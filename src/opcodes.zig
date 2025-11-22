@@ -56,3 +56,59 @@ pub fn opcode8D(cpu: *Cpu) void {
 pub fn opcode8F(cpu: *Cpu) void {
     Instructions.adc(cpu, cpu.registers.a);
 }
+
+pub fn opcode90(cpu: *Cpu) void {
+    Instructions.sub(cpu, cpu.registers.b);
+}
+
+pub fn opcode91(cpu: *Cpu) void {
+    Instructions.sub(cpu, cpu.registers.c);
+}
+
+pub fn opcode92(cpu: *Cpu) void {
+    Instructions.sub(cpu, cpu.registers.d);
+}
+
+pub fn opcode93(cpu: *Cpu) void {
+    Instructions.sub(cpu, cpu.registers.e);
+}
+
+pub fn opcode94(cpu: *Cpu) void {
+    Instructions.sub(cpu, cpu.registers.h);
+}
+
+pub fn opcode95(cpu: *Cpu) void {
+    Instructions.sub(cpu, cpu.registers.l);
+}
+
+pub fn opcode97(cpu: *Cpu) void {
+    Instructions.sub(cpu, cpu.registers.a);
+}
+
+pub fn opcode98(cpu: *Cpu) void {
+    Instructions.sbc(cpu, cpu.registers.b);
+}
+
+pub fn opcode99(cpu: *Cpu) void {
+    Instructions.sbc(cpu, cpu.registers.c);
+}
+
+pub fn opcode9A(cpu: *Cpu) void {
+    Instructions.sbc(cpu, cpu.registers.d);
+}
+
+pub fn opcode9B(cpu: *Cpu) void {
+    Instructions.sbc(cpu, cpu.registers.e);
+}
+
+pub fn opcode9C(cpu: *Cpu) void {
+    Instructions.sbc(cpu, cpu.registers.h);
+}
+
+pub fn opcode9D(cpu: *Cpu) void {
+    Instructions.sbc(cpu, cpu.registers.l);
+}
+
+pub fn opcode9F(cpu: *Cpu) void {
+    Instructions.sbc(cpu, cpu.registers.a);
+}

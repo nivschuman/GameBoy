@@ -54,12 +54,20 @@ pub const Registers = struct {
         return (self.f & 0x80) != 0;
     }
 
+    pub fn getZeroFlagValue(self: *const Registers) u1 {
+        return @intFromBool(self.getZeroFlag());
+    }
+
     pub fn setZeroFlag(self: *Registers, value: bool) void {
         self.f = (self.f & 0x7F) | (@as(u8, @intFromBool(value)) << 7);
     }
 
     pub fn getSubtractionFlag(self: *const Registers) bool {
         return (self.f & 0x40) != 0;
+    }
+
+    pub fn getSubtractionFlagValue(self: *const Registers) u1 {
+        return @intFromBool(self.getSubtractionFlag());
     }
 
     pub fn setSubtractionFlag(self: *Registers, value: bool) void {
@@ -70,12 +78,20 @@ pub const Registers = struct {
         return (self.f & 0x20) != 0;
     }
 
+    pub fn getHalfCarryFlagValue(self: *const Registers) u1 {
+        return @intFromBool(self.getHalfCarryFlag());
+    }
+
     pub fn setHalfCarryFlag(self: *Registers, value: bool) void {
         self.f = (self.f & 0xDF) | (@as(u8, @intFromBool(value)) << 5);
     }
 
     pub fn getCarryFlag(self: *const Registers) bool {
         return (self.f & 0x10) != 0;
+    }
+
+    pub fn getCarryFlagValue(self: *const Registers) u1 {
+        return @intFromBool(self.getCarryFlag());
     }
 
     pub fn setCarryFlag(self: *Registers, value: bool) void {
