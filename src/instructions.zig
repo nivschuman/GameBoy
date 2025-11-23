@@ -43,3 +43,42 @@ pub fn sbc(cpu: *Cpu, value: u8) void {
     cpu.registers.setHalfCarryFlag((cpu.registers.a & 0x0F) < (value & 0x0F) + carry_flag_value);
     cpu.registers.a = sub_carry_result[0];
 }
+
+pub fn andFn(cpu: *Cpu, value: u8) void {
+    const result = cpu.registers.a & value;
+
+    cpu.registers.setZeroFlag(result == 0);
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setCarryFlag(false);
+    cpu.registers.setHalfCarryFlag(true);
+    cpu.registers.a = result;
+}
+
+pub fn xor(cpu: *Cpu, value: u8) void {
+    const result = cpu.registers.a ^ value;
+
+    cpu.registers.setZeroFlag(result == 0);
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setCarryFlag(false);
+    cpu.registers.setHalfCarryFlag(false);
+    cpu.registers.a = result;
+}
+
+pub fn orFn(cpu: *Cpu, value: u8) void {
+    const result = cpu.registers.a | value;
+
+    cpu.registers.setZeroFlag(result == 0);
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setCarryFlag(false);
+    cpu.registers.setHalfCarryFlag(false);
+    cpu.registers.a = result;
+}
+
+pub fn cp(cpu: *Cpu, value: u8) void {
+    const result = @subWithOverflow(cpu.registers.a, value);
+
+    cpu.registers.setZeroFlag(result[0] == 0);
+    cpu.registers.setSubtractionFlag(true);
+    cpu.registers.setCarryFlag(cpu.registers.a < value);
+    cpu.registers.setHalfCarryFlag((cpu.registers.a & 0x0F) < (value & 0x0F));
+}

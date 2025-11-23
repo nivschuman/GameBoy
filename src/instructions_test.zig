@@ -87,3 +87,51 @@ test "SBC" {
     try std.testing.expect(cpu.registers.getCarryFlag());
     try std.testing.expect(cpu.registers.getHalfCarryFlag());
 }
+
+test "AND" {
+    var cpu = Cpu.init();
+    cpu.registers.a = 0xF0;
+
+    Instructions.andFn(&cpu, 0x0F);
+    try std.testing.expect(cpu.registers.a == 0x00);
+    try std.testing.expect(!cpu.registers.getSubtractionFlag());
+    try std.testing.expect(cpu.registers.getZeroFlag());
+    try std.testing.expect(!cpu.registers.getCarryFlag());
+    try std.testing.expect(cpu.registers.getHalfCarryFlag());
+}
+
+test "XOR" {
+    var cpu = Cpu.init();
+    cpu.registers.a = 0xAA;
+
+    Instructions.xor(&cpu, 0xFF);
+    try std.testing.expect(cpu.registers.a == 0x55);
+    try std.testing.expect(!cpu.registers.getSubtractionFlag());
+    try std.testing.expect(!cpu.registers.getZeroFlag());
+    try std.testing.expect(!cpu.registers.getCarryFlag());
+    try std.testing.expect(!cpu.registers.getHalfCarryFlag());
+}
+
+test "OR" {
+    var cpu = Cpu.init();
+    cpu.registers.a = 0x0A;
+
+    Instructions.orFn(&cpu, 0x05);
+    try std.testing.expect(cpu.registers.a == 0x0F);
+    try std.testing.expect(!cpu.registers.getSubtractionFlag());
+    try std.testing.expect(!cpu.registers.getZeroFlag());
+    try std.testing.expect(!cpu.registers.getCarryFlag());
+    try std.testing.expect(!cpu.registers.getHalfCarryFlag());
+}
+
+test "CP" {
+    var cpu = Cpu.init();
+    cpu.registers.a = 0x10;
+
+    Instructions.cp(&cpu, 0x10);
+    try std.testing.expect(cpu.registers.a == 0x10);
+    try std.testing.expect(cpu.registers.getZeroFlag());
+    try std.testing.expect(cpu.registers.getSubtractionFlag());
+    try std.testing.expect(!cpu.registers.getCarryFlag());
+    try std.testing.expect(!cpu.registers.getHalfCarryFlag());
+}
