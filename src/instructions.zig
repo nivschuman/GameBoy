@@ -39,7 +39,7 @@ pub fn sbc(cpu: *Cpu, value: u8) void {
 
     cpu.registers.setZeroFlag(sub_carry_result[0] == 0);
     cpu.registers.setSubtractionFlag(true);
-    cpu.registers.setCarryFlag(cpu.registers.a < value + carry_flag_value);
+    cpu.registers.setCarryFlag(@as(u9, cpu.registers.a) < @as(u9, value) + carry_flag_value);
     cpu.registers.setHalfCarryFlag((cpu.registers.a & 0x0F) < (value & 0x0F) + carry_flag_value);
     cpu.registers.a = sub_carry_result[0];
 }

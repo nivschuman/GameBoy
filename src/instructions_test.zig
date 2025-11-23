@@ -77,4 +77,13 @@ test "SBC" {
     try std.testing.expect(!cpu.registers.getZeroFlag());
     try std.testing.expect(cpu.registers.getCarryFlag());
     try std.testing.expect(cpu.registers.getHalfCarryFlag());
+
+    cpu.registers.a = 0x00;
+    cpu.registers.f = 0x10;
+    Instructions.sbc(&cpu, 0xFF);
+    try std.testing.expect(cpu.registers.a == 0x00);
+    try std.testing.expect(cpu.registers.getSubtractionFlag());
+    try std.testing.expect(cpu.registers.getZeroFlag());
+    try std.testing.expect(cpu.registers.getCarryFlag());
+    try std.testing.expect(cpu.registers.getHalfCarryFlag());
 }
