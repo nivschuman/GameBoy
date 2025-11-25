@@ -5,7 +5,6 @@ pub const Registers = struct {
     d: u8,
     e: u8,
     f: u8,
-    g: u8,
     h: u8,
     l: u8,
 

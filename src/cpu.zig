@@ -5,12 +5,14 @@ pub const Cpu = struct {
     registers: Registers,
     pc: u16,
     memory: Memory,
+    halted: bool,
 
     pub fn init() Cpu {
         return .{
             .registers = Registers.init(),
             .pc = 0,
             .memory = Memory.init(),
+            .halted = false,
         };
     }
 };
