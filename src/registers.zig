@@ -16,7 +16,6 @@ pub const Registers = struct {
             .d = 0,
             .e = 0,
             .f = 0,
-            .g = 0,
             .h = 0,
             .l = 0,
         };
