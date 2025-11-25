@@ -5,6 +5,16 @@ pub fn opcode00(cpu: *Cpu) void {
     cpu.pc += 1;
 }
 
+pub fn opcode01(cpu: *Cpu) void {
+    cpu.registers.setBC(cpu.memory.readWord(cpu.pc + 1));
+    cpu.pc += 3;
+}
+
+pub fn opcode02(cpu: *Cpu) void {
+    cpu.memory.writeByte(cpu.registers.getBC(), cpu.registers.a);
+    cpu.pc += 1;
+}
+
 pub fn opcode40(cpu: *Cpu) void {
     // LD B, B (no-op)
     cpu.pc += 1;
