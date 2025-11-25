@@ -82,3 +82,31 @@ pub fn cp(cpu: *Cpu, value: u8) void {
     cpu.registers.setCarryFlag(cpu.registers.a < value);
     cpu.registers.setHalfCarryFlag((cpu.registers.a & 0x0F) < (value & 0x0F));
 }
+
+pub fn inc(cpu: *Cpu, register: *u8) void {
+    const result = @addWithOverflow(register.*, 1);
+
+    cpu.registers.setZeroFlag(result[0] == 0);
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setHalfCarryFlag((register.* & 0x0F) + 1 > 0x0F);
+    register.* = result[0];
+}
+
+pub fn dec(cpu: *Cpu, register: *u8) void {
+    const result = @subWithOverflow(register.*, 1);
+
+    cpu.registers.setZeroFlag(result[0] == 0);
+    cpu.registers.setSubtractionFlag(true);
+    cpu.registers.setHalfCarryFlag((cpu.registers.a & 0x0F) < 1);
+    register.* = result[0];
+}
+
+pub fn rlc(cpu: *Cpu, register: *u8) void {
+    const highBit = register.* >> 7;
+    register.* = (register.* << 1) | highBit;
+
+    cpu.registers.setZeroFlag(register.* == 0);
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setHalfCarryFlag(false);
+    cpu.registers.setCarryFlag(highBit != 0);
+}

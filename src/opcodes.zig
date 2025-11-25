@@ -15,6 +15,37 @@ pub fn opcode02(cpu: *Cpu) void {
     cpu.pc += 1;
 }
 
+pub fn opcode03(cpu: *Cpu) void {
+    cpu.registers.setBC(@addWithOverflow(cpu.registers.getBC(), 1)[0]);
+    cpu.pc += 1;
+}
+
+pub fn opcode04(cpu: *Cpu) void {
+    Instructions.inc(cpu, &cpu.registers.b);
+    cpu.pc += 1;
+}
+
+pub fn opcode05(cpu: *Cpu) void {
+    Instructions.dec(cpu, &cpu.registers.b);
+    cpu.pc += 1;
+}
+
+pub fn opcode06(cpu: *Cpu) void {
+    cpu.registers.b = cpu.memory.readByte(cpu.pc + 1);
+    cpu.pc += 2;
+}
+
+pub fn opcode07(cpu: *Cpu) void {
+    cpu.registers.b = cpu.memory.readByte(cpu.pc + 1);
+    cpu.pc += 2;
+}
+
+pub fn opcode08(cpu: *Cpu) void {
+    Instructions.rlc(cpu, &cpu.registers.a);
+    cpu.registers.setZeroFlag(false); // RLCA always clears zero flag
+    cpu.pc += 1;
+}
+
 pub fn opcode40(cpu: *Cpu) void {
     // LD B, B (no-op)
     cpu.pc += 1;
