@@ -135,3 +135,79 @@ test "CP" {
     try std.testing.expect(!cpu.registers.getCarryFlag());
     try std.testing.expect(!cpu.registers.getHalfCarryFlag());
 }
+
+test "ADD words" {
+    var cpu = Cpu.init();
+
+    cpu.registers.setHL(0x1234);
+    cpu.registers.setBC(0x0001);
+
+    var hl_val = cpu.registers.getHL();
+    Instructions.addWords(&cpu, &hl_val, cpu.registers.getBC());
+    cpu.registers.setHL(hl_val);
+
+    try std.testing.expect(cpu.registers.getHL() == 0x1235);
+    try std.testing.expect(!cpu.registers.getSubtractionFlag());
+    try std.testing.expect(!cpu.registers.getCarryFlag());
+    try std.testing.expect(!cpu.registers.getHalfCarryFlag());
+
+    cpu.registers.setHL(0x0FFF);
+    cpu.registers.setBC(0x0001);
+
+    hl_val = cpu.registers.getHL();
+    Instructions.addWords(&cpu, &hl_val, cpu.registers.getBC());
+    cpu.registers.setHL(hl_val);
+
+    try std.testing.expect(cpu.registers.getHL() == 0x1000);
+    try std.testing.expect(cpu.registers.getHalfCarryFlag());
+    try std.testing.expect(!cpu.registers.getCarryFlag());
+
+    cpu.registers.setHL(0xFFFF);
+    cpu.registers.setBC(0x0001);
+
+    hl_val = cpu.registers.getHL();
+    Instructions.addWords(&cpu, &hl_val, cpu.registers.getBC());
+    cpu.registers.setHL(hl_val);
+
+    try std.testing.expect(cpu.registers.getHL() == 0x0000);
+    try std.testing.expect(cpu.registers.getCarryFlag());
+    try std.testing.expect(cpu.registers.getHalfCarryFlag());
+}
+
+test "RLC" {
+    var cpu = Cpu.init();
+    cpu.registers.a = 0b10000001;
+
+    Instructions.rlc(&cpu, &cpu.registers.a);
+
+    try std.testing.expect(cpu.registers.a == 0b00000011);
+    try std.testing.expect(cpu.registers.getCarryFlag());
+    try std.testing.expect(!cpu.registers.getSubtractionFlag());
+    try std.testing.expect(!cpu.registers.getHalfCarryFlag());
+    try std.testing.expect(!cpu.registers.getZeroFlag());
+
+    cpu.registers.a = 0x00;
+    Instructions.rlc(&cpu, &cpu.registers.a);
+    try std.testing.expect(cpu.registers.a == 0x00);
+    try std.testing.expect(cpu.registers.getZeroFlag());
+    try std.testing.expect(!cpu.registers.getCarryFlag());
+}
+
+test "RRC" {
+    var cpu = Cpu.init();
+    cpu.registers.a = 0b00101001;
+
+    Instructions.rrc(&cpu, &cpu.registers.a);
+
+    try std.testing.expect(cpu.registers.a == 0b10010100);
+    try std.testing.expect(cpu.registers.getCarryFlag());
+    try std.testing.expect(!cpu.registers.getSubtractionFlag());
+    try std.testing.expect(!cpu.registers.getHalfCarryFlag());
+    try std.testing.expect(!cpu.registers.getZeroFlag());
+
+    cpu.registers.a = 0x00;
+    Instructions.rrc(&cpu, &cpu.registers.a);
+    try std.testing.expect(cpu.registers.a == 0x00);
+    try std.testing.expect(cpu.registers.getZeroFlag());
+    try std.testing.expect(!cpu.registers.getCarryFlag());
+}

@@ -41,6 +41,84 @@ pub fn opcode07(cpu: *Cpu) void {
     cpu.pc += 1;
 }
 
+pub fn opcode08(cpu: *Cpu) void {
+    cpu.memory.writeWord(cpu.memory.readWord(cpu.pc + 1), cpu.sp);
+    cpu.pc += 3;
+}
+
+pub fn opcode09(cpu: *Cpu) void {
+    var target = cpu.registers.getHL();
+    Instructions.addWords(cpu, &target, cpu.registers.getBC());
+    cpu.registers.setHL(target);
+    cpu.pc += 1;
+}
+
+pub fn opcode0A(cpu: *Cpu) void {
+    cpu.registers.a = cpu.memory.readByte(cpu.registers.getBC());
+    cpu.pc += 1;
+}
+
+pub fn opcode0B(cpu: *Cpu) void {
+    cpu.registers.setBC(@subWithOverflow(cpu.registers.getBC(), 1)[0]);
+    cpu.pc += 1;
+}
+
+pub fn opcode0C(cpu: *Cpu) void {
+    Instructions.inc(cpu, &cpu.registers.c);
+    cpu.pc += 1;
+}
+
+pub fn opcode0D(cpu: *Cpu) void {
+    Instructions.dec(cpu, &cpu.registers.c);
+    cpu.pc += 1;
+}
+
+pub fn opcode0E(cpu: *Cpu) void {
+    cpu.registers.c = cpu.memory.readByte(cpu.pc + 1);
+    cpu.pc += 2;
+}
+
+pub fn opcode0F(cpu: *Cpu) void {
+    Instructions.rrc(cpu, &cpu.registers.a);
+    cpu.registers.setZeroFlag(false); // RRCA always clears zero flag
+    cpu.pc += 1;
+}
+
+pub fn opcode10(cpu: *Cpu) void {
+    cpu.stopped = true;
+    cpu.pc += 1;
+}
+
+pub fn opcode11(cpu: *Cpu) void {
+    cpu.registers.setDE(cpu.memory.readWord(cpu.pc + 1));
+    cpu.pc += 3;
+}
+
+pub fn opcode12(cpu: *Cpu) void {
+    cpu.memory.writeByte(cpu.registers.getDE(), cpu.registers.a);
+    cpu.pc += 1;
+}
+
+pub fn opcode13(cpu: *Cpu) void {
+    cpu.registers.setDE(@subWithOverflow(cpu.registers.getBC(), 1)[0]);
+    cpu.pc += 1;
+}
+
+pub fn opcode14(cpu: *Cpu) void {
+    Instructions.inc(cpu, &cpu.registers.d);
+    cpu.pc += 1;
+}
+
+pub fn opcode15(cpu: *Cpu) void {
+    Instructions.dec(cpu, &cpu.registers.d);
+    cpu.pc += 1;
+}
+
+pub fn opcode16(cpu: *Cpu) void {
+    cpu.registers.d = cpu.memory.readByte(cpu.pc + 1);
+    cpu.pc += 2;
+}
+
 pub fn opcode40(cpu: *Cpu) void {
     // LD B, B (no-op)
     cpu.pc += 1;
