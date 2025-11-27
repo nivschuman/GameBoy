@@ -180,6 +180,167 @@ pub fn opcode21(cpu: *Cpu) void {
     cpu.pc +%= 3;
 }
 
+pub fn opcode22(cpu: *Cpu) void {
+    cpu.memory.writeByte(cpu.registers.getHL(), cpu.registers.a);
+    cpu.registers.setHL(cpu.registers.getHL() +% 1);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode23(cpu: *Cpu) void {
+    cpu.registers.setHL(cpu.registers.getHL() +% 1);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode24(cpu: *Cpu) void {
+    Instructions.inc(cpu, &cpu.registers.h);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode25(cpu: *Cpu) void {
+    Instructions.dec(cpu, &cpu.registers.h);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode26(cpu: *Cpu) void {
+    cpu.registers.h = cpu.memory.readByte(cpu.pc + 1);
+    cpu.pc +%= 2;
+}
+
+pub fn opcode27(cpu: *Cpu) void {
+    // todo DAA
+    cpu.pc +%= 1;
+}
+
+pub fn opcode28(cpu: *Cpu) void {
+    const jmp = cpu.memory.readSignedByte(cpu.pc +% 1);
+    cpu.pc +%= 2;
+    Instructions.jr(cpu, jmp, cpu.registers.getZeroFlag());
+}
+
+pub fn opcode29(cpu: *Cpu) void {
+    var target = cpu.registers.getHL();
+    Instructions.addWords(cpu, &target, cpu.registers.getHL());
+    cpu.registers.setHL(target);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode2A(cpu: *Cpu) void {
+    cpu.registers.a = cpu.memory.readByte(cpu.registers.getHL());
+    cpu.registers.setHL(cpu.registers.getHL() +% 1);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode2B(cpu: *Cpu) void {
+    cpu.registers.setHL(cpu.registers.getHL() -% 1);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode2C(cpu: *Cpu) void {
+    Instructions.inc(cpu, &cpu.registers.l);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode2D(cpu: *Cpu) void {
+    Instructions.dec(cpu, &cpu.registers.l);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode2E(cpu: *Cpu) void {
+    cpu.registers.l = cpu.memory.readByte(cpu.pc + 1);
+    cpu.pc +%= 2;
+}
+
+pub fn opcode2F(cpu: *Cpu) void {
+    Instructions.cpl(cpu, &cpu.registers.a);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode30(cpu: *Cpu) void {
+    const jmp = cpu.memory.readSignedByte(cpu.pc +% 1);
+    cpu.pc +%= 2;
+    Instructions.jr(cpu, jmp, !cpu.registers.getCarryFlag());
+}
+
+pub fn opcode31(cpu: *Cpu) void {
+    cpu.sp = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.pc +%= 3;
+}
+
+pub fn opcode32(cpu: *Cpu) void {
+    cpu.memory.writeByte(cpu.registers.getHL(), cpu.registers.a);
+    cpu.registers.setHL(cpu.registers.getHL() -% 1);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode33(cpu: *Cpu) void {
+    cpu.sp +%= 1;
+    cpu.pc +%= 1;
+}
+
+pub fn opcode34(cpu: *Cpu) void {
+    Instructions.inc(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()));
+    cpu.pc +%= 1;
+}
+
+pub fn opcode35(cpu: *Cpu) void {
+    Instructions.dec(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()));
+    cpu.pc +%= 1;
+}
+
+pub fn opcode36(cpu: *Cpu) void {
+    cpu.memory.writeByte(cpu.registers.getHL(), cpu.memory.readByte(cpu.pc +% 1));
+    cpu.pc +%= 2;
+}
+
+pub fn opcode37(cpu: *Cpu) void {
+    Instructions.scf(cpu);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode38(cpu: *Cpu) void {
+    const jmp = cpu.memory.readSignedByte(cpu.pc +% 1);
+    cpu.pc +%= 2;
+    Instructions.jr(cpu, jmp, cpu.registers.getCarryFlag());
+}
+
+pub fn opcode39(cpu: *Cpu) void {
+    var target = cpu.registers.getHL();
+    Instructions.addWords(cpu, &target, cpu.sp);
+    cpu.registers.setHL(target);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode3A(cpu: *Cpu) void {
+    cpu.registers.a = cpu.memory.readByte(cpu.registers.getHL());
+    cpu.registers.setHL(cpu.registers.getHL() -% 1);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode3B(cpu: *Cpu) void {
+    cpu.sp -%= 1;
+    cpu.pc +%= 1;
+}
+
+pub fn opcode3C(cpu: *Cpu) void {
+    Instructions.inc(cpu, &cpu.registers.a);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode3D(cpu: *Cpu) void {
+    Instructions.dec(cpu, &cpu.registers.a);
+    cpu.pc +%= 1;
+}
+
+pub fn opcode3E(cpu: *Cpu) void {
+    cpu.registers.a = cpu.memory.readByte(cpu.pc +% 1);
+    cpu.pc +%= 2;
+}
+
+pub fn opcode3F(cpu: *Cpu) void {
+    Instructions.ccf(cpu);
+    cpu.pc +%= 1;
+}
+
 pub fn opcode40(cpu: *Cpu) void {
     // LD B, B (no-op)
     cpu.pc +%= 1;

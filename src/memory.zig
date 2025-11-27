@@ -31,4 +31,8 @@ pub const Memory = struct {
         self.data[address] = low;
         self.data[address + 1] = high;
     }
+
+    pub fn getBytePtr(self: *Memory, address: u16) *u8 {
+        return &self.data[address];
+    }
 };

@@ -149,6 +149,25 @@ pub fn rr(cpu: *Cpu, target: *u8) void {
     cpu.registers.setCarryFlag(low_bit != 0);
 }
 
+pub fn cpl(cpu: *Cpu, target: *u8) void {
+    target.* ^= 0xFF;
+
+    cpu.registers.setSubtractionFlag(true);
+    cpu.registers.setHalfCarryFlag(true);
+}
+
+pub fn scf(cpu: *Cpu) void {
+    cpu.registers.setCarryFlag(true);
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setHalfCarryFlag(false);
+}
+
+pub fn ccf(cpu: *Cpu) void {
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setHalfCarryFlag(false);
+    cpu.registers.setCarryFlag(!cpu.registers.getCarryFlag());
+}
+
 pub fn jr(cpu: *Cpu, value: i8, should_jump: bool) void {
     if (!should_jump) {
         return;
