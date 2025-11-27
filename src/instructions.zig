@@ -32,25 +32,24 @@ pub fn adc(cpu: *Cpu, target: *u8, value: u8) void {
 }
 
 pub fn sub(cpu: *Cpu, target: *u8, value: u8) void {
-    const result = @subWithOverflow(target.*, value);
+    const result = target.* -% value;
 
-    cpu.registers.setZeroFlag(result[0] == 0);
+    cpu.registers.setZeroFlag(result == 0);
     cpu.registers.setSubtractionFlag(true);
     cpu.registers.setCarryFlag(target.* < value);
     cpu.registers.setHalfCarryFlag((target.* & 0x0F) < (value & 0x0F));
-    target.* = result[0];
+    target.* = result;
 }
 
 pub fn sbc(cpu: *Cpu, target: *u8, value: u8) void {
     const carry_flag_value = @as(u8, cpu.registers.getCarryFlagValue());
-    const sub_value_result = @subWithOverflow(target.*, value);
-    const sub_carry_result = @subWithOverflow(sub_value_result[0], carry_flag_value);
+    const result = target.* -% value -% carry_flag_value;
 
-    cpu.registers.setZeroFlag(sub_carry_result[0] == 0);
+    cpu.registers.setZeroFlag(result == 0);
     cpu.registers.setSubtractionFlag(true);
     cpu.registers.setCarryFlag(@as(u9, target.*) < @as(u9, value) + carry_flag_value);
     cpu.registers.setHalfCarryFlag((target.* & 0x0F) < (value & 0x0F) + carry_flag_value);
-    target.* = sub_carry_result[0];
+    target.* = result;
 }
 
 pub fn andFn(cpu: *Cpu, target: *u8, value: u8) void {
@@ -84,30 +83,30 @@ pub fn orFn(cpu: *Cpu, target: *u8, value: u8) void {
 }
 
 pub fn cp(cpu: *Cpu, target: *u8, value: u8) void {
-    const result = @subWithOverflow(target.*, value);
+    const result = target.* -% value;
 
-    cpu.registers.setZeroFlag(result[0] == 0);
+    cpu.registers.setZeroFlag(result == 0);
     cpu.registers.setSubtractionFlag(true);
     cpu.registers.setCarryFlag(target.* < value);
     cpu.registers.setHalfCarryFlag((target.* & 0x0F) < (value & 0x0F));
 }
 
 pub fn inc(cpu: *Cpu, target: *u8) void {
-    const result = @addWithOverflow(target.*, 1);
+    const result = target.* +% 1;
 
-    cpu.registers.setZeroFlag(result[0] == 0);
+    cpu.registers.setZeroFlag(result == 0);
     cpu.registers.setSubtractionFlag(false);
     cpu.registers.setHalfCarryFlag((target.* & 0x0F) + 1 > 0x0F);
-    target.* = result[0];
+    target.* = result;
 }
 
 pub fn dec(cpu: *Cpu, target: *u8) void {
-    const result = @subWithOverflow(target.*, 1);
+    const result = target.* -% 1;
 
-    cpu.registers.setZeroFlag(result[0] == 0);
+    cpu.registers.setZeroFlag(result == 0);
     cpu.registers.setSubtractionFlag(true);
     cpu.registers.setHalfCarryFlag((target.* & 0x0F) < 1);
-    target.* = result[0];
+    target.* = result;
 }
 
 pub fn rlc(cpu: *Cpu, target: *u8) void {
@@ -156,9 +155,9 @@ pub fn jr(cpu: *Cpu, value: i8, should_jump: bool) void {
     }
 
     if (value < 0) {
-        cpu.pc = @subWithOverflow(cpu.pc, @abs(value))[0];
+        cpu.pc -%= @abs(value);
         return;
     }
 
-    cpu.pc = @addWithOverflow(cpu.pc, @abs(value));
+    cpu.pc +%= @abs(value);
 }
