@@ -6,7 +6,7 @@ pub fn opcode00(cpu: *Cpu) void {
 }
 
 pub fn opcode01(cpu: *Cpu) void {
-    cpu.registers.setBC(cpu.memory.readWord(cpu.pc +% 1));
+    cpu.registers.setBC(cpu.d16());
     cpu.pc +%= 3;
 }
 
@@ -31,7 +31,7 @@ pub fn opcode05(cpu: *Cpu) void {
 }
 
 pub fn opcode06(cpu: *Cpu) void {
-    cpu.registers.b = cpu.memory.readByte(cpu.pc +% 1);
+    cpu.registers.b = cpu.d8();
     cpu.pc +%= 2;
 }
 
@@ -42,7 +42,7 @@ pub fn opcode07(cpu: *Cpu) void {
 }
 
 pub fn opcode08(cpu: *Cpu) void {
-    cpu.memory.writeWord(cpu.memory.readWord(cpu.pc +% 1), cpu.sp);
+    cpu.memory.writeWord(cpu.d16(), cpu.sp);
     cpu.pc +%= 3;
 }
 
@@ -74,7 +74,7 @@ pub fn opcode0D(cpu: *Cpu) void {
 }
 
 pub fn opcode0E(cpu: *Cpu) void {
-    cpu.registers.c = cpu.memory.readByte(cpu.pc +% 1);
+    cpu.registers.c = cpu.d8();
     cpu.pc +%= 2;
 }
 
@@ -90,7 +90,7 @@ pub fn opcode10(cpu: *Cpu) void {
 }
 
 pub fn opcode11(cpu: *Cpu) void {
-    cpu.registers.setDE(cpu.memory.readWord(cpu.pc +% 1));
+    cpu.registers.setDE(cpu.d16());
     cpu.pc +%= 3;
 }
 
@@ -115,7 +115,7 @@ pub fn opcode15(cpu: *Cpu) void {
 }
 
 pub fn opcode16(cpu: *Cpu) void {
-    cpu.registers.d = cpu.memory.readByte(cpu.pc +% 1);
+    cpu.registers.d = cpu.d8();
     cpu.pc +%= 2;
 }
 
@@ -126,7 +126,7 @@ pub fn opcode17(cpu: *Cpu) void {
 }
 
 pub fn opcode18(cpu: *Cpu) void {
-    const jmp = cpu.memory.readSignedByte(cpu.pc +% 1);
+    const jmp = cpu.s8();
     cpu.pc +%= 2;
     Instructions.jr(cpu, jmp, true);
 }
@@ -159,7 +159,7 @@ pub fn opcode1D(cpu: *Cpu) void {
 }
 
 pub fn opcode1E(cpu: *Cpu) void {
-    cpu.registers.e = cpu.memory.readByte(cpu.pc +% 1);
+    cpu.registers.e = cpu.d8();
     cpu.pc +%= 2;
 }
 
@@ -170,13 +170,13 @@ pub fn opcode1F(cpu: *Cpu) void {
 }
 
 pub fn opcode20(cpu: *Cpu) void {
-    const jmp = cpu.memory.readSignedByte(cpu.pc +% 1);
+    const jmp = cpu.s8();
     cpu.pc +%= 2;
     Instructions.jr(cpu, jmp, !cpu.registers.getZeroFlag());
 }
 
 pub fn opcode21(cpu: *Cpu) void {
-    cpu.registers.setHL(cpu.memory.readWord(cpu.pc +% 1));
+    cpu.registers.setHL(cpu.d16());
     cpu.pc +%= 3;
 }
 
@@ -212,7 +212,7 @@ pub fn opcode27(cpu: *Cpu) void {
 }
 
 pub fn opcode28(cpu: *Cpu) void {
-    const jmp = cpu.memory.readSignedByte(cpu.pc +% 1);
+    const jmp = cpu.s8();
     cpu.pc +%= 2;
     Instructions.jr(cpu, jmp, cpu.registers.getZeroFlag());
 }
@@ -256,13 +256,13 @@ pub fn opcode2F(cpu: *Cpu) void {
 }
 
 pub fn opcode30(cpu: *Cpu) void {
-    const jmp = cpu.memory.readSignedByte(cpu.pc +% 1);
+    const jmp = cpu.s8();
     cpu.pc +%= 2;
     Instructions.jr(cpu, jmp, !cpu.registers.getCarryFlag());
 }
 
 pub fn opcode31(cpu: *Cpu) void {
-    cpu.sp = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.sp = cpu.d16();
     cpu.pc +%= 3;
 }
 
@@ -288,7 +288,7 @@ pub fn opcode35(cpu: *Cpu) void {
 }
 
 pub fn opcode36(cpu: *Cpu) void {
-    cpu.memory.writeByte(cpu.registers.getHL(), cpu.memory.readByte(cpu.pc +% 1));
+    cpu.memory.writeByte(cpu.registers.getHL(), cpu.d8());
     cpu.pc +%= 2;
 }
 
@@ -298,7 +298,7 @@ pub fn opcode37(cpu: *Cpu) void {
 }
 
 pub fn opcode38(cpu: *Cpu) void {
-    const jmp = cpu.memory.readSignedByte(cpu.pc +% 1);
+    const jmp = cpu.s8();
     cpu.pc +%= 2;
     Instructions.jr(cpu, jmp, cpu.registers.getCarryFlag());
 }
@@ -332,7 +332,7 @@ pub fn opcode3D(cpu: *Cpu) void {
 }
 
 pub fn opcode3E(cpu: *Cpu) void {
-    cpu.registers.a = cpu.memory.readByte(cpu.pc +% 1);
+    cpu.registers.a = cpu.d8();
     cpu.pc +%= 2;
 }
 
@@ -992,19 +992,19 @@ pub fn opcodeC1(cpu: *Cpu) void {
 }
 
 pub fn opcodeC2(cpu: *Cpu) void {
-    const address = cpu.memory.readWord(cpu.pc +% 1);
+    const address = cpu.d16();
     cpu.pc +%= 3;
     Instructions.jp(cpu, address, !cpu.registers.getZeroFlag());
 }
 
 pub fn opcodeC3(cpu: *Cpu) void {
-    const address = cpu.memory.readWord(cpu.pc +% 1);
+    const address = cpu.d16();
     cpu.pc +%= 3;
     Instructions.jp(cpu, address, true);
 }
 
 pub fn opcodeC4(cpu: *Cpu) void {
-    const address = cpu.memory.readWord(cpu.pc +% 1);
+    const address = cpu.d16();
     cpu.pc +%= 3;
     Instructions.call(cpu, address, !cpu.registers.getZeroFlag());
 }
@@ -1015,7 +1015,7 @@ pub fn opcodeC5(cpu: *Cpu) void {
 }
 
 pub fn opcodeC6(cpu: *Cpu) void {
-    Instructions.add(cpu, &cpu.registers.a, cpu.memory.readByte(cpu.pc +% 1));
+    Instructions.add(cpu, &cpu.registers.a, cpu.d8());
     cpu.pc +%= 2;
 }
 
@@ -1035,7 +1035,7 @@ pub fn opcodeC9(cpu: *Cpu) void {
 }
 
 pub fn opcodeCA(cpu: *Cpu) void {
-    const address = cpu.memory.readWord(cpu.pc +% 1);
+    const address = cpu.d16();
     cpu.pc +%= 3;
     Instructions.jp(cpu, address, cpu.registers.getZeroFlag());
 }
@@ -1046,19 +1046,19 @@ pub fn opcodeCB(cpu: *Cpu) void {
 }
 
 pub fn opcodeCC(cpu: *Cpu) void {
-    const address = cpu.memory.readWord(cpu.pc +% 1);
+    const address = cpu.d16();
     cpu.pc +%= 3;
     Instructions.call(cpu, address, cpu.registers.getZeroFlag());
 }
 
 pub fn opcodeCD(cpu: *Cpu) void {
-    const address = cpu.memory.readWord(cpu.pc +% 1);
+    const address = cpu.d16();
     cpu.pc +%= 3;
     Instructions.call(cpu, address, true);
 }
 
 pub fn opcodeCE(cpu: *Cpu) void {
-    Instructions.adc(cpu, &cpu.registers.a, cpu.memory.readByte(cpu.pc +% 1));
+    Instructions.adc(cpu, &cpu.registers.a, cpu.d8());
     cpu.pc +%= 1;
 }
 
@@ -1078,13 +1078,13 @@ pub fn opcodeD1(cpu: *Cpu) void {
 }
 
 pub fn opcodeD2(cpu: *Cpu) void {
-    const address = cpu.memory.readWord(cpu.pc +% 1);
+    const address = cpu.d16();
     cpu.pc +%= 3;
     Instructions.jp(cpu, address, !cpu.registers.getCarryFlag());
 }
 
 pub fn opcodeD4(cpu: *Cpu) void {
-    const address = cpu.memory.readWord(cpu.pc +% 1);
+    const address = cpu.d16();
     cpu.pc +%= 3;
     Instructions.call(cpu, address, !cpu.registers.getCarryFlag());
 }
@@ -1095,7 +1095,7 @@ pub fn opcodeD5(cpu: *Cpu) void {
 }
 
 pub fn opcodeD6(cpu: *Cpu) void {
-    Instructions.sub(cpu, &cpu.registers.a, cpu.memory.readByte(cpu.pc +% 1));
+    Instructions.sub(cpu, &cpu.registers.a, cpu.d8());
     cpu.pc +%= 2;
 }
 
@@ -1115,19 +1115,19 @@ pub fn opcodeD9(cpu: *Cpu) void {
 }
 
 pub fn opcodeDA(cpu: *Cpu) void {
-    const address = cpu.memory.readWord(cpu.pc +% 1);
+    const address = cpu.d16();
     cpu.pc +%= 3;
     Instructions.jp(cpu, address, cpu.registers.getCarryFlag());
 }
 
 pub fn opcodeDC(cpu: *Cpu) void {
-    const address = cpu.memory.readWord(cpu.pc +% 1);
+    const address = cpu.d16();
     cpu.pc +%= 3;
     Instructions.call(cpu, address, cpu.registers.getCarryFlag());
 }
 
 pub fn opcodeDE(cpu: *Cpu) void {
-    Instructions.sbc(cpu, &cpu.registers.a, cpu.memory.readByte(cpu.pc +% 1));
+    Instructions.sbc(cpu, &cpu.registers.a, cpu.d8());
     cpu.pc +%= 2;
 }
 
@@ -1137,7 +1137,7 @@ pub fn opcodeDF(cpu: *Cpu) void {
 }
 
 pub fn opcodeE0(cpu: *Cpu) void {
-    Instructions.ldRam(cpu, cpu.memory.readByte(cpu.pc +% 1), cpu.registers.a);
+    Instructions.ldRam(cpu, cpu.d8(), cpu.registers.a);
     cpu.pc +%= 2;
 }
 
@@ -1157,7 +1157,7 @@ pub fn opcodeE5(cpu: *Cpu) void {
 }
 
 pub fn opcodeE6(cpu: *Cpu) void {
-    Instructions.andFn(cpu, &cpu.registers.a, cpu.memory.readByte(cpu.pc +% 1));
+    Instructions.andFn(cpu, &cpu.registers.a, cpu.d8());
     cpu.pc +%= 2;
 }
 
@@ -1177,13 +1177,13 @@ pub fn opcodeE9(cpu: *Cpu) void {
 }
 
 pub fn opcodeEA(cpu: *Cpu) void {
-    const address = cpu.memory.readWord(cpu.pc +% 1);
+    const address = cpu.d16();
     cpu.memory.writeByte(address, cpu.registers.a);
     cpu.pc +%= 3;
 }
 
 pub fn opcodeEE(cpu: *Cpu) void {
-    Instructions.xor(cpu, &cpu.registers.a, cpu.memory.readByte(cpu.pc +% 1));
+    Instructions.xor(cpu, &cpu.registers.a, cpu.d8());
     cpu.pc +%= 2;
 }
 

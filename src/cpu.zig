@@ -19,4 +19,16 @@ pub const Cpu = struct {
             .stopped = false,
         };
     }
+
+    pub fn d8(self: *const Cpu) u8 {
+        return self.memory.readByte(self.pc +% 1);
+    }
+
+    pub fn s8(self: *const Cpu) i8 {
+        return self.memory.readSignedByte(self.pc +% 1);
+    }
+
+    pub fn d16(self: *const Cpu) u16 {
+        return self.memory.readWord(self.pc +% 1);
+    }
 };
