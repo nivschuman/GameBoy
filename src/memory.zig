@@ -11,6 +11,10 @@ pub const Memory = struct {
         return self.data[address];
     }
 
+    pub fn readSignedByte(self: *const Memory, address: u16) i8 {
+        return @bitCast(self.data[address]);
+    }
+
     pub fn writeByte(self: *Memory, address: u16, value: u8) void {
         self.data[address] = value;
     }

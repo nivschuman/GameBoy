@@ -129,3 +129,36 @@ pub fn rrc(cpu: *Cpu, target: *u8) void {
     cpu.registers.setHalfCarryFlag(false);
     cpu.registers.setCarryFlag(low_bit != 0);
 }
+
+pub fn rl(cpu: *Cpu, target: *u8) void {
+    const high_bit = target.* >> 7;
+    target.* = (target.* << 1) | @as(u8, cpu.registers.getCarryFlagValue());
+
+    cpu.registers.setZeroFlag(target.* == 0);
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setHalfCarryFlag(false);
+    cpu.registers.setCarryFlag(high_bit != 0);
+}
+
+pub fn rr(cpu: *Cpu, target: *u8) void {
+    const low_bit = target.* & 0x01;
+    target.* = (target.* >> 1) | (@as(u8, cpu.registers.getCarryFlagValue()) << 7);
+
+    cpu.registers.setZeroFlag(target.* == 0);
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setHalfCarryFlag(false);
+    cpu.registers.setCarryFlag(low_bit != 0);
+}
+
+pub fn jr(cpu: *Cpu, value: i8, should_jump: bool) void {
+    if (!should_jump) {
+        return;
+    }
+
+    if (value < 0) {
+        cpu.pc = @subWithOverflow(cpu.pc, @abs(value))[0];
+        return;
+    }
+
+    cpu.pc = @addWithOverflow(cpu.pc, @abs(value));
+}
