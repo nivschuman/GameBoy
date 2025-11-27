@@ -980,3 +980,89 @@ pub fn opcodeBF(cpu: *Cpu) void {
     Instructions.cp(cpu, &cpu.registers.a, cpu.registers.a);
     cpu.pc +%= 1;
 }
+
+pub fn opcodeC0(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.ret(cpu, !cpu.registers.getZeroFlag());
+}
+
+pub fn opcodeC1(cpu: *Cpu) void {
+    cpu.registers.setBC(Instructions.pop(cpu));
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeC2(cpu: *Cpu) void {
+    const address = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.pc +%= 3;
+    Instructions.jp(cpu, address, !cpu.registers.getZeroFlag());
+}
+
+pub fn opcodeC3(cpu: *Cpu) void {
+    const address = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.pc +%= 3;
+    Instructions.jp(cpu, address, true);
+}
+
+pub fn opcodeC4(cpu: *Cpu) void {
+    const address = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.pc +%= 3;
+    Instructions.call(cpu, address, !cpu.registers.getZeroFlag());
+}
+
+pub fn opcodeC5(cpu: *Cpu) void {
+    Instructions.push(cpu.registers.getBC());
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeC6(cpu: *Cpu) void {
+    Instructions.add(cpu, &cpu.registers.a, cpu.memory.readByte(cpu.pc +% 1));
+    cpu.pc +%= 2;
+}
+
+pub fn opcodeC7(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.call(cpu, 0x0000, true);
+}
+
+pub fn opcodeC8(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.ret(cpu, cpu.registers.getZeroFlag());
+}
+
+pub fn opcodeC9(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.ret(cpu, true);
+}
+
+pub fn opcodeCA(cpu: *Cpu) void {
+    const address = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.pc +%= 3;
+    Instructions.jp(cpu, address, cpu.registers.getZeroFlag());
+}
+
+pub fn opcodeCB(cpu: *Cpu) void {
+    // todo call CB opcodes
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeCC(cpu: *Cpu) void {
+    const address = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.pc +%= 3;
+    Instructions.call(cpu, address, cpu.registers.getZeroFlag());
+}
+
+pub fn opcodeCD(cpu: *Cpu) void {
+    const address = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.pc +%= 3;
+    Instructions.call(cpu, address, true);
+}
+
+pub fn opcodeCE(cpu: *Cpu) void {
+    Instructions.adc(cpu, &cpu.registers.a, cpu.memory.readByte(cpu.pc +% 1));
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeCF(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.call(cpu, 0x0008, true);
+}

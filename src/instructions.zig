@@ -180,3 +180,39 @@ pub fn jr(cpu: *Cpu, value: i8, should_jump: bool) void {
 
     cpu.pc +%= @abs(value);
 }
+
+pub fn jp(cpu: *Cpu, address: u16, should_jump: bool) void {
+    if (!should_jump) {
+        return;
+    }
+
+    cpu.pc = address;
+}
+
+pub fn ret(cpu: *Cpu, should_ret: bool) void {
+    if (!should_ret) {
+        return;
+    }
+
+    cpu.pc = pop(cpu);
+}
+
+pub fn pop(cpu: *Cpu) u16 {
+    const result = cpu.memory.readWord(cpu.sp);
+    cpu.sp +%= 2;
+    return result;
+}
+
+pub fn push(cpu: *Cpu, value: u16) void {
+    cpu.sp -%= 2;
+    cpu.memory.writeWord(cpu.sp, value);
+}
+
+pub fn call(cpu: *Cpu, address: u16, should_call: bool) void {
+    if (!should_call) {
+        return;
+    }
+
+    push(cpu, cpu.pc);
+    cpu.pc = address;
+}
