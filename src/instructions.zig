@@ -216,3 +216,8 @@ pub fn call(cpu: *Cpu, address: u16, should_call: bool) void {
     push(cpu, cpu.pc);
     cpu.pc = address;
 }
+
+pub fn ldRam(cpu: *Cpu, offset: u8, value: u8) void {
+    const address = 0xFF00 + @as(u16, offset);
+    cpu.memory.writeByte(address, value);
+}

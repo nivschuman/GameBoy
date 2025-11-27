@@ -1066,3 +1066,128 @@ pub fn opcodeCF(cpu: *Cpu) void {
     cpu.pc +%= 1;
     Instructions.call(cpu, 0x0008, true);
 }
+
+pub fn opcodeD0(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.ret(cpu, !cpu.registers.getCarryFlag());
+}
+
+pub fn opcodeD1(cpu: *Cpu) void {
+    cpu.registers.setDE(Instructions.pop(cpu));
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeD2(cpu: *Cpu) void {
+    const address = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.pc +%= 3;
+    Instructions.jp(cpu, address, !cpu.registers.getCarryFlag());
+}
+
+pub fn opcodeD4(cpu: *Cpu) void {
+    const address = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.pc +%= 3;
+    Instructions.call(cpu, address, !cpu.registers.getCarryFlag());
+}
+
+pub fn opcodeD5(cpu: *Cpu) void {
+    Instructions.push(cpu.registers.getDE());
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeD6(cpu: *Cpu) void {
+    Instructions.sub(cpu, &cpu.registers.a, cpu.memory.readByte(cpu.pc +% 1));
+    cpu.pc +%= 2;
+}
+
+pub fn opcodeD7(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.call(cpu, 0x0010, true);
+}
+
+pub fn opcodeD8(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.ret(cpu, cpu.registers.getCarryFlag());
+}
+
+pub fn opcodeD9(cpu: *Cpu) void {
+    // todo reti
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeDA(cpu: *Cpu) void {
+    const address = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.pc +%= 3;
+    Instructions.jp(cpu, address, cpu.registers.getCarryFlag());
+}
+
+pub fn opcodeDC(cpu: *Cpu) void {
+    const address = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.pc +%= 3;
+    Instructions.call(cpu, address, cpu.registers.getCarryFlag());
+}
+
+pub fn opcodeDE(cpu: *Cpu) void {
+    Instructions.sbc(cpu, &cpu.registers.a, cpu.memory.readByte(cpu.pc +% 1));
+    cpu.pc +%= 2;
+}
+
+pub fn opcodeDF(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.call(cpu, 0x0018, true);
+}
+
+pub fn opcodeE0(cpu: *Cpu) void {
+    Instructions.ldRam(cpu, cpu.memory.readByte(cpu.pc +% 1), cpu.registers.a);
+    cpu.pc +%= 2;
+}
+
+pub fn opcodeE1(cpu: *Cpu) void {
+    cpu.registers.setHL(Instructions.pop(cpu));
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeE2(cpu: *Cpu) void {
+    Instructions.ldRam(cpu, cpu.registers.c, cpu.registers.a);
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeE5(cpu: *Cpu) void {
+    Instructions.push(cpu.registers.getHL());
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeE6(cpu: *Cpu) void {
+    Instructions.andFn(cpu, &cpu.registers.a, cpu.memory.readByte(cpu.pc +% 1));
+    cpu.pc +%= 2;
+}
+
+pub fn opcodeE7(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.call(cpu, 0x0020, true);
+}
+
+pub fn opcodeE8(cpu: *Cpu) void {
+    // ADD SP, s8 -> skip as per instruction
+    cpu.pc +%= 2;
+}
+
+pub fn opcodeE9(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.jp(cpu, cpu.registers.getHL(), true);
+}
+
+pub fn opcodeEA(cpu: *Cpu) void {
+    const address = cpu.memory.readWord(cpu.pc +% 1);
+    cpu.memory.writeByte(address, cpu.registers.a);
+    cpu.pc +%= 3;
+}
+
+pub fn opcodeEE(cpu: *Cpu) void {
+    Instructions.xor(cpu, &cpu.registers.a, cpu.memory.readByte(cpu.pc +% 1));
+    cpu.pc +%= 2;
+}
+
+pub fn opcodeEF(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.call(cpu, 0x0028, true);
+}
