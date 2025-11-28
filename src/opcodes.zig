@@ -1167,7 +1167,7 @@ pub fn opcodeE7(cpu: *Cpu) void {
 }
 
 pub fn opcodeE8(cpu: *Cpu) void {
-    // ADD SP, s8 -> skip as per instruction
+    Instructions.addSigned(cpu, &cpu.sp, cpu.s8());
     cpu.pc +%= 2;
 }
 

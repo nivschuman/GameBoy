@@ -6,7 +6,7 @@ pub fn add(cpu: *Cpu, target: *u8, value: u8) void {
     cpu.registers.setZeroFlag(result[0] == 0);
     cpu.registers.setSubtractionFlag(false);
     cpu.registers.setCarryFlag(result[1] != 0);
-    cpu.registers.setHalfCarryFlag((target.* & 0x0F) + (value & 0xF) > 0x0F);
+    cpu.registers.setHalfCarryFlag((target.* & 0x0F) + (value & 0x0F) > 0x0F);
     target.* = result[0];
 }
 
@@ -17,6 +17,18 @@ pub fn addWords(cpu: *Cpu, target: *u16, value: u16) void {
     cpu.registers.setCarryFlag(result[1] != 0);
     cpu.registers.setHalfCarryFlag((target.* & 0x0FFF) + (value & 0x0FFF) > 0x0FFF);
     target.* = result[0];
+}
+
+pub fn addSigned(cpu: *Cpu, target: *u16, value: i8) void {
+    const value_u16: u16 = @as(u16, @bitCast(@as(i16, value)));
+    const result = target.* +% value_u16;
+    const xor_result = target.* ^ value_u16 ^ result;
+
+    cpu.registers.setZeroFlag(false);
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setHalfCarryFlag(xor_result & 0x10 != 0);
+    cpu.registers.setCarryFlag(xor_result & 0x100 != 0);
+    target.* = result;
 }
 
 pub fn adc(cpu: *Cpu, target: *u8, value: u8) void {
