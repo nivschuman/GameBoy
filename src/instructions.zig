@@ -229,7 +229,12 @@ pub fn call(cpu: *Cpu, address: u16, should_call: bool) void {
     cpu.pc = address;
 }
 
-pub fn ldRam(cpu: *Cpu, offset: u8, value: u8) void {
+pub fn ldIntoRam(cpu: *Cpu, offset: u8, value: u8) void {
     const address = 0xFF00 + @as(u16, offset);
     cpu.memory.writeByte(address, value);
+}
+
+pub fn ldRamInto(cpu: *Cpu, target: *u8, offset: u8) void {
+    const address = 0xFF00 + @as(u16, offset);
+    target.* = cpu.memory.readByte(address);
 }

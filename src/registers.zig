@@ -21,6 +21,15 @@ pub const Registers = struct {
         };
     }
 
+    pub fn getAF(self: *const Registers) u16 {
+        return (@as(u16, self.a) << 8) | (@as(u16, self.f));
+    }
+
+    pub fn setAF(self: *Registers, value: u16) void {
+        self.a = @truncate(value >> 8);
+        self.f = @as(u8, @truncate(value)) & 0xF0;
+    }
+
     pub fn getBC(self: *const Registers) u16 {
         return (@as(u16, self.b) << 8) | (@as(u16, self.c));
     }

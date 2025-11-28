@@ -1137,7 +1137,7 @@ pub fn opcodeDF(cpu: *Cpu) void {
 }
 
 pub fn opcodeE0(cpu: *Cpu) void {
-    Instructions.ldRam(cpu, cpu.d8(), cpu.registers.a);
+    Instructions.ldIntoRam(cpu, cpu.d8(), cpu.registers.a);
     cpu.pc +%= 2;
 }
 
@@ -1147,7 +1147,7 @@ pub fn opcodeE1(cpu: *Cpu) void {
 }
 
 pub fn opcodeE2(cpu: *Cpu) void {
-    Instructions.ldRam(cpu, cpu.registers.c, cpu.registers.a);
+    Instructions.ldIntoRam(cpu, cpu.registers.c, cpu.registers.a);
     cpu.pc +%= 1;
 }
 
@@ -1190,4 +1190,71 @@ pub fn opcodeEE(cpu: *Cpu) void {
 pub fn opcodeEF(cpu: *Cpu) void {
     cpu.pc +%= 1;
     Instructions.call(cpu, 0x0028, true);
+}
+
+pub fn opcodeF0(cpu: *Cpu) void {
+    Instructions.ldRamInto(cpu, &cpu.registers.a, cpu.d8());
+    cpu.pc +%= 2;
+}
+
+pub fn opcodeF1(cpu: *Cpu) void {
+    cpu.registers.setAF(Instructions.pop(cpu));
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeF2(cpu: *Cpu) void {
+    Instructions.ldRamInto(cpu, &cpu.registers.a, cpu.registers.c);
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeF3(cpu: *Cpu) void {
+    //todo DI
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeF5(cpu: *Cpu) void {
+    Instructions.push(cpu.registers.getAF());
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeF6(cpu: *Cpu) void {
+    Instructions.orFn(cpu, &cpu.registers.a, cpu.d8());
+    cpu.pc +%= 2;
+}
+
+pub fn opcodeF7(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.call(cpu, 0x0030, true);
+}
+
+pub fn opcodeF8(cpu: *Cpu) void {
+    const target = cpu.sp;
+    Instructions.addSigned(cpu, &target, cpu.s8());
+    cpu.registers.setHL(target);
+    cpu.pc +%= 2;
+}
+
+pub fn opcodeF9(cpu: *Cpu) void {
+    cpu.sp = cpu.registers.getHL();
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeFA(cpu: *Cpu) void {
+    cpu.registers.a = cpu.memory.readByte(cpu.d16());
+    cpu.pc +%= 3;
+}
+
+pub fn opcodeFB(cpu: *Cpu) void {
+    //todo EI
+    cpu.pc +%= 1;
+}
+
+pub fn opcodeFE(cpu: *Cpu) void {
+    Instructions.cp(cpu, &cpu.registers.a, cpu.d8());
+    cpu.pc +%= 2;
+}
+
+pub fn opcodeFF(cpu: *Cpu) void {
+    cpu.pc +%= 1;
+    Instructions.call(cpu, 0x0038, true);
 }
