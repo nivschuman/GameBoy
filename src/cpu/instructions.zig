@@ -1,4 +1,4 @@
-const Cpu = @import("cpu.zig").Cpu;
+const Cpu = @import("types/cpu.zig").Cpu;
 
 pub fn add(cpu: *Cpu, target: *u8, value: u8) void {
     const result = @addWithOverflow(target.*, value);
