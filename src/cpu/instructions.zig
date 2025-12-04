@@ -181,6 +181,27 @@ pub fn sra(cpu: *Cpu, target: *u8) void {
     cpu.registers.setCarryFlag(low_bit != 0);
 }
 
+pub fn swap(cpu: *Cpu, target: *u8) void {
+    const low_bits = target.* & 0x0F;
+    const high_bits = target.* & 0xF0;
+    target.* = (low_bits << 4) | (high_bits >> 4);
+
+    cpu.registers.setZeroFlag(target.* == 0);
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setHalfCarryFlag(false);
+    cpu.registers.setCarryFlag(false);
+}
+
+pub fn srl(cpu: *Cpu, target: *u8) void {
+    const low_bit = target.* & 0x01;
+    target.* >>= 1;
+
+    cpu.registers.setZeroFlag(target.* == 0);
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setHalfCarryFlag(false);
+    cpu.registers.setCarryFlag(low_bit != 0);
+}
+
 pub fn cpl(cpu: *Cpu, target: *u8) void {
     target.* ^= 0xFF;
 
