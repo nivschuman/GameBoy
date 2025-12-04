@@ -229,6 +229,10 @@ pub fn call(cpu: *Cpu, address: u16, should_call: bool) void {
     cpu.pc = address;
 }
 
+pub fn ld(_: *Cpu, target: *u8, value: u8) void {
+    target.* = value;
+}
+
 pub fn ldIntoRam(cpu: *Cpu, offset: u8, value: u8) void {
     const address = 0xFF00 + @as(u16, offset);
     cpu.memory.writeByte(address, value);
