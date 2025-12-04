@@ -221,6 +221,12 @@ pub fn ccf(cpu: *Cpu) void {
     cpu.registers.setCarryFlag(!cpu.registers.getCarryFlag());
 }
 
+pub fn bit(cpu: *Cpu, position: u3, value: u8) void {
+    cpu.registers.setZeroFlag(value & (0x01 << @as(u8, position)) == 0);
+    cpu.registers.setSubtractionFlag(false);
+    cpu.registers.setHalfCarryFlag(true);
+}
+
 pub fn jr(cpu: *Cpu, value: i8, should_jump: bool) void {
     if (!should_jump) {
         return;

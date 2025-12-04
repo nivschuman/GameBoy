@@ -319,3 +319,323 @@ fn opcodeCB3F(cpu: *Cpu) void {
     Instructions.srl(cpu, &cpu.registers.a);
     cpu.pc +%= 2;
 }
+
+fn opcodeCB40(cpu: *Cpu) void {
+    Instructions.bit(cpu, 0, cpu.registers.b);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB41(cpu: *Cpu) void {
+    Instructions.bit(cpu, 0, cpu.registers.c);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB42(cpu: *Cpu) void {
+    Instructions.bit(cpu, 0, cpu.registers.d);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB43(cpu: *Cpu) void {
+    Instructions.bit(cpu, 0, cpu.registers.e);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB44(cpu: *Cpu) void {
+    Instructions.bit(cpu, 0, cpu.registers.h);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB45(cpu: *Cpu) void {
+    Instructions.bit(cpu, 0, cpu.registers.l);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB46(cpu: *Cpu) void {
+    Instructions.bit(cpu, 0, cpu.memory.readByte(cpu.registers.getHL()));
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB47(cpu: *Cpu) void {
+    Instructions.bit(cpu, 0, cpu.registers.a);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB48(cpu: *Cpu) void {
+    Instructions.bit(cpu, 1, cpu.registers.b);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB49(cpu: *Cpu) void {
+    Instructions.bit(cpu, 1, cpu.registers.c);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB4A(cpu: *Cpu) void {
+    Instructions.bit(cpu, 1, cpu.registers.d);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB4B(cpu: *Cpu) void {
+    Instructions.bit(cpu, 1, cpu.registers.e);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB4C(cpu: *Cpu) void {
+    Instructions.bit(cpu, 1, cpu.registers.h);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB4D(cpu: *Cpu) void {
+    Instructions.bit(cpu, 1, cpu.registers.l);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB4E(cpu: *Cpu) void {
+    Instructions.bit(cpu, 1, cpu.memory.readByte(cpu.registers.getHL()));
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB4F(cpu: *Cpu) void {
+    Instructions.bit(cpu, 1, cpu.registers.a);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB50(cpu: *Cpu) void {
+    Instructions.bit(cpu, 2, cpu.registers.b);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB51(cpu: *Cpu) void {
+    Instructions.bit(cpu, 2, cpu.registers.c);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB52(cpu: *Cpu) void {
+    Instructions.bit(cpu, 2, cpu.registers.d);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB53(cpu: *Cpu) void {
+    Instructions.bit(cpu, 2, cpu.registers.e);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB54(cpu: *Cpu) void {
+    Instructions.bit(cpu, 2, cpu.registers.h);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB55(cpu: *Cpu) void {
+    Instructions.bit(cpu, 2, cpu.registers.l);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB56(cpu: *Cpu) void {
+    Instructions.bit(cpu, 2, cpu.memory.readByte(cpu.registers.getHL()));
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB57(cpu: *Cpu) void {
+    Instructions.bit(cpu, 2, cpu.registers.a);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB58(cpu: *Cpu) void {
+    Instructions.bit(cpu, 3, cpu.registers.b);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB59(cpu: *Cpu) void {
+    Instructions.bit(cpu, 3, cpu.registers.c);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB5A(cpu: *Cpu) void {
+    Instructions.bit(cpu, 3, cpu.registers.d);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB5B(cpu: *Cpu) void {
+    Instructions.bit(cpu, 3, cpu.registers.e);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB5C(cpu: *Cpu) void {
+    Instructions.bit(cpu, 3, cpu.registers.h);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB5D(cpu: *Cpu) void {
+    Instructions.bit(cpu, 3, cpu.registers.l);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB5E(cpu: *Cpu) void {
+    Instructions.bit(cpu, 3, cpu.memory.readByte(cpu.registers.getHL()));
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB5F(cpu: *Cpu) void {
+    Instructions.bit(cpu, 3, cpu.registers.a);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB60(cpu: *Cpu) void {
+    Instructions.bit(cpu, 4, cpu.registers.b);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB61(cpu: *Cpu) void {
+    Instructions.bit(cpu, 4, cpu.registers.c);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB62(cpu: *Cpu) void {
+    Instructions.bit(cpu, 4, cpu.registers.d);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB63(cpu: *Cpu) void {
+    Instructions.bit(cpu, 4, cpu.registers.e);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB64(cpu: *Cpu) void {
+    Instructions.bit(cpu, 4, cpu.registers.h);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB65(cpu: *Cpu) void {
+    Instructions.bit(cpu, 4, cpu.registers.l);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB66(cpu: *Cpu) void {
+    Instructions.bit(cpu, 4, cpu.memory.readByte(cpu.registers.getHL()));
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB67(cpu: *Cpu) void {
+    Instructions.bit(cpu, 4, cpu.registers.a);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB68(cpu: *Cpu) void {
+    Instructions.bit(cpu, 5, cpu.registers.b);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB69(cpu: *Cpu) void {
+    Instructions.bit(cpu, 5, cpu.registers.c);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB6A(cpu: *Cpu) void {
+    Instructions.bit(cpu, 5, cpu.registers.d);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB6B(cpu: *Cpu) void {
+    Instructions.bit(cpu, 5, cpu.registers.e);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB6C(cpu: *Cpu) void {
+    Instructions.bit(cpu, 5, cpu.registers.h);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB6D(cpu: *Cpu) void {
+    Instructions.bit(cpu, 5, cpu.registers.l);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB6E(cpu: *Cpu) void {
+    Instructions.bit(cpu, 5, cpu.memory.readByte(cpu.registers.getHL()));
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB6F(cpu: *Cpu) void {
+    Instructions.bit(cpu, 5, cpu.registers.a);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB70(cpu: *Cpu) void {
+    Instructions.bit(cpu, 6, cpu.registers.b);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB71(cpu: *Cpu) void {
+    Instructions.bit(cpu, 6, cpu.registers.c);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB72(cpu: *Cpu) void {
+    Instructions.bit(cpu, 6, cpu.registers.d);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB73(cpu: *Cpu) void {
+    Instructions.bit(cpu, 6, cpu.registers.e);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB74(cpu: *Cpu) void {
+    Instructions.bit(cpu, 6, cpu.registers.h);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB75(cpu: *Cpu) void {
+    Instructions.bit(cpu, 6, cpu.registers.l);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB76(cpu: *Cpu) void {
+    Instructions.bit(cpu, 6, cpu.memory.readByte(cpu.registers.getHL()));
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB77(cpu: *Cpu) void {
+    Instructions.bit(cpu, 6, cpu.registers.a);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB78(cpu: *Cpu) void {
+    Instructions.bit(cpu, 7, cpu.registers.b);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB79(cpu: *Cpu) void {
+    Instructions.bit(cpu, 7, cpu.registers.c);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB7A(cpu: *Cpu) void {
+    Instructions.bit(cpu, 7, cpu.registers.d);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB7B(cpu: *Cpu) void {
+    Instructions.bit(cpu, 7, cpu.registers.e);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB7C(cpu: *Cpu) void {
+    Instructions.bit(cpu, 7, cpu.registers.h);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB7D(cpu: *Cpu) void {
+    Instructions.bit(cpu, 7, cpu.registers.l);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB7E(cpu: *Cpu) void {
+    Instructions.bit(cpu, 7, cpu.memory.readByte(cpu.registers.getHL()));
+    cpu.pc +%= 2;
+}
+
+fn opcodeCB7F(cpu: *Cpu) void {
+    Instructions.bit(cpu, 7, cpu.registers.a);
+    cpu.pc +%= 2;
+}
