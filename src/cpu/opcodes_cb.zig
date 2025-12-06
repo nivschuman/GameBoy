@@ -959,3 +959,323 @@ fn opcodeCBBF(cpu: *Cpu) void {
     instructions.res(cpu, &cpu.registers.a, 7);
     cpu.pc +%= 2;
 }
+
+fn opcodeCBC0(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.b, 0);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBC1(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.c, 0);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBC2(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.d, 0);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBC3(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.e, 0);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBC4(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.h, 0);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBC5(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.l, 0);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBC6(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 0);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBC7(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.a, 0);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBC8(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.b, 1);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBC9(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.c, 1);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBCA(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.d, 1);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBCB(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.e, 1);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBCC(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.h, 1);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBCD(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.l, 1);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBCE(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 1);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBCF(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.a, 1);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBD0(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.b, 2);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBD1(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.c, 2);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBD2(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.d, 2);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBD3(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.e, 2);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBD4(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.h, 2);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBD5(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.l, 2);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBD6(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 2);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBD7(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.a, 2);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBD8(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.b, 3);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBD9(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.c, 3);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBDA(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.d, 3);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBDB(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.e, 3);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBDC(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.h, 3);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBDD(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.l, 3);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBDE(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 3);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBDF(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.a, 3);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBE0(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.b, 4);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBE1(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.c, 4);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBE2(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.d, 4);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBE3(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.e, 4);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBE4(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.h, 4);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBE5(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.l, 4);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBE6(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 4);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBE7(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.a, 4);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBE8(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.b, 5);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBE9(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.c, 5);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBEA(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.d, 5);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBEB(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.e, 5);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBEC(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.h, 5);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBED(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.l, 5);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBEE(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 5);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBEF(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.a, 5);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBF0(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.b, 6);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBF1(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.c, 6);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBF2(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.d, 6);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBF3(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.e, 6);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBF4(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.h, 6);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBF5(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.l, 6);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBF6(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 6);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBF7(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.a, 6);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBF8(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.b, 7);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBF9(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.c, 7);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBFA(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.d, 7);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBFB(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.e, 7);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBFC(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.h, 7);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBFD(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.l, 7);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBFE(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 7);
+    cpu.pc +%= 2;
+}
+
+fn opcodeCBFF(cpu: *Cpu) void {
+    instructions.set(cpu, &cpu.registers.a, 7);
+    cpu.pc +%= 2;
+}
