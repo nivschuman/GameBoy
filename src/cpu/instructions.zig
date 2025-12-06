@@ -297,3 +297,27 @@ pub fn ldRamInto(cpu: *Cpu, target: *u8, offset: u8) void {
     const address = 0xFF00 + @as(u16, offset);
     target.* = cpu.memory.readByte(address);
 }
+
+pub fn daa(cpu: *Cpu, target: *u8) void {
+    var offset: u8 = 0;
+    var carry = false;
+
+    if ((!cpu.registers.getSubtractionFlag() and target.* & 0x0F > 0x09) or cpu.registers.getHalfCarryFlag()) {
+        offset = 0x06;
+    }
+
+    if ((!cpu.registers.getSubtractionFlag() and target.* > 0x99) or cpu.registers.getCarryFlag()) {
+        offset |= 0x60;
+        carry = true;
+    }
+
+    if (cpu.registers.getSubtractionFlag()) {
+        target.* +%= offset;
+    } else {
+        target.* -%= offset;
+    }
+
+    cpu.registers.setZeroFlag(target.* == 0);
+    cpu.registers.setHalfCarryFlag(false);
+    cpu.registers.setCarryFlag(carry);
+}

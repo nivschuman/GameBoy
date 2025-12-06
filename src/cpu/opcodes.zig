@@ -247,7 +247,7 @@ fn opcode26(cpu: *Cpu) void {
 }
 
 fn opcode27(cpu: *Cpu) void {
-    // todo DAA
+    instructions.daa(cpu, &cpu.registers.a);
     cpu.pc +%= 1;
 }
 
