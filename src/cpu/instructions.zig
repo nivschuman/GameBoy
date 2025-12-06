@@ -227,6 +227,10 @@ pub fn bit(cpu: *Cpu, position: u3, value: u8) void {
     cpu.registers.setHalfCarryFlag(true);
 }
 
+pub fn res(_: *Cpu, target: *u8, position: u3) void {
+    target.* &= ~(0x01 << @as(u8, position));
+}
+
 pub fn jr(cpu: *Cpu, value: i8, should_jump: bool) void {
     if (!should_jump) {
         return;

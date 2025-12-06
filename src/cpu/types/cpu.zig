@@ -5,16 +5,16 @@ pub const Cpu = struct {
     registers: Registers,
     pc: u16,
     sp: u16,
-    memory: Memory,
     halted: bool,
     stopped: bool,
+    memory: *Memory,
 
-    pub fn init() Cpu {
+    pub fn init(memory: *Memory) Cpu {
         return .{
             .registers = Registers.init(),
             .pc = 0,
             .sp = 0,
-            .memory = Memory.init(),
+            .memory = memory,
             .halted = false,
             .stopped = false,
         };
