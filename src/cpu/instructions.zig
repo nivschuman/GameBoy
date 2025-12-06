@@ -1,4 +1,4 @@
-const Cpu = @import("types/cpu.zig").Cpu;
+const Cpu = @import("cpu.zig").Cpu;
 
 pub fn add(cpu: *Cpu, target: *u8, value: u8) void {
     const result = @addWithOverflow(target.*, value);
@@ -222,17 +222,17 @@ pub fn ccf(cpu: *Cpu) void {
 }
 
 pub fn bit(cpu: *Cpu, position: u3, value: u8) void {
-    cpu.registers.setZeroFlag(value & (0x01 << @as(u8, position)) == 0);
+    cpu.registers.setZeroFlag(value & (@as(u8, 0x01) << position) == 0);
     cpu.registers.setSubtractionFlag(false);
     cpu.registers.setHalfCarryFlag(true);
 }
 
 pub fn res(_: *Cpu, target: *u8, position: u3) void {
-    target.* &= ~(0x01 << @as(u8, position));
+    target.* &= ~(@as(u8, 0x01) << position);
 }
 
 pub fn set(_: *Cpu, target: *u8, position: u3) void {
-    target.* |= 0x01 << @as(u8, position);
+    target.* |= @as(u8, 0x01) << position;
 }
 
 pub fn jr(cpu: *Cpu, value: i8, should_jump: bool) void {

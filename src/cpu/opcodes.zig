@@ -1,8 +1,8 @@
 const Cpu = @import("cpu.zig").Cpu;
 const instructions = @import("instructions.zig");
+const opcodes_cb_table = @import("opcodes_cb.zig").opcodes_cb_table;
 
-pub const OpcodeFn = fn (*Cpu) void;
-pub const opcodes_table: [256]OpcodeFn = .{
+pub const opcodes_table: [256]*const fn (*Cpu) void = .{
     opcode00, opcode01, opcode02, opcode03, opcode04, opcode05, opcode06, opcode07,
     opcode08, opcode09, opcode0A, opcode0B, opcode0C, opcode0D, opcode0E, opcode0F,
     opcode10, opcode11, opcode12, opcode13, opcode14, opcode15, opcode16, opcode17,
@@ -1050,7 +1050,7 @@ fn opcodeC4(cpu: *Cpu) void {
 }
 
 fn opcodeC5(cpu: *Cpu) void {
-    instructions.push(cpu.registers.getBC());
+    instructions.push(cpu, cpu.registers.getBC());
     cpu.pc +%= 1;
 }
 
@@ -1081,8 +1081,7 @@ fn opcodeCA(cpu: *Cpu) void {
 }
 
 fn opcodeCB(cpu: *Cpu) void {
-    // todo call CB opcodes
-    cpu.pc +%= 1;
+    opcodes_cb_table[cpu.d8()](cpu);
 }
 
 fn opcodeCC(cpu: *Cpu) void {
@@ -1130,7 +1129,7 @@ fn opcodeD4(cpu: *Cpu) void {
 }
 
 fn opcodeD5(cpu: *Cpu) void {
-    instructions.push(cpu.registers.getDE());
+    instructions.push(cpu, cpu.registers.getDE());
     cpu.pc +%= 1;
 }
 
@@ -1192,7 +1191,7 @@ fn opcodeE2(cpu: *Cpu) void {
 }
 
 fn opcodeE5(cpu: *Cpu) void {
-    instructions.push(cpu.registers.getHL());
+    instructions.push(cpu, cpu.registers.getHL());
     cpu.pc +%= 1;
 }
 
@@ -1253,7 +1252,7 @@ fn opcodeF3(cpu: *Cpu) void {
 }
 
 fn opcodeF5(cpu: *Cpu) void {
-    instructions.push(cpu.registers.getAF());
+    instructions.push(cpu, cpu.registers.getAF());
     cpu.pc +%= 1;
 }
 
@@ -1268,7 +1267,7 @@ fn opcodeF7(cpu: *Cpu) void {
 }
 
 fn opcodeF8(cpu: *Cpu) void {
-    const target = cpu.sp;
+    var target = cpu.sp;
     instructions.addSigned(cpu, &target, cpu.s8());
     cpu.registers.setHL(target);
     cpu.pc +%= 2;

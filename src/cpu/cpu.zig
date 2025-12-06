@@ -1,5 +1,6 @@
-const Registers = @import("registers.zig").Registers;
-const Memory = @import("memory.zig").Memory;
+const Registers = @import("types/registers.zig").Registers;
+const Memory = @import("types/memory.zig").Memory;
+const opcodes_table = @import("opcodes.zig").opcodes_table;
 
 pub const Cpu = struct {
     registers: Registers,
@@ -20,6 +21,10 @@ pub const Cpu = struct {
         };
     }
 
+    pub fn opcode(self: *const Cpu) u8 {
+        return self.memory.readByte(self.pc);
+    }
+
     pub fn d8(self: *const Cpu) u8 {
         return self.memory.readByte(self.pc +% 1);
     }
@@ -30,5 +35,9 @@ pub const Cpu = struct {
 
     pub fn d16(self: *const Cpu) u16 {
         return self.memory.readWord(self.pc +% 1);
+    }
+
+    pub fn executeInstruction(self: *Cpu) void {
+        opcodes_table[self.opcode()](self);
     }
 };

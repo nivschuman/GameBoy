@@ -1,5 +1,40 @@
-const Cpu = @import("types/cpu.zig").Cpu;
+const Cpu = @import("cpu.zig").Cpu;
 const instructions = @import("instructions.zig");
+
+pub const opcodes_cb_table: [256]*const fn (*Cpu) void = .{
+    opcodeCB00, opcodeCB01, opcodeCB02, opcodeCB03, opcodeCB04, opcodeCB05, opcodeCB06, opcodeCB07,
+    opcodeCB08, opcodeCB09, opcodeCB0A, opcodeCB0B, opcodeCB0C, opcodeCB0D, opcodeCB0E, opcodeCB0F,
+    opcodeCB10, opcodeCB11, opcodeCB12, opcodeCB13, opcodeCB14, opcodeCB15, opcodeCB16, opcodeCB17,
+    opcodeCB18, opcodeCB19, opcodeCB1A, opcodeCB1B, opcodeCB1C, opcodeCB1D, opcodeCB1E, opcodeCB1F,
+    opcodeCB20, opcodeCB21, opcodeCB22, opcodeCB23, opcodeCB24, opcodeCB25, opcodeCB26, opcodeCB27,
+    opcodeCB28, opcodeCB29, opcodeCB2A, opcodeCB2B, opcodeCB2C, opcodeCB2D, opcodeCB2E, opcodeCB2F,
+    opcodeCB30, opcodeCB31, opcodeCB32, opcodeCB33, opcodeCB34, opcodeCB35, opcodeCB36, opcodeCB37,
+    opcodeCB38, opcodeCB39, opcodeCB3A, opcodeCB3B, opcodeCB3C, opcodeCB3D, opcodeCB3E, opcodeCB3F,
+    opcodeCB40, opcodeCB41, opcodeCB42, opcodeCB43, opcodeCB44, opcodeCB45, opcodeCB46, opcodeCB47,
+    opcodeCB48, opcodeCB49, opcodeCB4A, opcodeCB4B, opcodeCB4C, opcodeCB4D, opcodeCB4E, opcodeCB4F,
+    opcodeCB50, opcodeCB51, opcodeCB52, opcodeCB53, opcodeCB54, opcodeCB55, opcodeCB56, opcodeCB57,
+    opcodeCB58, opcodeCB59, opcodeCB5A, opcodeCB5B, opcodeCB5C, opcodeCB5D, opcodeCB5E, opcodeCB5F,
+    opcodeCB60, opcodeCB61, opcodeCB62, opcodeCB63, opcodeCB64, opcodeCB65, opcodeCB66, opcodeCB67,
+    opcodeCB68, opcodeCB69, opcodeCB6A, opcodeCB6B, opcodeCB6C, opcodeCB6D, opcodeCB6E, opcodeCB6F,
+    opcodeCB70, opcodeCB71, opcodeCB72, opcodeCB73, opcodeCB74, opcodeCB75, opcodeCB76, opcodeCB77,
+    opcodeCB78, opcodeCB79, opcodeCB7A, opcodeCB7B, opcodeCB7C, opcodeCB7D, opcodeCB7E, opcodeCB7F,
+    opcodeCB80, opcodeCB81, opcodeCB82, opcodeCB83, opcodeCB84, opcodeCB85, opcodeCB86, opcodeCB87,
+    opcodeCB88, opcodeCB89, opcodeCB8A, opcodeCB8B, opcodeCB8C, opcodeCB8D, opcodeCB8E, opcodeCB8F,
+    opcodeCB90, opcodeCB91, opcodeCB92, opcodeCB93, opcodeCB94, opcodeCB95, opcodeCB96, opcodeCB97,
+    opcodeCB98, opcodeCB99, opcodeCB9A, opcodeCB9B, opcodeCB9C, opcodeCB9D, opcodeCB9E, opcodeCB9F,
+    opcodeCBA0, opcodeCBA1, opcodeCBA2, opcodeCBA3, opcodeCBA4, opcodeCBA5, opcodeCBA6, opcodeCBA7,
+    opcodeCBA8, opcodeCBA9, opcodeCBAA, opcodeCBAB, opcodeCBAC, opcodeCBAD, opcodeCBAE, opcodeCBAF,
+    opcodeCBB0, opcodeCBB1, opcodeCBB2, opcodeCBB3, opcodeCBB4, opcodeCBB5, opcodeCBB6, opcodeCBB7,
+    opcodeCBB8, opcodeCBB9, opcodeCBBA, opcodeCBBB, opcodeCBBC, opcodeCBBD, opcodeCBBE, opcodeCBBF,
+    opcodeCBC0, opcodeCBC1, opcodeCBC2, opcodeCBC3, opcodeCBC4, opcodeCBC5, opcodeCBC6, opcodeCBC7,
+    opcodeCBC8, opcodeCBC9, opcodeCBCA, opcodeCBCB, opcodeCBCC, opcodeCBCD, opcodeCBCE, opcodeCBCF,
+    opcodeCBD0, opcodeCBD1, opcodeCBD2, opcodeCBD3, opcodeCBD4, opcodeCBD5, opcodeCBD6, opcodeCBD7,
+    opcodeCBD8, opcodeCBD9, opcodeCBDA, opcodeCBDB, opcodeCBDC, opcodeCBDD, opcodeCBDE, opcodeCBDF,
+    opcodeCBE0, opcodeCBE1, opcodeCBE2, opcodeCBE3, opcodeCBE4, opcodeCBE5, opcodeCBE6, opcodeCBE7,
+    opcodeCBE8, opcodeCBE9, opcodeCBEA, opcodeCBEB, opcodeCBEC, opcodeCBED, opcodeCBEE, opcodeCBEF,
+    opcodeCBF0, opcodeCBF1, opcodeCBF2, opcodeCBF3, opcodeCBF4, opcodeCBF5, opcodeCBF6, opcodeCBF7,
+    opcodeCBF8, opcodeCBF9, opcodeCBFA, opcodeCBFB, opcodeCBFC, opcodeCBFD, opcodeCBFE, opcodeCBFF,
+};
 
 fn opcodeCB00(cpu: *Cpu) void {
     instructions.rlc(cpu, &cpu.registers.b);
@@ -32,7 +67,7 @@ fn opcodeCB05(cpu: *Cpu) void {
 }
 
 fn opcodeCB06(cpu: *Cpu) void {
-    instructions.rlc(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()));
+    instructions.rlc(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -71,7 +106,7 @@ fn opcodeCB0D(cpu: *Cpu) void {
 }
 
 fn opcodeCB0E(cpu: *Cpu) void {
-    instructions.rrc(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()));
+    instructions.rrc(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -111,7 +146,7 @@ fn opcodeCB15(cpu: *Cpu) void {
 }
 
 fn opcodeCB16(cpu: *Cpu) void {
-    instructions.rl(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()));
+    instructions.rl(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -151,7 +186,7 @@ fn opcodeCB1D(cpu: *Cpu) void {
 }
 
 fn opcodeCB1E(cpu: *Cpu) void {
-    instructions.rr(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()));
+    instructions.rr(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -191,7 +226,7 @@ fn opcodeCB25(cpu: *Cpu) void {
 }
 
 fn opcodeCB26(cpu: *Cpu) void {
-    instructions.sla(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()));
+    instructions.sla(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -231,7 +266,7 @@ fn opcodeCB2D(cpu: *Cpu) void {
 }
 
 fn opcodeCB2E(cpu: *Cpu) void {
-    instructions.sra(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()));
+    instructions.sra(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -271,7 +306,7 @@ fn opcodeCB35(cpu: *Cpu) void {
 }
 
 fn opcodeCB36(cpu: *Cpu) void {
-    instructions.swap(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()));
+    instructions.swap(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -311,7 +346,7 @@ fn opcodeCB3D(cpu: *Cpu) void {
 }
 
 fn opcodeCB3E(cpu: *Cpu) void {
-    instructions.srl(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()));
+    instructions.srl(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -671,7 +706,7 @@ fn opcodeCB85(cpu: *Cpu) void {
 }
 
 fn opcodeCB86(cpu: *Cpu) void {
-    instructions.res(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 0);
+    instructions.res(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 0);
     cpu.pc +%= 2;
 }
 
@@ -711,7 +746,7 @@ fn opcodeCB8D(cpu: *Cpu) void {
 }
 
 fn opcodeCB8E(cpu: *Cpu) void {
-    instructions.res(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 1);
+    instructions.res(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 1);
     cpu.pc +%= 2;
 }
 
@@ -751,7 +786,7 @@ fn opcodeCB95(cpu: *Cpu) void {
 }
 
 fn opcodeCB96(cpu: *Cpu) void {
-    instructions.res(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 2);
+    instructions.res(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 2);
     cpu.pc +%= 2;
 }
 
@@ -791,7 +826,7 @@ fn opcodeCB9D(cpu: *Cpu) void {
 }
 
 fn opcodeCB9E(cpu: *Cpu) void {
-    instructions.res(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 3);
+    instructions.res(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 3);
     cpu.pc +%= 2;
 }
 
@@ -831,7 +866,7 @@ fn opcodeCBA5(cpu: *Cpu) void {
 }
 
 fn opcodeCBA6(cpu: *Cpu) void {
-    instructions.res(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 4);
+    instructions.res(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 4);
     cpu.pc +%= 2;
 }
 
@@ -871,7 +906,7 @@ fn opcodeCBAD(cpu: *Cpu) void {
 }
 
 fn opcodeCBAE(cpu: *Cpu) void {
-    instructions.res(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 5);
+    instructions.res(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 5);
     cpu.pc +%= 2;
 }
 
@@ -911,7 +946,7 @@ fn opcodeCBB5(cpu: *Cpu) void {
 }
 
 fn opcodeCBB6(cpu: *Cpu) void {
-    instructions.res(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 6);
+    instructions.res(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 6);
     cpu.pc +%= 2;
 }
 
@@ -951,7 +986,7 @@ fn opcodeCBBD(cpu: *Cpu) void {
 }
 
 fn opcodeCBBE(cpu: *Cpu) void {
-    instructions.res(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 7);
+    instructions.res(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 7);
     cpu.pc +%= 2;
 }
 
@@ -991,7 +1026,7 @@ fn opcodeCBC5(cpu: *Cpu) void {
 }
 
 fn opcodeCBC6(cpu: *Cpu) void {
-    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 0);
+    instructions.set(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 0);
     cpu.pc +%= 2;
 }
 
@@ -1031,7 +1066,7 @@ fn opcodeCBCD(cpu: *Cpu) void {
 }
 
 fn opcodeCBCE(cpu: *Cpu) void {
-    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 1);
+    instructions.set(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 1);
     cpu.pc +%= 2;
 }
 
@@ -1071,7 +1106,7 @@ fn opcodeCBD5(cpu: *Cpu) void {
 }
 
 fn opcodeCBD6(cpu: *Cpu) void {
-    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 2);
+    instructions.set(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 2);
     cpu.pc +%= 2;
 }
 
@@ -1111,7 +1146,7 @@ fn opcodeCBDD(cpu: *Cpu) void {
 }
 
 fn opcodeCBDE(cpu: *Cpu) void {
-    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 3);
+    instructions.set(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 3);
     cpu.pc +%= 2;
 }
 
@@ -1151,7 +1186,7 @@ fn opcodeCBE5(cpu: *Cpu) void {
 }
 
 fn opcodeCBE6(cpu: *Cpu) void {
-    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 4);
+    instructions.set(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 4);
     cpu.pc +%= 2;
 }
 
@@ -1191,7 +1226,7 @@ fn opcodeCBED(cpu: *Cpu) void {
 }
 
 fn opcodeCBEE(cpu: *Cpu) void {
-    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 5);
+    instructions.set(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 5);
     cpu.pc +%= 2;
 }
 
@@ -1231,7 +1266,7 @@ fn opcodeCBF5(cpu: *Cpu) void {
 }
 
 fn opcodeCBF6(cpu: *Cpu) void {
-    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 6);
+    instructions.set(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 6);
     cpu.pc +%= 2;
 }
 
@@ -1271,7 +1306,7 @@ fn opcodeCBFD(cpu: *Cpu) void {
 }
 
 fn opcodeCBFE(cpu: *Cpu) void {
-    instructions.set(cpu, &cpu.memory.getBytePtr(cpu.registers.getHL()), 7);
+    instructions.set(cpu, cpu.memory.getBytePtr(cpu.registers.getHL()), 7);
     cpu.pc +%= 2;
 }
 
