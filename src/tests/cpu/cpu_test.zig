@@ -1,6 +1,6 @@
 const std = @import("std");
-const Memory = @import("../memory/memory.zig").Memory;
-const Cpu = @import("cpu.zig").Cpu;
+const Memory = @import("../../memory/memory.zig").Memory;
+const Cpu = @import("../../cpu/cpu.zig").Cpu;
 
 test "executeInstruction" {
     var memory = Memory.init();

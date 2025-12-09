@@ -1,5 +1,5 @@
 const std = @import("std");
-const Memory = @import("memory.zig").Memory;
+const Memory = @import("../../memory/memory.zig").Memory;
 
 test "Memory write and read a word" {
     var memory = Memory.init();
