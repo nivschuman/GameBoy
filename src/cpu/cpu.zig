@@ -1,5 +1,5 @@
-const Registers = @import("types/registers.zig").Registers;
-const Memory = @import("types/memory.zig").Memory;
+const Registers = @import("registers/registers.zig").Registers;
+const Memory = @import("../memory/memory.zig").Memory;
 const opcodes_table = @import("opcodes.zig").opcodes_table;
 
 pub const Cpu = struct {

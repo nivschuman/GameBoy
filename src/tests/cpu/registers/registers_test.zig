@@ -1,5 +1,5 @@
 const std = @import("std");
-const Registers = @import("registers.zig").Registers;
+const Registers = @import("../../../cpu/registers/registers.zig").Registers;
 
 test "16-bit registers get/set" {
     var r = Registers.init();
