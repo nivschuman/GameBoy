@@ -293,10 +293,10 @@ test "jp" {
     try std.testing.expect(cpu.pc == 0x100);
 }
 
-test "ldRam" {
+test "ldIntoRam" {
     var memory = Memory.init();
     var cpu = Cpu.init(&memory);
-    instructions.ldRam(&cpu, 0x12, 0xAB);
+    instructions.ldIntoRam(&cpu, 0x12, 0xAB);
     try std.testing.expect(cpu.memory.readByte(0xFF12) == 0xAB);
 }
 
