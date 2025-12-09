@@ -1,0 +1,25 @@
+name: Zig Test Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        
+      - name: Setup Zig
+        uses: samuelmeuli/setup-zig@v1
+        with:
+          version: '0.15.2'
+
+      - name: Run Tests
+        run: zig build test
