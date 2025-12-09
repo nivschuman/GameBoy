@@ -21,6 +21,7 @@ pub fn build(b: *std.Build) void {
             .root_source_file = b.path("src/tests.zig"),
             .target = b.graph.host,
         }),
+        .test_runner = .{ .path = b.path("src/tests/test_runner.zig"), .mode = .simple },
     });
     const run_tests = b.addRunArtifact(tests);
     test_step.dependOn(&run_tests.step);
