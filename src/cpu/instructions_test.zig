@@ -1,6 +1,6 @@
 const std = @import("std");
 const Cpu = @import("cpu.zig").Cpu;
-const Memory = @import("types/memory.zig").Memory;
+const Memory = @import("../memory/memory.zig").Memory;
 const instructions = @import("instructions.zig");
 
 test "add" {
