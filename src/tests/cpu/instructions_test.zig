@@ -1,11 +1,14 @@
 const std = @import("std");
 const Cpu = @import("../../cpu/cpu.zig").Cpu;
-const Memory = @import("../../memory/memory.zig").Memory;
+const Mmu = @import("../../mmu/mmu.zig").Mmu;
+const Cartridge = @import("../../cartridge/cartridge.zig").Cartridge;
 const instructions = @import("../../cpu/instructions.zig");
 
 test "add" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.registers.a = 0x10;
 
     instructions.add(&cpu, &cpu.registers.a, 0x22);
@@ -17,8 +20,10 @@ test "add" {
 }
 
 test "adc" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.registers.a = 0x8F;
     cpu.registers.f = 0x10;
 
@@ -31,8 +36,10 @@ test "adc" {
 }
 
 test "sub" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
 
     cpu.registers.a = 0x22;
     instructions.sub(&cpu, &cpu.registers.a, 0x11);
@@ -52,8 +59,10 @@ test "sub" {
 }
 
 test "sbc" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
 
     cpu.registers.a = 0x10;
     cpu.registers.f = 0x00;
@@ -93,8 +102,10 @@ test "sbc" {
 }
 
 test "and" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.registers.a = 0xF0;
 
     instructions.andFn(&cpu, &cpu.registers.a, 0x0F);
@@ -106,8 +117,10 @@ test "and" {
 }
 
 test "xor" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.registers.a = 0xAA;
 
     instructions.xor(&cpu, &cpu.registers.a, 0xFF);
@@ -119,8 +132,10 @@ test "xor" {
 }
 
 test "or" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.registers.a = 0x0A;
 
     instructions.orFn(&cpu, &cpu.registers.a, 0x05);
@@ -132,8 +147,10 @@ test "or" {
 }
 
 test "cp" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.registers.a = 0x10;
 
     instructions.cp(&cpu, &cpu.registers.a, 0x10);
@@ -145,8 +162,10 @@ test "cp" {
 }
 
 test "addWords" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
 
     cpu.registers.setHL(0x1234);
     cpu.registers.setBC(0x0001);
@@ -184,8 +203,10 @@ test "addWords" {
 }
 
 test "rlc" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.registers.a = 0b10000001;
 
     instructions.rlc(&cpu, &cpu.registers.a);
@@ -204,8 +225,10 @@ test "rlc" {
 }
 
 test "rrc" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.registers.a = 0b00101001;
 
     instructions.rrc(&cpu, &cpu.registers.a);
@@ -224,8 +247,10 @@ test "rrc" {
 }
 
 test "rl" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.registers.a = 0b10000000;
     instructions.rl(&cpu, &cpu.registers.a);
     try std.testing.expect(cpu.registers.a == 0);
@@ -233,8 +258,10 @@ test "rl" {
 }
 
 test "rr" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.registers.a = 0b00000001;
     instructions.rr(&cpu, &cpu.registers.a);
     try std.testing.expect(cpu.registers.a == 0);
@@ -242,8 +269,10 @@ test "rr" {
 }
 
 test "cpl" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.registers.a = 0xAA;
     instructions.cpl(&cpu, &cpu.registers.a);
     try std.testing.expect(cpu.registers.a == 0x55);
@@ -252,8 +281,10 @@ test "cpl" {
 }
 
 test "scf" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     instructions.scf(&cpu);
     try std.testing.expect(cpu.registers.getCarryFlag());
     try std.testing.expect(!cpu.registers.getSubtractionFlag());
@@ -261,8 +292,10 @@ test "scf" {
 }
 
 test "ccf" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     instructions.scf(&cpu);
     instructions.ccf(&cpu);
     try std.testing.expect(!cpu.registers.getCarryFlag());
@@ -271,8 +304,10 @@ test "ccf" {
 }
 
 test "jr" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.pc = 0x100;
     instructions.jr(&cpu, 0x10, true);
     try std.testing.expect(cpu.pc == 0x110);
@@ -283,8 +318,10 @@ test "jr" {
 }
 
 test "jp" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     instructions.jp(&cpu, 0x1234, true);
     try std.testing.expect(cpu.pc == 0x1234);
 
@@ -293,16 +330,11 @@ test "jp" {
     try std.testing.expect(cpu.pc == 0x100);
 }
 
-test "ldIntoRam" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
-    instructions.ldIntoRam(&cpu, 0x12, 0xAB);
-    try std.testing.expect(cpu.memory.readByte(0xFF12) == 0xAB);
-}
-
 test "addSigned" {
-    var memory = Memory.init();
-    var cpu = Cpu.init(&memory);
+    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
+    var cart = Cartridge.init(rom[0..]);
+    var mmu = Mmu.init(&cart);
+    var cpu = Cpu.init(&mmu);
     cpu.sp = 0xFFF8;
 
     instructions.addSigned(&cpu, &cpu.sp, 8);
