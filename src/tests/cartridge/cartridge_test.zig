@@ -3,10 +3,10 @@ const cartridge = @import("../../cartridge/cartridge.zig");
 
 test "load cartridge" {
     const allocator = std.testing.allocator;
-    const rom_file = try cartridge.RomLoader.init(allocator, "./src/tests/roms/dmg-acid2.gb");
-    defer rom_file.deinit();
+    const rom_file_loader = try cartridge.FileLoader.init(allocator, "./src/tests/roms/dmg-acid2.gb");
+    defer rom_file_loader.deinit();
 
-    const cart = cartridge.Cartridge.init(rom_file.rom);
+    const cart = cartridge.Cartridge.init(rom_file_loader.file_bytes);
 
     const expected_title = "DMG-ACID2";
     const title_slice = cart.header.title();

@@ -1,4 +1,4 @@
-fn Memory(comptime size: usize) type {
+pub fn Memory(comptime size: usize) type {
     return struct {
         data: [size]u8,
 

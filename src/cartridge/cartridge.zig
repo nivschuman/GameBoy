@@ -65,9 +65,9 @@ pub const CartridgeHeader = struct {
 
 pub const Cartridge = struct {
     header: CartridgeHeader,
-    rom: []const u8,
+    rom: []u8,
 
-    pub fn init(rom: []const u8) Cartridge {
+    pub fn init(rom: []u8) Cartridge {
         return .{ .header = CartridgeHeader.init(rom), .rom = rom };
     }
 
@@ -79,25 +79,33 @@ pub const Cartridge = struct {
 
         return self.header.headerChecksum() == checksum;
     }
+
+    pub fn readByte(self: *const @This(), addr: u16) u8 {
+        return self.rom[addr];
+    }
+
+    pub fn writeByte(self: *@This(), addr: u16, value: u8) void {
+        self.rom[addr] = value;
+    }
 };
 
-pub const RomLoader = struct {
+pub const FileLoader = struct {
     allocator: std.mem.Allocator,
-    rom: []u8,
+    file_bytes: []u8,
 
-    pub fn init(allocator: std.mem.Allocator, filename: []const u8) !RomLoader {
+    pub fn init(allocator: std.mem.Allocator, filename: []const u8) !FileLoader {
         const cwd = std.fs.cwd();
         const file = try cwd.openFile(filename, .{ .mode = .read_only });
         defer file.close();
 
         const file_size = try file.getEndPos();
-        const rom = try allocator.alloc(u8, file_size);
-        _ = try file.readAll(rom);
+        const file_bytes = try allocator.alloc(u8, file_size);
+        _ = try file.readAll(file_bytes);
 
-        return .{ .allocator = allocator, .rom = rom };
+        return .{ .allocator = allocator, .file_bytes = file_bytes };
     }
 
-    pub fn deinit(self: *const RomLoader) void {
-        self.allocator.free(self.rom);
+    pub fn deinit(self: *const FileLoader) void {
+        self.allocator.free(self.file_bytes);
     }
 };

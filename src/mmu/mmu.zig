@@ -1,18 +1,18 @@
-const memory = @import("../memory/memory.zig");
+const Cartridge = @import("../cartridge/cartridge.zig").Cartridge;
 
 pub const Mmu = struct {
-    wram: *memory.WRam,
-    hram: *memory.HRam,
-    oam: *memory.Oam,
-    vram: *memory.VRam,
+    cartridge: *Cartridge,
+
+    pub fn init(cartridge: *Cartridge) Mmu {
+        return .{
+            .cartridge = cartridge,
+        };
+    }
 
     pub fn readByte(self: *const Mmu, address: u16) u8 {
         return switch (address) {
-            0x8000...0x9FFF => self.vram.readByte(address - 0x8000),
-            0xC000...0xDFFF => self.wram.readByte(address - 0xC000),
-            0xFE00...0xFE9F => self.oam.readByte(address - 0xFE00),
-            0xFF80...0xFFFE => self.hram.readByte(address - 0xFF80),
-            else => 0xFF,
+            0x0000...0x8000 => self.cartridge.readByte(address),
+            else => @panic("unmapped address"),
         };
     }
 
@@ -22,10 +22,8 @@ pub const Mmu = struct {
 
     pub fn writeByte(self: *Mmu, address: u16, value: u8) void {
         switch (address) {
-            0x8000...0x9FFF => self.vram.writeByte(address - 0x8000, value),
-            0xC000...0xDFFF => self.wram.writeByte(address - 0xC000, value),
-            0xFE00...0xFE9F => self.oam.writeByte(address - 0xFE00, value),
-            0xFF80...0xFFFE => self.hram.writeByte(address - 0xFF80, value),
+            0x0000...0x8000 => self.cartridge.writeByte(address, value),
+            else => @panic("unmapped address"),
         }
     }
 
