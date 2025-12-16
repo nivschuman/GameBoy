@@ -265,14 +265,14 @@ pub fn ret(cpu: *Cpu, should_ret: bool) void {
 }
 
 pub fn pop(cpu: *Cpu) u16 {
-    const result = cpu.mmu.readWord(cpu.sp);
+    const result = cpu.readWord(cpu.sp);
     cpu.sp +%= 2;
     return result;
 }
 
 pub fn push(cpu: *Cpu, value: u16) void {
     cpu.sp -%= 2;
-    cpu.mmu.writeWord(cpu.sp, value);
+    cpu.writeWord(cpu.sp, value);
 }
 
 pub fn call(cpu: *Cpu, address: u16, should_call: bool) void {
@@ -290,12 +290,12 @@ pub fn ld(_: *Cpu, target: *u8, value: u8) void {
 
 pub fn ldIntoRam(cpu: *Cpu, offset: u8, value: u8) void {
     const address = 0xFF00 + @as(u16, offset);
-    cpu.mmu.writeByte(address, value);
+    cpu.writeByte(address, value);
 }
 
 pub fn ldRamInto(cpu: *Cpu, target: *u8, offset: u8) void {
     const address = 0xFF00 + @as(u16, offset);
-    target.* = cpu.mmu.readByte(address);
+    target.* = cpu.readByte(address);
 }
 
 pub fn daa(cpu: *Cpu, target: *u8) void {

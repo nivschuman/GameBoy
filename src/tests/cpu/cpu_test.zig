@@ -2,12 +2,14 @@ const std = @import("std");
 const Mmu = @import("../../mmu/mmu.zig").Mmu;
 const Cartridge = @import("../../cartridge/cartridge.zig").Cartridge;
 const Cpu = @import("../../cpu/cpu.zig").Cpu;
+const CycleManager = @import("../../cycles/cycles.zig").CycleManager;
 
 test "executeInstruction" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
 
     cpu.pc = 0;
     mmu.writeByte(0, 0x01);

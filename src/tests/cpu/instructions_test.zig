@@ -3,12 +3,14 @@ const Cpu = @import("../../cpu/cpu.zig").Cpu;
 const Mmu = @import("../../mmu/mmu.zig").Mmu;
 const Cartridge = @import("../../cartridge/cartridge.zig").Cartridge;
 const instructions = @import("../../cpu/instructions.zig");
+const CycleManager = @import("../../cycles/cycles.zig").CycleManager;
 
 test "add" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.registers.a = 0x10;
 
     instructions.add(&cpu, &cpu.registers.a, 0x22);
@@ -23,7 +25,8 @@ test "adc" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.registers.a = 0x8F;
     cpu.registers.f = 0x10;
 
@@ -39,7 +42,8 @@ test "sub" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
 
     cpu.registers.a = 0x22;
     instructions.sub(&cpu, &cpu.registers.a, 0x11);
@@ -62,7 +66,8 @@ test "sbc" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
 
     cpu.registers.a = 0x10;
     cpu.registers.f = 0x00;
@@ -105,7 +110,8 @@ test "and" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.registers.a = 0xF0;
 
     instructions.andFn(&cpu, &cpu.registers.a, 0x0F);
@@ -120,7 +126,8 @@ test "xor" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.registers.a = 0xAA;
 
     instructions.xor(&cpu, &cpu.registers.a, 0xFF);
@@ -135,7 +142,8 @@ test "or" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.registers.a = 0x0A;
 
     instructions.orFn(&cpu, &cpu.registers.a, 0x05);
@@ -150,7 +158,8 @@ test "cp" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.registers.a = 0x10;
 
     instructions.cp(&cpu, &cpu.registers.a, 0x10);
@@ -165,7 +174,8 @@ test "addWords" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
 
     cpu.registers.setHL(0x1234);
     cpu.registers.setBC(0x0001);
@@ -206,7 +216,8 @@ test "rlc" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.registers.a = 0b10000001;
 
     instructions.rlc(&cpu, &cpu.registers.a);
@@ -228,7 +239,8 @@ test "rrc" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.registers.a = 0b00101001;
 
     instructions.rrc(&cpu, &cpu.registers.a);
@@ -250,7 +262,8 @@ test "rl" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.registers.a = 0b10000000;
     instructions.rl(&cpu, &cpu.registers.a);
     try std.testing.expect(cpu.registers.a == 0);
@@ -261,7 +274,8 @@ test "rr" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.registers.a = 0b00000001;
     instructions.rr(&cpu, &cpu.registers.a);
     try std.testing.expect(cpu.registers.a == 0);
@@ -272,7 +286,8 @@ test "cpl" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.registers.a = 0xAA;
     instructions.cpl(&cpu, &cpu.registers.a);
     try std.testing.expect(cpu.registers.a == 0x55);
@@ -284,7 +299,8 @@ test "scf" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     instructions.scf(&cpu);
     try std.testing.expect(cpu.registers.getCarryFlag());
     try std.testing.expect(!cpu.registers.getSubtractionFlag());
@@ -295,7 +311,8 @@ test "ccf" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     instructions.scf(&cpu);
     instructions.ccf(&cpu);
     try std.testing.expect(!cpu.registers.getCarryFlag());
@@ -307,7 +324,8 @@ test "jr" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.pc = 0x100;
     instructions.jr(&cpu, 0x10, true);
     try std.testing.expect(cpu.pc == 0x110);
@@ -321,7 +339,8 @@ test "jp" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     instructions.jp(&cpu, 0x1234, true);
     try std.testing.expect(cpu.pc == 0x1234);
 
@@ -334,7 +353,8 @@ test "addSigned" {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
     var mmu = Mmu.init(&cart);
-    var cpu = Cpu.init(&mmu);
+    var cycle_manager = CycleManager.init();
+    var cpu = Cpu.init(&mmu, &cycle_manager);
     cpu.sp = 0xFFF8;
 
     instructions.addSigned(&cpu, &cpu.sp, 8);
