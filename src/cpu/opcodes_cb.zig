@@ -67,9 +67,9 @@ fn opcodeCB05(cpu: *Cpu) void {
 }
 
 fn opcodeCB06(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.rlc(cpu, &target);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -108,9 +108,9 @@ fn opcodeCB0D(cpu: *Cpu) void {
 }
 
 fn opcodeCB0E(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.rrc(cpu, &target);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -150,9 +150,9 @@ fn opcodeCB15(cpu: *Cpu) void {
 }
 
 fn opcodeCB16(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.rl(cpu, &target);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -192,9 +192,9 @@ fn opcodeCB1D(cpu: *Cpu) void {
 }
 
 fn opcodeCB1E(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.rr(cpu, &target);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -234,9 +234,9 @@ fn opcodeCB25(cpu: *Cpu) void {
 }
 
 fn opcodeCB26(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.sla(cpu, &target);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -276,9 +276,9 @@ fn opcodeCB2D(cpu: *Cpu) void {
 }
 
 fn opcodeCB2E(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.sra(cpu, &target);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -318,9 +318,9 @@ fn opcodeCB35(cpu: *Cpu) void {
 }
 
 fn opcodeCB36(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.swap(cpu, &target);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -360,9 +360,9 @@ fn opcodeCB3D(cpu: *Cpu) void {
 }
 
 fn opcodeCB3E(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.srl(cpu, &target);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -402,7 +402,7 @@ fn opcodeCB45(cpu: *Cpu) void {
 }
 
 fn opcodeCB46(cpu: *Cpu) void {
-    instructions.bit(cpu, 0, cpu.mmu.readByte(cpu.registers.getHL()));
+    instructions.bit(cpu, 0, cpu.readByte(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -442,7 +442,7 @@ fn opcodeCB4D(cpu: *Cpu) void {
 }
 
 fn opcodeCB4E(cpu: *Cpu) void {
-    instructions.bit(cpu, 1, cpu.mmu.readByte(cpu.registers.getHL()));
+    instructions.bit(cpu, 1, cpu.readByte(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -482,7 +482,7 @@ fn opcodeCB55(cpu: *Cpu) void {
 }
 
 fn opcodeCB56(cpu: *Cpu) void {
-    instructions.bit(cpu, 2, cpu.mmu.readByte(cpu.registers.getHL()));
+    instructions.bit(cpu, 2, cpu.readByte(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -522,7 +522,7 @@ fn opcodeCB5D(cpu: *Cpu) void {
 }
 
 fn opcodeCB5E(cpu: *Cpu) void {
-    instructions.bit(cpu, 3, cpu.mmu.readByte(cpu.registers.getHL()));
+    instructions.bit(cpu, 3, cpu.readByte(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -562,7 +562,7 @@ fn opcodeCB65(cpu: *Cpu) void {
 }
 
 fn opcodeCB66(cpu: *Cpu) void {
-    instructions.bit(cpu, 4, cpu.mmu.readByte(cpu.registers.getHL()));
+    instructions.bit(cpu, 4, cpu.readByte(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -602,7 +602,7 @@ fn opcodeCB6D(cpu: *Cpu) void {
 }
 
 fn opcodeCB6E(cpu: *Cpu) void {
-    instructions.bit(cpu, 5, cpu.mmu.readByte(cpu.registers.getHL()));
+    instructions.bit(cpu, 5, cpu.readByte(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -642,7 +642,7 @@ fn opcodeCB75(cpu: *Cpu) void {
 }
 
 fn opcodeCB76(cpu: *Cpu) void {
-    instructions.bit(cpu, 6, cpu.mmu.readByte(cpu.registers.getHL()));
+    instructions.bit(cpu, 6, cpu.readByte(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -682,7 +682,7 @@ fn opcodeCB7D(cpu: *Cpu) void {
 }
 
 fn opcodeCB7E(cpu: *Cpu) void {
-    instructions.bit(cpu, 7, cpu.mmu.readByte(cpu.registers.getHL()));
+    instructions.bit(cpu, 7, cpu.readByte(cpu.registers.getHL()));
     cpu.pc +%= 2;
 }
 
@@ -722,9 +722,9 @@ fn opcodeCB85(cpu: *Cpu) void {
 }
 
 fn opcodeCB86(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.res(cpu, &target, 0);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -764,9 +764,9 @@ fn opcodeCB8D(cpu: *Cpu) void {
 }
 
 fn opcodeCB8E(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.res(cpu, &target, 1);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -806,9 +806,9 @@ fn opcodeCB95(cpu: *Cpu) void {
 }
 
 fn opcodeCB96(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.res(cpu, &target, 2);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -848,9 +848,9 @@ fn opcodeCB9D(cpu: *Cpu) void {
 }
 
 fn opcodeCB9E(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.res(cpu, &target, 3);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -890,9 +890,9 @@ fn opcodeCBA5(cpu: *Cpu) void {
 }
 
 fn opcodeCBA6(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.res(cpu, &target, 4);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -932,9 +932,9 @@ fn opcodeCBAD(cpu: *Cpu) void {
 }
 
 fn opcodeCBAE(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.res(cpu, &target, 5);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -974,9 +974,9 @@ fn opcodeCBB5(cpu: *Cpu) void {
 }
 
 fn opcodeCBB6(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.res(cpu, &target, 6);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -1016,9 +1016,9 @@ fn opcodeCBBD(cpu: *Cpu) void {
 }
 
 fn opcodeCBBE(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.res(cpu, &target, 7);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -1058,9 +1058,9 @@ fn opcodeCBC5(cpu: *Cpu) void {
 }
 
 fn opcodeCBC6(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.set(cpu, &target, 0);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -1100,9 +1100,9 @@ fn opcodeCBCD(cpu: *Cpu) void {
 }
 
 fn opcodeCBCE(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.set(cpu, &target, 1);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -1142,9 +1142,9 @@ fn opcodeCBD5(cpu: *Cpu) void {
 }
 
 fn opcodeCBD6(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.set(cpu, &target, 2);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -1184,9 +1184,9 @@ fn opcodeCBDD(cpu: *Cpu) void {
 }
 
 fn opcodeCBDE(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.set(cpu, &target, 3);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -1226,9 +1226,9 @@ fn opcodeCBE5(cpu: *Cpu) void {
 }
 
 fn opcodeCBE6(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.set(cpu, &target, 4);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -1268,9 +1268,9 @@ fn opcodeCBED(cpu: *Cpu) void {
 }
 
 fn opcodeCBEE(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.set(cpu, &target, 5);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -1310,9 +1310,9 @@ fn opcodeCBF5(cpu: *Cpu) void {
 }
 
 fn opcodeCBF6(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.set(cpu, &target, 6);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
@@ -1352,9 +1352,9 @@ fn opcodeCBFD(cpu: *Cpu) void {
 }
 
 fn opcodeCBFE(cpu: *Cpu) void {
-    var target = cpu.mmu.readByte(cpu.registers.getHL());
+    var target = cpu.readByte(cpu.registers.getHL());
     instructions.set(cpu, &target, 7);
-    cpu.mmu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), target);
     cpu.pc +%= 2;
 }
 
