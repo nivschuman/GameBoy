@@ -20,13 +20,13 @@ fn testWithCpu(testFunction: fn (*Cpu) anyerror!void) anyerror!void {
 test "add" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0x10;
-            instructions.add(cpu, &cpu.*.registers.a, 0x22);
-            try std.testing.expect(cpu.*.registers.a == 0x32);
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0x10;
+            instructions.add(cpu, &cpu.registers.a, 0x22);
+            try std.testing.expect(cpu.registers.a == 0x32);
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -35,14 +35,14 @@ test "add" {
 test "adc" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0x8F;
-            cpu.*.registers.f = 0x10;
-            instructions.adc(cpu, &cpu.*.registers.a, 0x01);
-            try std.testing.expect(cpu.*.registers.a == 0x91);
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
-            try std.testing.expect(cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0x8F;
+            cpu.registers.f = 0x10;
+            instructions.adc(cpu, &cpu.registers.a, 0x01);
+            try std.testing.expect(cpu.registers.a == 0x91);
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
+            try std.testing.expect(cpu.registers.getHalfCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -51,21 +51,21 @@ test "adc" {
 test "sub" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0x22;
-            instructions.sub(cpu, &cpu.*.registers.a, 0x11);
-            try std.testing.expect(cpu.*.registers.a == 0x11);
-            try std.testing.expect(cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0x22;
+            instructions.sub(cpu, &cpu.registers.a, 0x11);
+            try std.testing.expect(cpu.registers.a == 0x11);
+            try std.testing.expect(cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
 
-            cpu.*.registers.a = 0x10;
-            instructions.sub(cpu, &cpu.*.registers.a, 0x10);
-            try std.testing.expect(cpu.*.registers.a == 0x00);
-            try std.testing.expect(cpu.*.registers.getZeroFlag());
-            try std.testing.expect(cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0x10;
+            instructions.sub(cpu, &cpu.registers.a, 0x10);
+            try std.testing.expect(cpu.registers.a == 0x00);
+            try std.testing.expect(cpu.registers.getZeroFlag());
+            try std.testing.expect(cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -74,41 +74,41 @@ test "sub" {
 test "sbc" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0x10;
-            cpu.*.registers.f = 0x00;
-            instructions.sbc(cpu, &cpu.*.registers.a, 0x05);
-            try std.testing.expect(cpu.*.registers.a == 0x0B);
-            try std.testing.expect(cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
-            try std.testing.expect(cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0x10;
+            cpu.registers.f = 0x00;
+            instructions.sbc(cpu, &cpu.registers.a, 0x05);
+            try std.testing.expect(cpu.registers.a == 0x0B);
+            try std.testing.expect(cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
+            try std.testing.expect(cpu.registers.getHalfCarryFlag());
 
-            cpu.*.registers.a = 0x10;
-            cpu.*.registers.f = 0x10;
-            instructions.sbc(cpu, &cpu.*.registers.a, 0x05);
-            try std.testing.expect(cpu.*.registers.a == 0x0A);
-            try std.testing.expect(cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
-            try std.testing.expect(cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0x10;
+            cpu.registers.f = 0x10;
+            instructions.sbc(cpu, &cpu.registers.a, 0x05);
+            try std.testing.expect(cpu.registers.a == 0x0A);
+            try std.testing.expect(cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
+            try std.testing.expect(cpu.registers.getHalfCarryFlag());
 
-            cpu.*.registers.a = 0x00;
-            cpu.*.registers.f = 0x10;
-            instructions.sbc(cpu, &cpu.*.registers.a, 0x01);
-            try std.testing.expect(cpu.*.registers.a == 0xFE);
-            try std.testing.expect(cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
-            try std.testing.expect(cpu.*.registers.getCarryFlag());
-            try std.testing.expect(cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0x00;
+            cpu.registers.f = 0x10;
+            instructions.sbc(cpu, &cpu.registers.a, 0x01);
+            try std.testing.expect(cpu.registers.a == 0xFE);
+            try std.testing.expect(cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
+            try std.testing.expect(cpu.registers.getCarryFlag());
+            try std.testing.expect(cpu.registers.getHalfCarryFlag());
 
-            cpu.*.registers.a = 0x00;
-            cpu.*.registers.f = 0x10;
-            instructions.sbc(cpu, &cpu.*.registers.a, 0xFF);
-            try std.testing.expect(cpu.*.registers.a == 0x00);
-            try std.testing.expect(cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(cpu.*.registers.getZeroFlag());
-            try std.testing.expect(cpu.*.registers.getCarryFlag());
-            try std.testing.expect(cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0x00;
+            cpu.registers.f = 0x10;
+            instructions.sbc(cpu, &cpu.registers.a, 0xFF);
+            try std.testing.expect(cpu.registers.a == 0x00);
+            try std.testing.expect(cpu.registers.getSubtractionFlag());
+            try std.testing.expect(cpu.registers.getZeroFlag());
+            try std.testing.expect(cpu.registers.getCarryFlag());
+            try std.testing.expect(cpu.registers.getHalfCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -117,13 +117,13 @@ test "sbc" {
 test "and" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0xF0;
-            instructions.andFn(cpu, &cpu.*.registers.a, 0x0F);
-            try std.testing.expect(cpu.*.registers.a == 0x00);
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
-            try std.testing.expect(cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0xF0;
+            instructions.andFn(cpu, &cpu.registers.a, 0x0F);
+            try std.testing.expect(cpu.registers.a == 0x00);
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
+            try std.testing.expect(cpu.registers.getHalfCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -132,13 +132,13 @@ test "and" {
 test "xor" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0xAA;
-            instructions.xor(cpu, &cpu.*.registers.a, 0xFF);
-            try std.testing.expect(cpu.*.registers.a == 0x55);
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0xAA;
+            instructions.xor(cpu, &cpu.registers.a, 0xFF);
+            try std.testing.expect(cpu.registers.a == 0x55);
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -147,13 +147,13 @@ test "xor" {
 test "or" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0x0A;
-            instructions.orFn(cpu, &cpu.*.registers.a, 0x05);
-            try std.testing.expect(cpu.*.registers.a == 0x0F);
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0x0A;
+            instructions.orFn(cpu, &cpu.registers.a, 0x05);
+            try std.testing.expect(cpu.registers.a == 0x0F);
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -162,13 +162,13 @@ test "or" {
 test "cp" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0x10;
-            instructions.cp(cpu, &cpu.*.registers.a, 0x10);
-            try std.testing.expect(cpu.*.registers.a == 0x10);
-            try std.testing.expect(cpu.*.registers.getZeroFlag());
-            try std.testing.expect(cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0x10;
+            instructions.cp(cpu, &cpu.registers.a, 0x10);
+            try std.testing.expect(cpu.registers.a == 0x10);
+            try std.testing.expect(cpu.registers.getZeroFlag());
+            try std.testing.expect(cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -177,39 +177,39 @@ test "cp" {
 test "addWords" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.setHL(0x1234);
-            cpu.*.registers.setBC(0x0001);
+            cpu.registers.setHL(0x1234);
+            cpu.registers.setBC(0x0001);
 
-            var hl_val = cpu.*.registers.getHL();
-            instructions.addWords(cpu, &hl_val, cpu.*.registers.getBC());
-            cpu.*.registers.setHL(hl_val);
+            var hl_val = cpu.registers.getHL();
+            instructions.addWords(cpu, &hl_val, cpu.registers.getBC());
+            cpu.registers.setHL(hl_val);
 
-            try std.testing.expect(cpu.*.registers.getHL() == 0x1235);
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
+            try std.testing.expect(cpu.registers.getHL() == 0x1235);
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
 
-            cpu.*.registers.setHL(0x0FFF);
-            cpu.*.registers.setBC(0x0001);
+            cpu.registers.setHL(0x0FFF);
+            cpu.registers.setBC(0x0001);
 
-            hl_val = cpu.*.registers.getHL();
-            instructions.addWords(cpu, &hl_val, cpu.*.registers.getBC());
-            cpu.*.registers.setHL(hl_val);
+            hl_val = cpu.registers.getHL();
+            instructions.addWords(cpu, &hl_val, cpu.registers.getBC());
+            cpu.registers.setHL(hl_val);
 
-            try std.testing.expect(cpu.*.registers.getHL() == 0x1000);
-            try std.testing.expect(cpu.*.registers.getHalfCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
+            try std.testing.expect(cpu.registers.getHL() == 0x1000);
+            try std.testing.expect(cpu.registers.getHalfCarryFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
 
-            cpu.*.registers.setHL(0xFFFF);
-            cpu.*.registers.setBC(0x0001);
+            cpu.registers.setHL(0xFFFF);
+            cpu.registers.setBC(0x0001);
 
-            hl_val = cpu.*.registers.getHL();
-            instructions.addWords(cpu, &hl_val, cpu.*.registers.getBC());
-            cpu.*.registers.setHL(hl_val);
+            hl_val = cpu.registers.getHL();
+            instructions.addWords(cpu, &hl_val, cpu.registers.getBC());
+            cpu.registers.setHL(hl_val);
 
-            try std.testing.expect(cpu.*.registers.getHL() == 0x0000);
-            try std.testing.expect(cpu.*.registers.getCarryFlag());
-            try std.testing.expect(cpu.*.registers.getHalfCarryFlag());
+            try std.testing.expect(cpu.registers.getHL() == 0x0000);
+            try std.testing.expect(cpu.registers.getCarryFlag());
+            try std.testing.expect(cpu.registers.getHalfCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -218,21 +218,21 @@ test "addWords" {
 test "rlc" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0b10000001;
+            cpu.registers.a = 0b10000001;
 
-            instructions.rlc(cpu, &cpu.*.registers.a);
+            instructions.rlc(cpu, &cpu.registers.a);
 
-            try std.testing.expect(cpu.*.registers.a == 0b00000011);
-            try std.testing.expect(cpu.*.registers.getCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
+            try std.testing.expect(cpu.registers.a == 0b00000011);
+            try std.testing.expect(cpu.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
 
-            cpu.*.registers.a = 0x00;
-            instructions.rlc(cpu, &cpu.*.registers.a);
-            try std.testing.expect(cpu.*.registers.a == 0x00);
-            try std.testing.expect(cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
+            cpu.registers.a = 0x00;
+            instructions.rlc(cpu, &cpu.registers.a);
+            try std.testing.expect(cpu.registers.a == 0x00);
+            try std.testing.expect(cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -241,21 +241,21 @@ test "rlc" {
 test "rrc" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0b00101001;
+            cpu.registers.a = 0b00101001;
 
-            instructions.rrc(cpu, &cpu.*.registers.a);
+            instructions.rrc(cpu, &cpu.registers.a);
 
-            try std.testing.expect(cpu.*.registers.a == 0b10010100);
-            try std.testing.expect(cpu.*.registers.getCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
+            try std.testing.expect(cpu.registers.a == 0b10010100);
+            try std.testing.expect(cpu.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
 
-            cpu.*.registers.a = 0x00;
-            instructions.rrc(cpu, &cpu.*.registers.a);
-            try std.testing.expect(cpu.*.registers.a == 0x00);
-            try std.testing.expect(cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
+            cpu.registers.a = 0x00;
+            instructions.rrc(cpu, &cpu.registers.a);
+            try std.testing.expect(cpu.registers.a == 0x00);
+            try std.testing.expect(cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -264,10 +264,10 @@ test "rrc" {
 test "rl" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0b10000000;
-            instructions.rl(cpu, &cpu.*.registers.a);
-            try std.testing.expect(cpu.*.registers.a == 0);
-            try std.testing.expect(cpu.*.registers.getCarryFlag());
+            cpu.registers.a = 0b10000000;
+            instructions.rl(cpu, &cpu.registers.a);
+            try std.testing.expect(cpu.registers.a == 0);
+            try std.testing.expect(cpu.registers.getCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -276,10 +276,10 @@ test "rl" {
 test "rr" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0b00000001;
-            instructions.rr(cpu, &cpu.*.registers.a);
-            try std.testing.expect(cpu.*.registers.a == 0);
-            try std.testing.expect(cpu.*.registers.getCarryFlag());
+            cpu.registers.a = 0b00000001;
+            instructions.rr(cpu, &cpu.registers.a);
+            try std.testing.expect(cpu.registers.a == 0);
+            try std.testing.expect(cpu.registers.getCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -288,11 +288,11 @@ test "rr" {
 test "cpl" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
-            cpu.*.registers.a = 0xAA;
-            instructions.cpl(cpu, &cpu.*.registers.a);
-            try std.testing.expect(cpu.*.registers.a == 0x55);
-            try std.testing.expect(cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(cpu.*.registers.getHalfCarryFlag());
+            cpu.registers.a = 0xAA;
+            instructions.cpl(cpu, &cpu.registers.a);
+            try std.testing.expect(cpu.registers.a == 0x55);
+            try std.testing.expect(cpu.registers.getSubtractionFlag());
+            try std.testing.expect(cpu.registers.getHalfCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -302,9 +302,9 @@ test "scf" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
             instructions.scf(cpu);
-            try std.testing.expect(cpu.*.registers.getCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
+            try std.testing.expect(cpu.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -315,9 +315,9 @@ test "ccf" {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
             instructions.scf(cpu);
             instructions.ccf(cpu);
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
             instructions.ccf(cpu);
-            try std.testing.expect(cpu.*.registers.getCarryFlag());
+            try std.testing.expect(cpu.registers.getCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
@@ -357,36 +357,36 @@ test "addSigned" {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
             cpu.sp = 0xFFF8;
 
-            instructions.addSigned(cpu, &cpu.*.sp, 8);
+            instructions.addSigned(cpu, &cpu.sp, 8);
             try std.testing.expect(cpu.sp == 0x0000);
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(cpu.*.registers.getHalfCarryFlag());
-            try std.testing.expect(cpu.*.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(cpu.registers.getHalfCarryFlag());
+            try std.testing.expect(cpu.registers.getCarryFlag());
 
             cpu.sp = 0x0004;
-            instructions.addSigned(cpu, &cpu.*.sp, -8);
+            instructions.addSigned(cpu, &cpu.sp, -8);
             try std.testing.expect(cpu.sp == 0xFFFC);
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
 
             cpu.sp = 0x8000;
-            instructions.addSigned(cpu, &cpu.*.sp, 127);
+            instructions.addSigned(cpu, &cpu.sp, 127);
             try std.testing.expect(cpu.sp == 0x807F);
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
 
             cpu.sp = 0x8000;
-            instructions.addSigned(cpu, &cpu.*.sp, -128);
+            instructions.addSigned(cpu, &cpu.sp, -128);
             try std.testing.expect(cpu.sp == 0x7F80);
-            try std.testing.expect(!cpu.*.registers.getZeroFlag());
-            try std.testing.expect(!cpu.*.registers.getSubtractionFlag());
-            try std.testing.expect(!cpu.*.registers.getHalfCarryFlag());
-            try std.testing.expect(!cpu.*.registers.getCarryFlag());
+            try std.testing.expect(!cpu.registers.getZeroFlag());
+            try std.testing.expect(!cpu.registers.getSubtractionFlag());
+            try std.testing.expect(!cpu.registers.getHalfCarryFlag());
+            try std.testing.expect(!cpu.registers.getCarryFlag());
         }
     }.testFunction;
     try testWithCpu(testFunction);
