@@ -1,18 +1,31 @@
 const Cartridge = @import("../cartridge/cartridge.zig").Cartridge;
+const memory = @import("memory/memory.zig");
 
 pub const Mmu = struct {
     cartridge: *Cartridge,
+    wram: *memory.WRam,
+    hram: *memory.HRam,
 
-    pub fn init(cartridge: *Cartridge) Mmu {
+    pub fn init(cartridge: *Cartridge, wram: *memory.WRam, hram: *memory.HRam) Mmu {
         return .{
             .cartridge = cartridge,
+            .wram = wram,
+            .hram = hram,
         };
     }
 
     pub fn readByte(self: *const Mmu, address: u16) u8 {
         return switch (address) {
-            0x0000...0x8000 => self.cartridge.readByte(address),
-            else => @panic("unmapped address"),
+            0x0000...0x7FFF => self.cartridge.readByte(address), // ROM bank 0 / switchable banks
+            0x8000...0x9FFF => @panic("unmapped address"), // VRAM (8 KB) – video memory
+            0xA000...0xBFFF => self.cartridge.readByte(address - 0xA000), // External RAM in cartridge
+            0xC000...0xDFFF => self.wram.readByte(address - 0xC000), // Work RAM (WRAM)
+            0xE000...0xFDFF => self.wram.readByte(address - 0xE000), // Echo RAM (mirror of WRAM)
+            0xFE00...0xFE9F => @panic("unmapped address"), // OAM (sprite attribute memory, 160 bytes)
+            0xFEA0...0xFEFF => 0, // Unusable / forbidden memory
+            0xFF00...0xFF7F => @panic("unmapped address"), // I/O registers
+            0xFF80...0xFFFE => self.hram.readByte(address - 0xFF80), // High Ram (HRAM)
+            0xFFFF => @panic("unmapped address"), // Interrupt Enable register
         };
     }
 
@@ -22,8 +35,16 @@ pub const Mmu = struct {
 
     pub fn writeByte(self: *Mmu, address: u16, value: u8) void {
         switch (address) {
-            0x0000...0x8000 => self.cartridge.writeByte(address, value),
-            else => @panic("unmapped address"),
+            0x0000...0x7FFF => self.cartridge.writeByte(address, value), // ROM bank 0 / switchable banks
+            0x8000...0x9FFF => @panic("unmapped address"), // VRAM – video memory
+            0xA000...0xBFFF => self.cartridge.writeByte(address - 0xA000, value), // External RAM in cartridge
+            0xC000...0xDFFF => self.wram.writeByte(address - 0xC000, value), // Work RAM (WRAM)
+            0xE000...0xFDFF => self.wram.writeByte(address - 0xE000, value), // Echo RAM (mirror of WRAM)
+            0xFE00...0xFE9F => @panic("unmapped address"), // OAM (sprite attribute memory, 160 bytes)
+            0xFEA0...0xFEFF => {}, // Unusable / forbidden memory – writes ignored
+            0xFF00...0xFF7F => @panic("unmapped address"), // I/O registers
+            0xFF80...0xFFFE => self.hram.writeByte(address - 0xFF80, value), // High Ram (HRAM)
+            0xFFFF => @panic("unmapped address"), // Interrupt Enable register
         }
     }
 
