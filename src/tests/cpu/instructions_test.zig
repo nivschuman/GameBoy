@@ -1,21 +1,7 @@
 const std = @import("std");
 const Cpu = @import("../../cpu/cpu.zig").Cpu;
-const Mmu = @import("../../mmu/mmu.zig").Mmu;
-const Cartridge = @import("../../cartridge/cartridge.zig").Cartridge;
 const instructions = @import("../../cpu/instructions.zig");
-const CycleManager = @import("../../cycles/cycles.zig").CycleManager;
-const memory = @import("../../mmu/memory/memory.zig");
-
-fn testWithCpu(testFunction: fn (*Cpu) anyerror!void) anyerror!void {
-    var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
-    var cart = Cartridge.init(rom[0..]);
-    var wram = memory.WRam.init();
-    var hram = memory.HRam.init();
-    var mmu = Mmu.init(&cart, &wram, &hram);
-    var cycle_manager = CycleManager.init();
-    var cpu = Cpu.init(&mmu, &cycle_manager);
-    try testFunction(&cpu);
-}
+const testWithCpu = @import("cpu_test.zig").testWithCpu;
 
 test "add" {
     const testFunction = struct {
