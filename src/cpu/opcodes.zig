@@ -127,7 +127,7 @@ fn opcode0F(cpu: *Cpu) void {
 }
 
 fn opcode10(cpu: *Cpu) void {
-    cpu.stopped = true;
+    instructions.stop(cpu);
     cpu.pc +%= 1;
 }
 
@@ -678,7 +678,7 @@ fn opcode75(cpu: *Cpu) void {
 }
 
 fn opcode76(cpu: *Cpu) void {
-    cpu.halted = true;
+    instructions.halt(cpu);
     cpu.pc +%= 1;
 }
 
@@ -1177,7 +1177,7 @@ fn opcodeD8(cpu: *Cpu) void {
 }
 
 fn opcodeD9(cpu: *Cpu) void {
-    // todo reti
+    instructions.reti(cpu);
     cpu.pc +%= 1;
 }
 
@@ -1275,7 +1275,7 @@ fn opcodeF2(cpu: *Cpu) void {
 }
 
 fn opcodeF3(cpu: *Cpu) void {
-    //todo DI
+    instructions.di(cpu);
     cpu.pc +%= 1;
 }
 
@@ -1312,7 +1312,7 @@ fn opcodeFA(cpu: *Cpu) void {
 }
 
 fn opcodeFB(cpu: *Cpu) void {
-    //todo EI
+    instructions.ei(cpu);
     cpu.pc +%= 1;
 }
 

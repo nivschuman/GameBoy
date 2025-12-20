@@ -321,3 +321,22 @@ pub fn daa(cpu: *Cpu, target: *u8) void {
     cpu.registers.setHalfCarryFlag(false);
     cpu.registers.setCarryFlag(carry);
 }
+
+pub fn stop(_: *Cpu) void {}
+
+pub fn halt(cpu: *Cpu) void {
+    cpu.halted = true;
+}
+
+pub fn di(cpu: *Cpu) void {
+    cpu.interrupt_master_enable = false;
+}
+
+pub fn ei(cpu: *Cpu) void {
+    cpu.set_interrupt_master_enable = true;
+}
+
+pub fn reti(cpu: *Cpu) void {
+    ret(cpu, true);
+    cpu.interrupt_master_enable = true;
+}
