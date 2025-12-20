@@ -51,13 +51,12 @@ fn opcode01(cpu: *Cpu) void {
 }
 
 fn opcode02(cpu: *Cpu) void {
-    var target = cpu.readByte(cpu.registers.getBC());
-    instructions.ld(cpu, &target, cpu.registers.a);
-    cpu.writeByte(cpu.registers.getBC(), target);
+    cpu.writeByte(cpu.registers.getBC(), cpu.registers.a);
     cpu.pc +%= 1;
 }
 
 fn opcode03(cpu: *Cpu) void {
+    cpu.cycle_manager.cycle(1);
     cpu.registers.setBC(cpu.registers.getBC() +% 1);
     cpu.pc +%= 1;
 }
@@ -101,6 +100,7 @@ fn opcode0A(cpu: *Cpu) void {
 }
 
 fn opcode0B(cpu: *Cpu) void {
+    cpu.cycle_manager.cycle(1);
     cpu.registers.setBC(cpu.registers.getBC() -% 1);
     cpu.pc +%= 1;
 }
@@ -137,13 +137,12 @@ fn opcode11(cpu: *Cpu) void {
 }
 
 fn opcode12(cpu: *Cpu) void {
-    var target = cpu.readByte(cpu.registers.getDE());
-    instructions.ld(cpu, &target, cpu.registers.a);
-    cpu.writeByte(cpu.registers.getDE(), target);
+    cpu.writeByte(cpu.registers.getDE(), cpu.registers.a);
     cpu.pc +%= 1;
 }
 
 fn opcode13(cpu: *Cpu) void {
+    cpu.cycle_manager.cycle(1);
     cpu.registers.setDE(cpu.registers.getDE() +% 1);
     cpu.pc +%= 1;
 }
@@ -188,6 +187,7 @@ fn opcode1A(cpu: *Cpu) void {
 }
 
 fn opcode1B(cpu: *Cpu) void {
+    cpu.cycle_manager.cycle(1);
     cpu.registers.setDE(cpu.registers.getDE() -% 1);
     cpu.pc +%= 1;
 }
@@ -225,14 +225,13 @@ fn opcode21(cpu: *Cpu) void {
 }
 
 fn opcode22(cpu: *Cpu) void {
-    var target = cpu.readByte(cpu.registers.getHL());
-    instructions.ld(cpu, &target, cpu.registers.a);
-    cpu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), cpu.registers.a);
     cpu.registers.setHL(cpu.registers.getHL() +% 1);
     cpu.pc +%= 1;
 }
 
 fn opcode23(cpu: *Cpu) void {
+    cpu.cycle_manager.cycle(1);
     cpu.registers.setHL(cpu.registers.getHL() +% 1);
     cpu.pc +%= 1;
 }
@@ -277,6 +276,7 @@ fn opcode2A(cpu: *Cpu) void {
 }
 
 fn opcode2B(cpu: *Cpu) void {
+    cpu.cycle_manager.cycle(1);
     cpu.registers.setHL(cpu.registers.getHL() -% 1);
     cpu.pc +%= 1;
 }
@@ -313,14 +313,13 @@ fn opcode31(cpu: *Cpu) void {
 }
 
 fn opcode32(cpu: *Cpu) void {
-    var target = cpu.readByte(cpu.registers.getHL());
-    instructions.ld(cpu, &target, cpu.registers.a);
-    cpu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), cpu.registers.a);
     cpu.registers.setHL(cpu.registers.getHL() -% 1);
     cpu.pc +%= 1;
 }
 
 fn opcode33(cpu: *Cpu) void {
+    cpu.cycle_manager.cycle(1);
     cpu.sp +%= 1;
     cpu.pc +%= 1;
 }
@@ -340,9 +339,7 @@ fn opcode35(cpu: *Cpu) void {
 }
 
 fn opcode36(cpu: *Cpu) void {
-    var target = cpu.readByte(cpu.registers.getHL());
-    instructions.ld(cpu, &target, cpu.d8());
-    cpu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), cpu.d8());
     cpu.pc +%= 2;
 }
 
@@ -371,6 +368,7 @@ fn opcode3A(cpu: *Cpu) void {
 }
 
 fn opcode3B(cpu: *Cpu) void {
+    cpu.cycle_manager.cycle(1);
     cpu.sp -%= 1;
     cpu.pc +%= 1;
 }
@@ -636,44 +634,32 @@ fn opcode6F(cpu: *Cpu) void {
 }
 
 fn opcode70(cpu: *Cpu) void {
-    var target = cpu.readByte(cpu.registers.getHL());
-    instructions.ld(cpu, &target, cpu.registers.b);
-    cpu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), cpu.registers.b);
     cpu.pc +%= 1;
 }
 
 fn opcode71(cpu: *Cpu) void {
-    var target = cpu.readByte(cpu.registers.getHL());
-    instructions.ld(cpu, &target, cpu.registers.c);
-    cpu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), cpu.registers.c);
     cpu.pc +%= 1;
 }
 
 fn opcode72(cpu: *Cpu) void {
-    var target = cpu.readByte(cpu.registers.getHL());
-    instructions.ld(cpu, &target, cpu.registers.d);
-    cpu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), cpu.registers.d);
     cpu.pc +%= 1;
 }
 
 fn opcode73(cpu: *Cpu) void {
-    var target = cpu.readByte(cpu.registers.getHL());
-    instructions.ld(cpu, &target, cpu.registers.e);
-    cpu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), cpu.registers.e);
     cpu.pc +%= 1;
 }
 
 fn opcode74(cpu: *Cpu) void {
-    var target = cpu.readByte(cpu.registers.getHL());
-    instructions.ld(cpu, &target, cpu.registers.h);
-    cpu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), cpu.registers.h);
     cpu.pc +%= 1;
 }
 
 fn opcode75(cpu: *Cpu) void {
-    var target = cpu.readByte(cpu.registers.getHL());
-    instructions.ld(cpu, &target, cpu.registers.l);
-    cpu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), cpu.registers.l);
     cpu.pc +%= 1;
 }
 
@@ -683,9 +669,7 @@ fn opcode76(cpu: *Cpu) void {
 }
 
 fn opcode77(cpu: *Cpu) void {
-    var target = cpu.readByte(cpu.registers.getHL());
-    instructions.ld(cpu, &target, cpu.registers.a);
-    cpu.writeByte(cpu.registers.getHL(), target);
+    cpu.writeByte(cpu.registers.getHL(), cpu.registers.a);
     cpu.pc +%= 1;
 }
 
@@ -1051,6 +1035,7 @@ fn opcodeBF(cpu: *Cpu) void {
 
 fn opcodeC0(cpu: *Cpu) void {
     cpu.pc +%= 1;
+    cpu.cycle_manager.cycle(1);
     instructions.ret(cpu, !cpu.registers.getZeroFlag());
 }
 
@@ -1094,6 +1079,7 @@ fn opcodeC7(cpu: *Cpu) void {
 
 fn opcodeC8(cpu: *Cpu) void {
     cpu.pc +%= 1;
+    cpu.cycle_manager.cycle(1);
     instructions.ret(cpu, cpu.registers.getZeroFlag());
 }
 
@@ -1136,6 +1122,7 @@ fn opcodeCF(cpu: *Cpu) void {
 
 fn opcodeD0(cpu: *Cpu) void {
     cpu.pc +%= 1;
+    cpu.cycle_manager.cycle(1);
     instructions.ret(cpu, !cpu.registers.getCarryFlag());
 }
 
@@ -1173,6 +1160,7 @@ fn opcodeD7(cpu: *Cpu) void {
 
 fn opcodeD8(cpu: *Cpu) void {
     cpu.pc +%= 1;
+    cpu.cycle_manager.cycle(1);
     instructions.ret(cpu, cpu.registers.getCarryFlag());
 }
 
@@ -1234,13 +1222,13 @@ fn opcodeE7(cpu: *Cpu) void {
 }
 
 fn opcodeE8(cpu: *Cpu) void {
+    cpu.cycle_manager.cycle(1); //this opcode takes an extra cycle
     instructions.addSigned(cpu, &cpu.sp, cpu.s8());
     cpu.pc +%= 2;
 }
 
 fn opcodeE9(cpu: *Cpu) void {
-    cpu.pc +%= 1;
-    instructions.jp(cpu, cpu.registers.getHL(), true);
+    cpu.pc = cpu.registers.getHL(); // we do this because this opcode always takes 1 cycle
 }
 
 fn opcodeEA(cpu: *Cpu) void {
