@@ -11,6 +11,7 @@ pub fn add(cpu: *Cpu, target: *u8, value: u8) void {
 }
 
 pub fn addWords(cpu: *Cpu, target: *u16, value: u16) void {
+    cpu.cycle_manager.cycle(1);
     const result = @addWithOverflow(target.*, value);
 
     cpu.registers.setSubtractionFlag(false);
@@ -20,6 +21,7 @@ pub fn addWords(cpu: *Cpu, target: *u16, value: u16) void {
 }
 
 pub fn addSigned(cpu: *Cpu, target: *u16, value: i8) void {
+    cpu.cycle_manager.cycle(1);
     const value_u16: u16 = @as(u16, @bitCast(@as(i16, value)));
     const result = target.* +% value_u16;
     const xor_result = target.* ^ value_u16 ^ result;
@@ -236,16 +238,9 @@ pub fn set(_: *Cpu, target: *u8, position: u3) void {
 }
 
 pub fn jr(cpu: *Cpu, value: i8, should_jump: bool) void {
-    if (!should_jump) {
-        return;
-    }
-
-    if (value < 0) {
-        cpu.pc -%= @abs(value);
-        return;
-    }
-
-    cpu.pc +%= @abs(value);
+    const value_u16: u16 = @bitCast(@as(i16, @intCast(value)));
+    const address = cpu.pc +% value_u16;
+    jp(cpu, address, should_jump);
 }
 
 pub fn jp(cpu: *Cpu, address: u16, should_jump: bool) void {
@@ -254,6 +249,7 @@ pub fn jp(cpu: *Cpu, address: u16, should_jump: bool) void {
     }
 
     cpu.pc = address;
+    cpu.cycle_manager.cycle(1);
 }
 
 pub fn ret(cpu: *Cpu, should_ret: bool) void {
@@ -273,6 +269,7 @@ pub fn pop(cpu: *Cpu) u16 {
 pub fn push(cpu: *Cpu, value: u16) void {
     cpu.sp -%= 2;
     cpu.writeWord(cpu.sp, value);
+    cpu.cycle_manager.cycle(1);
 }
 
 pub fn call(cpu: *Cpu, address: u16, should_call: bool) void {
@@ -337,6 +334,6 @@ pub fn ei(cpu: *Cpu) void {
 }
 
 pub fn reti(cpu: *Cpu) void {
-    ret(cpu, true);
     cpu.interrupt_master_enable = true;
+    ret(cpu, true);
 }
