@@ -3,32 +3,83 @@ const c = @cImport({
     @cInclude("SDL.h");
 });
 
-pub fn init() void {
-    _ = c.SDL_Init(c.SDL_INIT_VIDEO);
-}
+pub const SDL = struct {
+    windows: std.ArrayList(SDLWindow),
+    allocator: std.mem.Allocator,
 
-pub fn deinit() void {
-    c.SDL_Quit();
-}
+    pub fn init(allocator: std.mem.Allocator) !SDL {
+        _ = c.SDL_Init(c.SDL_INIT_VIDEO);
+        return .{
+            .allocator = allocator,
+            .windows = .empty,
+        };
+    }
 
-pub fn createWindow(title: [*c]const u8) SDLWindow {
-    return SDLWindow.init(title);
-}
+    pub fn deinit(self: *SDL) void {
+        for (self.windows.items) |*win| {
+            win.deinit();
+        }
+        self.windows.deinit(self.allocator);
+        c.SDL_Quit();
+    }
+
+    pub fn createWindow(self: *SDL, title: [*c]const u8) !SDLWindow {
+        const win = SDLWindow.init(title);
+        try self.windows.append(self.allocator, win);
+        return win;
+    }
+
+    pub fn run(self: *SDL) void {
+        var event: c.SDL_Event = undefined;
+        while (self.windows.items.len > 0) {
+            while (c.SDL_PollEvent(&event) != 0) {
+                if (event.type == c.SDL_WINDOWEVENT and event.window.event == c.SDL_WINDOWEVENT_CLOSE) {
+                    for (self.windows.items) |*win| {
+                        if (win.id == event.window.windowID) {
+                            win.closed = true;
+                        }
+                    }
+                }
+            }
+
+            for (self.windows.items) |*win| {
+                if (!win.closed) {
+                    win.renderer.clearAndPresent();
+                }
+            }
+
+            var i: usize = 0;
+            while (i < self.windows.items.len) {
+                if (self.windows.items[i].closed) {
+                    self.windows.items[i].deinit();
+                    _ = self.windows.swapRemove(i);
+                } else {
+                    i += 1;
+                }
+            }
+
+            c.SDL_Delay(16);
+        }
+    }
+};
 
 pub const SDLWindow = struct {
+    id: u32,
     title: [*c]const u8,
     window: ?*c.struct_SDL_Window,
     renderer: SDLRenderer,
-    running: bool,
+    closed: bool,
 
     pub fn init(title: [*c]const u8) SDLWindow {
         const window = c.SDL_CreateWindow(title, c.SDL_WINDOWPOS_CENTERED, c.SDL_WINDOWPOS_CENTERED, 640, 400, 0);
-        const r = SDLRenderer.init(window);
+        const id = c.SDL_GetWindowID(window);
+        const renderer = SDLRenderer.init(window);
         return .{
+            .id = id,
             .title = title,
             .window = window,
-            .renderer = r,
-            .running = false,
+            .renderer = renderer,
+            .closed = false,
         };
     }
 
@@ -36,30 +87,14 @@ pub const SDLWindow = struct {
         self.renderer.deinit();
         c.SDL_DestroyWindow(self.window);
     }
-
-    pub fn run(self: *SDLWindow) void {
-        var event: c.SDL_Event = undefined;
-        self.running = true;
-        while (self.running) {
-            while (c.SDL_PollEvent(&event) != 0) {
-                switch (event.type) {
-                    c.SDL_QUIT => self.running = false,
-                    else => {},
-                }
-            }
-
-            self.renderer.clearAndPresent();
-            c.SDL_Delay(16);
-        }
-    }
 };
 
 pub const SDLRenderer = struct {
     renderer: ?*c.struct_SDL_Renderer,
 
     pub fn init(window: ?*c.struct_SDL_Window) SDLRenderer {
-        const r = c.SDL_CreateRenderer(window, 0, c.SDL_RENDERER_PRESENTVSYNC);
-        return .{ .renderer = r };
+        const renderer = c.SDL_CreateRenderer(window, 0, c.SDL_RENDERER_PRESENTVSYNC);
+        return .{ .renderer = renderer };
     }
 
     pub fn deinit(self: *SDLRenderer) void {

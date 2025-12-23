@@ -8,7 +8,7 @@ const GameBoy = @import("gameboy/gameboy.zig").GameBoy;
 const interrupts = @import("cpu/interrupts/interrupts.zig");
 const files = @import("utils/files/files.zig");
 const errors = @import("errors/errors.zig");
-const sdl = @import("sdl/sdl.zig");
+const SDL = @import("sdl/sdl.zig").SDL;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -36,11 +36,11 @@ pub fn main() !void {
     //var gameboy = GameBoy.init(&cpu);
     //gameboy.start();
 
-    sdl.init();
+    var sdl = try SDL.init(allocator);
     defer sdl.deinit();
 
-    var window = sdl.createWindow("GameBoy");
-    defer window.deinit();
+    _ = try sdl.createWindow("GameBoy");
+    _ = try sdl.createWindow("GameBoy2");
 
-    window.run();
+    sdl.run();
 }
