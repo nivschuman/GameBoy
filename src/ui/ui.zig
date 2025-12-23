@@ -1,13 +1,14 @@
 const std = @import("std");
+const GameBoy = @import("../gameboy/gameboy.zig").GameBoy;
 const c = @cImport({
     @cInclude("SDL.h");
 });
 
-pub const SDL = struct {
-    windows: std.ArrayList(SDLWindow),
+pub const Ui = struct {
+    windows: std.ArrayList(GameBoyWindow),
     allocator: std.mem.Allocator,
 
-    pub fn init(allocator: std.mem.Allocator) !SDL {
+    pub fn init(allocator: std.mem.Allocator) !Ui {
         _ = c.SDL_Init(c.SDL_INIT_VIDEO);
         return .{
             .allocator = allocator,
@@ -15,7 +16,7 @@ pub const SDL = struct {
         };
     }
 
-    pub fn deinit(self: *SDL) void {
+    pub fn deinit(self: *Ui) void {
         for (self.windows.items) |*win| {
             win.deinit();
         }
@@ -23,13 +24,13 @@ pub const SDL = struct {
         c.SDL_Quit();
     }
 
-    pub fn createWindow(self: *SDL, title: [*c]const u8) !SDLWindow {
-        const win = SDLWindow.init(title);
-        try self.windows.append(self.allocator, win);
-        return win;
+    pub fn createGameBoyWindow(self: *Ui, title: [*c]const u8, gameboy: *GameBoy) !WindowId {
+        const window = GameBoyWindow.init(title, gameboy);
+        try self.windows.append(self.allocator, window);
+        return window.id;
     }
 
-    pub fn run(self: *SDL) void {
+    pub fn run(self: *Ui) void {
         var event: c.SDL_Event = undefined;
         while (self.windows.items.len > 0) {
             while (c.SDL_PollEvent(&event) != 0) {
@@ -44,7 +45,7 @@ pub const SDL = struct {
 
             for (self.windows.items) |*win| {
                 if (!win.closed) {
-                    win.renderer.clearAndPresent();
+                    win.renderFrame();
                 }
             }
 
@@ -63,45 +64,53 @@ pub const SDL = struct {
     }
 };
 
-pub const SDLWindow = struct {
-    id: u32,
+pub const WindowId = u32;
+
+pub const GameBoyWindow = struct {
+    id: WindowId,
     title: [*c]const u8,
     window: ?*c.struct_SDL_Window,
-    renderer: SDLRenderer,
+    renderer: Renderer,
     closed: bool,
+    gameboy: *GameBoy,
 
-    pub fn init(title: [*c]const u8) SDLWindow {
+    pub fn init(title: [*c]const u8, gameboy: *GameBoy) GameBoyWindow {
         const window = c.SDL_CreateWindow(title, c.SDL_WINDOWPOS_CENTERED, c.SDL_WINDOWPOS_CENTERED, 640, 400, 0);
         const id = c.SDL_GetWindowID(window);
-        const renderer = SDLRenderer.init(window);
+        const renderer = Renderer.init(window);
         return .{
             .id = id,
             .title = title,
             .window = window,
             .renderer = renderer,
             .closed = false,
+            .gameboy = gameboy,
         };
     }
 
-    pub fn deinit(self: *SDLWindow) void {
+    pub fn deinit(self: *GameBoyWindow) void {
         self.renderer.deinit();
         c.SDL_DestroyWindow(self.window);
     }
+
+    pub fn renderFrame(self: *GameBoyWindow) void {
+        self.renderer.renderFrame();
+    }
 };
 
-pub const SDLRenderer = struct {
+pub const Renderer = struct {
     renderer: ?*c.struct_SDL_Renderer,
 
-    pub fn init(window: ?*c.struct_SDL_Window) SDLRenderer {
+    pub fn init(window: ?*c.struct_SDL_Window) Renderer {
         const renderer = c.SDL_CreateRenderer(window, 0, c.SDL_RENDERER_PRESENTVSYNC);
         return .{ .renderer = renderer };
     }
 
-    pub fn deinit(self: *SDLRenderer) void {
+    pub fn deinit(self: *Renderer) void {
         c.SDL_DestroyRenderer(self.renderer);
     }
 
-    pub fn clearAndPresent(self: *SDLRenderer) void {
+    pub fn renderFrame(self: *Renderer) void {
         _ = c.SDL_SetRenderDrawColor(self.renderer, 0, 0, 0, 255);
         _ = c.SDL_RenderClear(self.renderer);
         c.SDL_RenderPresent(self.renderer);
