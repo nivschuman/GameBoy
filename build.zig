@@ -1,5 +1,18 @@
 const std = @import("std");
 
+const winlibs = [_][]const u8{
+    "gdi32",
+    "winmm",
+    "setupapi",
+    "user32",
+    "shell32",
+    "advapi32",
+    "ole32",
+    "oleaut32",
+    "imm32",
+    "version",
+};
+
 pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
         .name = "gameboy",
@@ -12,10 +25,14 @@ pub fn build(b: *std.Build) void {
     const sdl_path = "third_party/sdl2";
     exe.addIncludePath(b.path(sdl_path ++ "/include"));
     exe.addLibraryPath(b.path(sdl_path ++ "/lib"));
-    exe.linkSystemLibrary("sdl2");
-    exe.linkLibC();
 
-    b.installBinFile(sdl_path ++ "/bin", "SDL2.dll");
+    exe.linkLibC();
+    for (winlibs) |winLib| {
+        exe.linkSystemLibrary(winLib);
+    }
+    exe.linkSystemLibrary("SDL2");
+
+    b.installBinFile(sdl_path ++ "/bin/SDL2.dll", "SDL2.dll");
     b.installArtifact(exe);
 
     const run_exe = b.addRunArtifact(exe);

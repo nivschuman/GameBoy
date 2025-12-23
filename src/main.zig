@@ -8,6 +8,7 @@ const GameBoy = @import("gameboy/gameboy.zig").GameBoy;
 const interrupts = @import("cpu/interrupts/interrupts.zig");
 const files = @import("utils/files/files.zig");
 const errors = @import("errors/errors.zig");
+const sdl = @import("sdl/sdl.zig");
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -24,14 +25,22 @@ pub fn main() !void {
     const file_bytes = try file_loader.loadFile(args[1]);
     defer file_bytes.deinit();
 
-    var interrupt_registers = interrupts.InterruptRegisters.init();
-    var cart = Cartridge.init(file_bytes.bytes);
-    var wram = memory.WRam.init();
-    var hram = memory.HRam.init();
-    var mmu = Mmu.init(&cart, &wram, &hram, &interrupt_registers);
-    var cycle_manager = CycleManager.init();
-    var cpu = Cpu.init(&mmu, &cycle_manager, &interrupt_registers);
+    //var interrupt_registers = interrupts.InterruptRegisters.init();
+    //var cart = Cartridge.init(file_bytes.bytes);
+    //var wram = memory.WRam.init();
+    //var hram = memory.HRam.init();
+    //var mmu = Mmu.init(&cart, &wram, &hram, &interrupt_registers);
+    //var cycle_manager = CycleManager.init();
+    //var cpu = Cpu.init(&mmu, &cycle_manager, &interrupt_registers);
 
-    var gameboy = GameBoy.init(&cpu);
-    gameboy.start();
+    //var gameboy = GameBoy.init(&cpu);
+    //gameboy.start();
+
+    sdl.init();
+    defer sdl.deinit();
+
+    var window = sdl.createWindow("GameBoy");
+    defer window.deinit();
+
+    window.run();
 }
