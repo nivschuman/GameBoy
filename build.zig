@@ -2,13 +2,20 @@ const std = @import("std");
 
 pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
-        .name = "hello",
+        .name = "gameboy",
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/main.zig"),
             .target = b.graph.host,
         }),
     });
 
+    const sdl_path = "third_party/sdl2";
+    exe.addIncludePath(b.path(sdl_path ++ "/include"));
+    exe.addLibraryPath(b.path(sdl_path ++ "/lib"));
+    exe.linkSystemLibrary("sdl2");
+    exe.linkLibC();
+
+    b.installBinFile(sdl_path ++ "/bin", "SDL2.dll");
     b.installArtifact(exe);
 
     const run_exe = b.addRunArtifact(exe);
