@@ -1,4 +1,3 @@
-const std = @import("std");
 const types = @import("types/types.zig");
 
 pub const CartridgeHeader = struct {
@@ -86,26 +85,5 @@ pub const Cartridge = struct {
 
     pub fn writeByte(self: *@This(), addr: u16, value: u8) void {
         self.rom[addr] = value;
-    }
-};
-
-pub const FileLoader = struct {
-    allocator: std.mem.Allocator,
-    file_bytes: []u8,
-
-    pub fn init(allocator: std.mem.Allocator, filename: []const u8) !FileLoader {
-        const cwd = std.fs.cwd();
-        const file = try cwd.openFile(filename, .{ .mode = .read_only });
-        defer file.close();
-
-        const file_size = try file.getEndPos();
-        const file_bytes = try allocator.alloc(u8, file_size);
-        _ = try file.readAll(file_bytes);
-
-        return .{ .allocator = allocator, .file_bytes = file_bytes };
-    }
-
-    pub fn deinit(self: *const FileLoader) void {
-        self.allocator.free(self.file_bytes);
     }
 };

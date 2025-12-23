@@ -1,3 +1,4 @@
+const std = @import("std");
 const Registers = @import("registers/registers.zig").Registers;
 const Mmu = @import("../mmu/mmu.zig").Mmu;
 const CycleManager = @import("../cycles/cycles.zig").CycleManager;
@@ -5,6 +6,8 @@ const Cycles = @import("../cycles/cycles.zig").Cycles;
 const InterruptRegisters = @import("interrupts/interrupts.zig").InterruptRegisters;
 const opcodes_table = @import("opcodes.zig").opcodes_table;
 const call = @import("instructions.zig").call;
+
+const logger = std.log.scoped(.cpu);
 
 pub const Cpu = struct {
     registers: Registers,
@@ -20,8 +23,8 @@ pub const Cpu = struct {
     pub fn init(mmu: *Mmu, cycle_manager: *CycleManager, interrupt_registers: *InterruptRegisters) Cpu {
         return .{
             .registers = Registers.init(),
-            .pc = 0,
-            .sp = 0,
+            .pc = 0x100,
+            .sp = 0xFFFE,
             .interrupt_master_enable = false,
             .set_interrupt_master_enable = false,
             .mmu = mmu,
@@ -76,7 +79,9 @@ pub const Cpu = struct {
     }
 
     pub fn executeInstruction(self: *Cpu) void {
-        opcodes_table[self.opcode()](self);
+        const op = self.opcode();
+        logger.info("executing opcode 0x{X}", .{op});
+        opcodes_table[op](self);
     }
 
     pub fn executeInterrupt(self: *Cpu) void {
@@ -95,6 +100,7 @@ pub const Cpu = struct {
     pub fn step(self: *Cpu) void {
         if (self.halted) {
             self.cycle_manager.cycle(1);
+            self.halted = self.interrupt_registers.interrupt_enable & self.interrupt_registers.interrupt_flag != 0;
         } else {
             self.executeInstruction();
         }
