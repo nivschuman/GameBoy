@@ -5,7 +5,9 @@ const Cartridge = @import("cartridge/cartridge.zig").Cartridge;
 const Cpu = @import("cpu/cpu.zig").Cpu;
 const CycleManager = @import("cycles/cycles.zig").CycleManager;
 const GameBoy = @import("gameboy/gameboy.zig").GameBoy;
-const interrupts = @import("cpu/interrupts/interrupts.zig");
+const interrupts = @import("io/interrupts/interrupts.zig");
+const Serial = @import("io/serial/serial.zig").Serial;
+const Io = @import("io/io.zig").Io;
 const files = @import("utils/files/files.zig");
 const errors = @import("errors/errors.zig");
 const Ui = @import("ui/ui.zig").Ui;
@@ -26,12 +28,17 @@ pub fn main() !void {
     defer file_bytes.deinit();
 
     var interrupt_registers = interrupts.InterruptRegisters.init();
+    var serial = Serial.init();
+    var io = Io.init(&serial, &interrupt_registers);
+
     var cart = Cartridge.init(file_bytes.bytes);
+
     var wram = memory.WRam.init();
     var hram = memory.HRam.init();
-    var mmu = Mmu.init(&cart, &wram, &hram, &interrupt_registers);
+    var mmu = Mmu.init(&cart, &wram, &hram, &io);
+
     var cycle_manager = CycleManager.init();
-    var cpu = Cpu.init(&mmu, &cycle_manager, &interrupt_registers);
+    var cpu = Cpu.init(&mmu, &cycle_manager, &io);
 
     var gameboy = GameBoy.init(&cpu);
     //gameboy.start();

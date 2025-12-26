@@ -4,17 +4,24 @@ const memory = @import("../../mmu/memory/memory.zig");
 const Cartridge = @import("../../cartridge/cartridge.zig").Cartridge;
 const Cpu = @import("../../cpu/cpu.zig").Cpu;
 const CycleManager = @import("../../cycles/cycles.zig").CycleManager;
-const interrupts = @import("../../cpu/interrupts/interrupts.zig");
+const interrupts = @import("../../io/interrupts/interrupts.zig");
+const Serial = @import("../../io/serial/serial.zig").Serial;
+const Io = @import("../../io/io.zig").Io;
 
 pub fn testWithCpu(testFunction: fn (*Cpu) anyerror!void) anyerror!void {
     var interrupt_registers = interrupts.InterruptRegisters.init();
+    var serial = Serial.init();
+    var io = Io.init(&serial, &interrupt_registers);
+
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
+
     var wram = memory.WRam.init();
     var hram = memory.HRam.init();
-    var mmu = Mmu.init(&cart, &wram, &hram, &interrupt_registers);
+    var mmu = Mmu.init(&cart, &wram, &hram, &io);
+
     var cycle_manager = CycleManager.init();
-    var cpu = Cpu.init(&mmu, &cycle_manager, &interrupt_registers);
+    var cpu = Cpu.init(&mmu, &cycle_manager, &io);
     try testFunction(&cpu);
 }
 
@@ -44,8 +51,8 @@ test "executeInterrupt" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
             cpu.interrupt_master_enable = true;
-            cpu.interrupt_registers.setSpecifiedInterruptEnable(interrupts.Interrupt.VBlank, true);
-            cpu.interrupt_registers.setSpecifiedInterruptFlag(interrupts.Interrupt.VBlank, true);
+            cpu.io.interrupt_registers.setSpecifiedInterruptEnable(interrupts.Interrupt.VBlank, true);
+            cpu.io.interrupt_registers.setSpecifiedInterruptFlag(interrupts.Interrupt.VBlank, true);
             cpu.pc = 0x100;
             cpu.sp = 0xFFFE;
             cpu.mmu.writeWord(cpu.sp - 2, 0x0000);
