@@ -22,17 +22,8 @@ pub fn build(b: *std.Build) void {
         }),
     });
 
-    const sdl_path = "third_party/sdl2";
-    exe.addIncludePath(b.path(sdl_path ++ "/include"));
-    exe.addLibraryPath(b.path(sdl_path ++ "/lib"));
-
     exe.linkLibC();
-    for (winlibs) |winLib| {
-        exe.linkSystemLibrary(winLib);
-    }
-    exe.linkSystemLibrary("SDL2");
-
-    b.installBinFile(sdl_path ++ "/bin/SDL2.dll", "SDL2.dll");
+    installSdl2(b, exe);
     b.installArtifact(exe);
 
     const run_exe = b.addRunArtifact(exe);
@@ -52,4 +43,23 @@ pub fn build(b: *std.Build) void {
     });
     const run_tests = b.addRunArtifact(tests);
     test_step.dependOn(&run_tests.step);
+}
+
+fn installSdl2(b: *std.Build, exe: *std.Build.Step.Compile) void {
+    const os = b.graph.host.result.os;
+    switch (os.tag) {
+        .windows => {
+            const sdl_path = "third_party/sdl2";
+            exe.addIncludePath(b.path(sdl_path ++ "/include"));
+            exe.addLibraryPath(b.path(sdl_path ++ "/lib"));
+            for (winlibs) |winLib| {
+                exe.linkSystemLibrary(winLib);
+            }
+            exe.linkSystemLibrary("SDL2");
+            b.installBinFile(sdl_path ++ "/bin/SDL2.dll", "SDL2.dll");
+        },
+        else => {
+            exe.linkSystemLibrary("SDL2");
+        },
+    }
 }
