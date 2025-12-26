@@ -1,3 +1,6 @@
 # Zig Build
 .zig-cache/
 zig-out/
+
+# libraries
+third_party/

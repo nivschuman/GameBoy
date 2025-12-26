@@ -1,14 +1,29 @@
 const std = @import("std");
 
+const winlibs = [_][]const u8{
+    "gdi32",
+    "winmm",
+    "setupapi",
+    "user32",
+    "shell32",
+    "advapi32",
+    "ole32",
+    "oleaut32",
+    "imm32",
+    "version",
+};
+
 pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
-        .name = "hello",
+        .name = "gameboy",
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/main.zig"),
             .target = b.graph.host,
         }),
     });
 
+    exe.linkLibC();
+    installSdl2(b, exe);
     b.installArtifact(exe);
 
     const run_exe = b.addRunArtifact(exe);
@@ -28,4 +43,23 @@ pub fn build(b: *std.Build) void {
     });
     const run_tests = b.addRunArtifact(tests);
     test_step.dependOn(&run_tests.step);
+}
+
+fn installSdl2(b: *std.Build, exe: *std.Build.Step.Compile) void {
+    const os = b.graph.host.result.os;
+    switch (os.tag) {
+        .windows => {
+            const sdl_path = "third_party/sdl2";
+            exe.addIncludePath(b.path(sdl_path ++ "/include"));
+            exe.addLibraryPath(b.path(sdl_path ++ "/lib"));
+            for (winlibs) |winLib| {
+                exe.linkSystemLibrary(winLib);
+            }
+            exe.linkSystemLibrary("SDL2");
+            b.installBinFile(sdl_path ++ "/bin/SDL2.dll", "SDL2.dll");
+        },
+        else => {
+            exe.linkSystemLibrary("SDL2");
+        },
+    }
 }

@@ -8,6 +8,7 @@ const GameBoy = @import("gameboy/gameboy.zig").GameBoy;
 const interrupts = @import("cpu/interrupts/interrupts.zig");
 const files = @import("utils/files/files.zig");
 const errors = @import("errors/errors.zig");
+const Ui = @import("ui/ui.zig").Ui;
 
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
@@ -33,5 +34,11 @@ pub fn main() !void {
     var cpu = Cpu.init(&mmu, &cycle_manager, &interrupt_registers);
 
     var gameboy = GameBoy.init(&cpu);
-    gameboy.start();
+    //gameboy.start();
+
+    var ui = try Ui.init(allocator);
+    defer ui.deinit();
+
+    _ = try ui.createGameBoyWindow("GameBoy", &gameboy);
+    ui.run();
 }
