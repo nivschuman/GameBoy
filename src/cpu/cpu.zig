@@ -3,8 +3,10 @@ const Registers = @import("registers/registers.zig").Registers;
 const Mmu = @import("../mmu/mmu.zig").Mmu;
 const CycleManager = @import("../cycles/cycles.zig").CycleManager;
 const Cycles = @import("../cycles/cycles.zig").Cycles;
-const InterruptRegisters = @import("interrupts/interrupts.zig").InterruptRegisters;
+const Io = @import("../io/io.zig").Io;
 const opcodes_table = @import("opcodes.zig").opcodes_table;
+const opcode_names = @import("opcodes.zig").opcode_names;
+const opcodes_cb_names = @import("opcodes_cb.zig").opcodes_cb_names;
 const call = @import("instructions.zig").call;
 
 const logger = std.log.scoped(.cpu);
@@ -18,9 +20,9 @@ pub const Cpu = struct {
     halted: bool,
     mmu: *Mmu,
     cycle_manager: *CycleManager,
-    interrupt_registers: *InterruptRegisters,
+    io: *Io,
 
-    pub fn init(mmu: *Mmu, cycle_manager: *CycleManager, interrupt_registers: *InterruptRegisters) Cpu {
+    pub fn init(mmu: *Mmu, cycle_manager: *CycleManager, io: *Io) Cpu {
         return .{
             .registers = Registers.init(),
             .pc = 0x100,
@@ -30,7 +32,7 @@ pub const Cpu = struct {
             .mmu = mmu,
             .cycle_manager = cycle_manager,
             .halted = false,
-            .interrupt_registers = interrupt_registers,
+            .io = io,
         };
     }
 
@@ -80,14 +82,19 @@ pub const Cpu = struct {
 
     pub fn executeInstruction(self: *Cpu) void {
         const op = self.opcode();
-        logger.info("executing opcode 0x{X}", .{op});
+        if (op == 0xCB) {
+            const op_cb = self.mmu.readByte(self.pc +% 1);
+            logger.info("executing CB opcode 0x{X}: {s}", .{ op_cb, opcodes_cb_names[op_cb] });
+        } else {
+            logger.info("executing opcode 0x{X}: {s}", .{ op, opcode_names[op] });
+        }
         opcodes_table[op](self);
     }
 
     pub fn executeInterrupt(self: *Cpu) void {
-        if (self.interrupt_registers.getInterruptToHandle()) |interrupt| {
+        if (self.io.interrupt_registers.getInterruptToHandle()) |interrupt| {
             call(self, interrupt.getAddress(), true);
-            self.interrupt_registers.setSpecifiedInterruptFlag(interrupt, false);
+            self.io.interrupt_registers.setSpecifiedInterruptFlag(interrupt, false);
             self.halted = false;
             self.interrupt_master_enable = false;
         }
@@ -100,7 +107,7 @@ pub const Cpu = struct {
     pub fn step(self: *Cpu) void {
         if (self.halted) {
             self.cycle_manager.cycle(1);
-            self.halted = self.interrupt_registers.interrupt_enable & self.interrupt_registers.interrupt_flag != 0;
+            self.halted = self.io.interrupt_registers.interrupt_enable & self.io.interrupt_registers.interrupt_flag != 0;
         } else {
             self.executeInstruction();
         }
@@ -111,6 +118,10 @@ pub const Cpu = struct {
 
         if (self.set_interrupt_master_enable) {
             self.interrupt_master_enable = true;
+        }
+
+        if (self.io.serial.bytes_received_length > 0) {
+            logger.debug("Serial Debug: {s}", .{self.io.serial.bytes_received});
         }
     }
 };

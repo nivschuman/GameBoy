@@ -1,6 +1,6 @@
 const std = @import("std");
-const InterruptRegisters = @import("../../../cpu/interrupts/interrupts.zig").InterruptRegisters;
-const Interrupt = @import("../../../cpu/interrupts/interrupts.zig").Interrupt;
+const InterruptRegisters = @import("../../../io/interrupts/interrupts.zig").InterruptRegisters;
+const Interrupt = @import("../../../io/interrupts/interrupts.zig").Interrupt;
 
 test "specified interrupt enable" {
     var interrupt_registers = InterruptRegisters.init();
