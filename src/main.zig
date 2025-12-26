@@ -41,11 +41,14 @@ pub fn main() !void {
     var cpu = Cpu.init(&mmu, &cycle_manager, &io);
 
     var gameboy = GameBoy.init(&cpu);
-    //gameboy.start();
+    const thread = try std.Thread.spawn(.{ .allocator = allocator }, GameBoy.start, .{&gameboy});
 
     var ui = try Ui.init(allocator);
     defer ui.deinit();
 
     _ = try ui.createGameBoyWindow("GameBoy", &gameboy);
     ui.run();
+
+    gameboy.stop();
+    thread.join();
 }
