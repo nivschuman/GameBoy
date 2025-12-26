@@ -5,6 +5,8 @@ const CycleManager = @import("../cycles/cycles.zig").CycleManager;
 const Cycles = @import("../cycles/cycles.zig").Cycles;
 const InterruptRegisters = @import("interrupts/interrupts.zig").InterruptRegisters;
 const opcodes_table = @import("opcodes.zig").opcodes_table;
+const opcode_names = @import("opcodes.zig").opcode_names;
+const opcodes_cb_names = @import("opcodes_cb.zig").opcodes_cb_names;
 const call = @import("instructions.zig").call;
 
 const logger = std.log.scoped(.cpu);
@@ -80,7 +82,12 @@ pub const Cpu = struct {
 
     pub fn executeInstruction(self: *Cpu) void {
         const op = self.opcode();
-        logger.info("executing opcode 0x{X}", .{op});
+        if (op == 0xCB) {
+            const op_cb = self.mmu.readByte(self.pc +% 1);
+            logger.info("executing CB opcode 0x{X}: {s}", .{ op_cb, opcodes_cb_names[op_cb] });
+        } else {
+            logger.info("executing opcode 0x{X}: {s}", .{ op, opcode_names[op] });
+        }
         opcodes_table[op](self);
     }
 

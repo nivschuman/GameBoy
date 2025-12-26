@@ -79,11 +79,19 @@ pub const Cartridge = struct {
         return self.header.headerChecksum() == checksum;
     }
 
-    pub fn readByte(self: *const @This(), addr: u16) u8 {
-        return self.rom[addr];
+    pub fn readByte(self: *const @This(), address: u16) u8 {
+        return switch (address) {
+            0x0000...0x7FFF => self.rom[address],
+            0xA000...0xBFFF => 0, //todo external RAM,
+            else => @panic("cartridge unmapped address"),
+        };
     }
 
-    pub fn writeByte(self: *@This(), addr: u16, value: u8) void {
-        self.rom[addr] = value;
+    pub fn writeByte(self: *@This(), address: u16, value: u8) void {
+        switch (address) {
+            0x0000...0x7FFF => self.rom[address] = value,
+            0xA000...0xBFFF => {}, //todo external RAM,
+            else => @panic("cartridge unmapped address"),
+        }
     }
 };

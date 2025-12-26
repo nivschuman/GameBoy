@@ -1,5 +1,6 @@
 const std = @import("std");
 const GameBoy = @import("../gameboy/gameboy.zig").GameBoy;
+const UiError = @import("../errors/errors.zig").UiError;
 const c = @cImport({
     @cInclude("SDL.h");
 });
@@ -25,7 +26,7 @@ pub const Ui = struct {
     }
 
     pub fn createGameBoyWindow(self: *Ui, title: [*c]const u8, gameboy: *GameBoy) !WindowId {
-        const window = GameBoyWindow.init(title, gameboy);
+        const window = try GameBoyWindow.init(title, gameboy);
         try self.windows.append(self.allocator, window);
         return window.id;
     }
@@ -69,23 +70,27 @@ pub const WindowId = u32;
 pub const GameBoyWindow = struct {
     id: WindowId,
     title: [*c]const u8,
-    window: ?*c.struct_SDL_Window,
+    window: *c.struct_SDL_Window,
     renderer: Renderer,
     closed: bool,
     gameboy: *GameBoy,
 
-    pub fn init(title: [*c]const u8, gameboy: *GameBoy) GameBoyWindow {
+    pub fn init(title: [*c]const u8, gameboy: *GameBoy) !GameBoyWindow {
         const window = c.SDL_CreateWindow(title, c.SDL_WINDOWPOS_CENTERED, c.SDL_WINDOWPOS_CENTERED, 640, 400, 0);
-        const id = c.SDL_GetWindowID(window);
-        const renderer = Renderer.init(window);
-        return .{
-            .id = id,
-            .title = title,
-            .window = window,
-            .renderer = renderer,
-            .closed = false,
-            .gameboy = gameboy,
-        };
+        if (window) |w| {
+            const id = c.SDL_GetWindowID(window);
+            const renderer = try Renderer.init(window);
+            return .{
+                .id = id,
+                .title = title,
+                .window = w,
+                .renderer = renderer,
+                .closed = false,
+                .gameboy = gameboy,
+            };
+        }
+
+        return UiError.WindowCreationFailed;
     }
 
     pub fn deinit(self: *GameBoyWindow) void {
@@ -99,11 +104,15 @@ pub const GameBoyWindow = struct {
 };
 
 pub const Renderer = struct {
-    renderer: ?*c.struct_SDL_Renderer,
+    renderer: *c.struct_SDL_Renderer,
 
-    pub fn init(window: ?*c.struct_SDL_Window) Renderer {
+    pub fn init(window: ?*c.struct_SDL_Window) !Renderer {
         const renderer = c.SDL_CreateRenderer(window, 0, c.SDL_RENDERER_PRESENTVSYNC);
-        return .{ .renderer = renderer };
+        if (renderer) |r| {
+            return .{ .renderer = r };
+        }
+
+        return UiError.RendererCreationFailed;
     }
 
     pub fn deinit(self: *Renderer) void {
