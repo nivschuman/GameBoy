@@ -84,9 +84,9 @@ pub const Cpu = struct {
         const op = self.opcode();
         if (op == 0xCB) {
             const op_cb = self.mmu.readByte(self.pc +% 1);
-            logger.info("executing CB opcode 0x{X}: {s}", .{ op_cb, opcodes_cb_names[op_cb] });
+            logger.info("PC 0x{X}, executing CB opcode 0x{X} {s}", .{ self.pc, op_cb, opcodes_cb_names[op_cb] });
         } else {
-            logger.info("executing opcode 0x{X}: {s}", .{ op, opcode_names[op] });
+            logger.info("PC 0x{X}, executing opcode 0x{X} {s}", .{ self.pc, op, opcode_names[op] });
         }
         opcodes_table[op](self);
     }
@@ -107,13 +107,14 @@ pub const Cpu = struct {
     pub fn step(self: *Cpu) void {
         if (self.halted) {
             self.cycle_manager.cycle(1);
-            self.halted = self.io.interrupt_registers.interrupt_enable & self.io.interrupt_registers.interrupt_flag != 0;
+            self.halted = self.io.interrupt_registers.interrupt_flag == 0;
         } else {
             self.executeInstruction();
         }
 
         if (self.interrupt_master_enable) {
             self.executeInterrupt();
+            self.set_interrupt_master_enable = false;
         }
 
         if (self.set_interrupt_master_enable) {
