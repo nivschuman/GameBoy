@@ -22,7 +22,7 @@ pub const Io = struct {
             0xFF04...0xFF07 => self.timer.readByte(address),
             0xFF0F => self.interrupt_registers.interrupt_flag,
             0xFFFF => self.interrupt_registers.interrupt_enable,
-            else => @panic("unmapped io address"),
+            else => 0,
         };
     }
 
@@ -33,7 +33,7 @@ pub const Io = struct {
             0xFF04...0xFF07 => self.timer.writeByte(address, value),
             0xFF0F => self.interrupt_registers.setInterruptFlag(value),
             0xFFFF => self.interrupt_registers.setInterruptEnable(value),
-            else => @panic("unmapped io address"),
+            else => {},
         }
     }
 };

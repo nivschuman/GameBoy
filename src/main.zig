@@ -30,7 +30,7 @@ pub fn main() !void {
 
     var interrupt_registers = interrupts.InterruptRegisters.init();
     var serial = Serial.init();
-    var timer = Timer.init(interrupt_registers);
+    var timer = Timer.init(&interrupt_registers);
     var io = Io.init(&serial, &timer, &interrupt_registers);
 
     var cart = Cartridge.init(file_bytes.bytes);

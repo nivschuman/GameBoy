@@ -39,7 +39,7 @@ pub const Mmu = struct {
     pub fn writeByte(self: *Mmu, address: u16, value: u8) void {
         switch (address) {
             0x0000...0x7FFF => self.cartridge.writeByte(address, value), // ROM bank 0 / switchable banks
-            0x8000...0x9FFF => @panic("unmapped address"), // VRAM – video memory
+            0x8000...0x9FFF => {}, // VRAM – video memory
             0xA000...0xBFFF => self.cartridge.writeByte(address, value), // External RAM in cartridge
             0xC000...0xDFFF => self.wram.writeByte(address - 0xC000, value), // Work RAM (WRAM)
             0xE000...0xFDFF => self.wram.writeByte(address - 0xE000, value), // Echo RAM (mirror of WRAM)

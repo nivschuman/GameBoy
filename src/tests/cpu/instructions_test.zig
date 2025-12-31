@@ -251,6 +251,7 @@ test "rl" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
             cpu.registers.a = 0b10000000;
+            cpu.registers.f = 0;
             instructions.rl(cpu, &cpu.registers.a);
             try std.testing.expect(cpu.registers.a == 0);
             try std.testing.expect(cpu.registers.getCarryFlag());
@@ -263,6 +264,7 @@ test "rr" {
     const testFunction = struct {
         pub fn testFunction(cpu: *Cpu) anyerror!void {
             cpu.registers.a = 0b00000001;
+            cpu.registers.f = 0;
             instructions.rr(cpu, &cpu.registers.a);
             try std.testing.expect(cpu.registers.a == 0);
             try std.testing.expect(cpu.registers.getCarryFlag());

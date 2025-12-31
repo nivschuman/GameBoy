@@ -4,3 +4,6 @@ zig-out/
 
 # libraries
 third_party/
+
+# roms
+roms/

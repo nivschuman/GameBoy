@@ -13,7 +13,7 @@ pub const Timer = struct {
 
     pub fn init(interrupt_registers: *InterruptRegisters) Timer {
         return .{
-            .div = 0xAC00,
+            .div = 0xABCC,
             .tima = 0,
             .tma = 0,
             .tac = 0,
