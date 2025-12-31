@@ -2,7 +2,7 @@ const std = @import("std");
 const Registers = @import("registers/registers.zig").Registers;
 const Mmu = @import("../mmu/mmu.zig").Mmu;
 const CycleManager = @import("../cycles/cycles.zig").CycleManager;
-const Cycles = @import("../cycles/cycles.zig").Cycles;
+const Cycle = @import("../cycles/cycles.zig").Cycle;
 const Io = @import("../io/io.zig").Io;
 const opcodes_table = @import("opcodes.zig").opcodes_table;
 const opcode_names = @import("opcodes.zig").opcode_names;
@@ -100,7 +100,7 @@ pub const Cpu = struct {
         }
     }
 
-    pub fn cycle(self: *const Cpu, cycles: Cycles) void {
+    pub fn cycle(self: *const Cpu, cycles: Cycle) void {
         self.cycle_manager.cycle(cycles);
     }
 

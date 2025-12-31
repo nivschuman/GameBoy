@@ -6,12 +6,14 @@ const Cpu = @import("../../cpu/cpu.zig").Cpu;
 const CycleManager = @import("../../cycles/cycles.zig").CycleManager;
 const interrupts = @import("../../io/interrupts/interrupts.zig");
 const Serial = @import("../../io/serial/serial.zig").Serial;
+const Timer = @import("../../io/timer/timer.zig").Timer;
 const Io = @import("../../io/io.zig").Io;
 
 pub fn testWithCpu(testFunction: fn (*Cpu) anyerror!void) anyerror!void {
     var interrupt_registers = interrupts.InterruptRegisters.init();
     var serial = Serial.init();
-    var io = Io.init(&serial, &interrupt_registers);
+    var timer = Timer.init(&interrupt_registers);
+    var io = Io.init(&serial, &timer, &interrupt_registers);
 
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
@@ -20,7 +22,7 @@ pub fn testWithCpu(testFunction: fn (*Cpu) anyerror!void) anyerror!void {
     var hram = memory.HRam.init();
     var mmu = Mmu.init(&cart, &wram, &hram, &io);
 
-    var cycle_manager = CycleManager.init();
+    var cycle_manager = CycleManager.init(&timer);
     var cpu = Cpu.init(&mmu, &cycle_manager, &io);
     try testFunction(&cpu);
 }
