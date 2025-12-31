@@ -33,11 +33,14 @@ pub const Serial = struct {
         return self.sc & 0x01 != 0;
     }
 
-    pub fn receiveByte(self: *Serial) void {
+    pub fn receiveByte(self: *Serial) bool {
         if (self.sc == 0x81) {
             self.bytes_received[self.bytes_received_length] = self.sb;
             self.bytes_received_length += 1;
             self.sc = 0;
+            return true;
         }
+
+        return false;
     }
 };

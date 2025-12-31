@@ -45,7 +45,7 @@ pub fn main() !void {
     var cpu = Cpu.init(&mmu, &cycle_manager, &io);
 
     const start = std.time.timestamp();
-    var gameboy = GameBoy.init(&cpu);
+    var gameboy = GameBoy.init(&cpu, true);
     const thread = try std.Thread.spawn(.{ .allocator = allocator }, GameBoy.start, .{&gameboy});
 
     var ui = try Ui.init(allocator);

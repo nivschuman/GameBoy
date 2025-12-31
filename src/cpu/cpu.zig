@@ -5,11 +5,7 @@ const CycleManager = @import("../cycles/cycles.zig").CycleManager;
 const Cycle = @import("../cycles/cycles.zig").Cycle;
 const Io = @import("../io/io.zig").Io;
 const opcodes_table = @import("opcodes.zig").opcodes_table;
-const opcode_names = @import("opcodes.zig").opcode_names;
-const opcodes_cb_names = @import("opcodes_cb.zig").opcodes_cb_names;
 const call = @import("instructions.zig").call;
-
-const logger = std.log.scoped(.cpu);
 
 pub const Cpu = struct {
     registers: Registers,
@@ -81,14 +77,7 @@ pub const Cpu = struct {
     }
 
     pub fn executeInstruction(self: *Cpu) void {
-        const op = self.opcode();
-        if (op == 0xCB) {
-            const op_cb = self.mmu.readByte(self.pc +% 1);
-            logger.info("PC 0x{X}, executing CB opcode 0x{X} {s}", .{ self.pc, op_cb, opcodes_cb_names[op_cb] });
-        } else {
-            logger.info("PC 0x{X}, executing opcode 0x{X} {s}", .{ self.pc, op, opcode_names[op] });
-        }
-        opcodes_table[op](self);
+        opcodes_table[self.opcode()](self);
     }
 
     pub fn executeInterrupt(self: *Cpu) void {
@@ -119,11 +108,6 @@ pub const Cpu = struct {
 
         if (self.set_interrupt_master_enable) {
             self.interrupt_master_enable = true;
-        }
-
-        self.io.serial.receiveByte();
-        if (self.io.serial.bytes_received_length > 0) {
-            logger.debug("{s}", .{self.io.serial.bytes_received});
         }
     }
 };
