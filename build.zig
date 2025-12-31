@@ -18,7 +18,8 @@ pub fn build(b: *std.Build) void {
         .name = "gameboy",
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/main.zig"),
-            .target = b.graph.host,
+            .target = b.standardTargetOptions(.{}),
+            .optimize = b.standardOptimizeOption(.{}),
         }),
     });
 

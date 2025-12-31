@@ -308,7 +308,7 @@ pub fn daa(cpu: *Cpu, target: *u8) void {
         carry = true;
     }
 
-    if (cpu.registers.getSubtractionFlag()) {
+    if (!cpu.registers.getSubtractionFlag()) {
         target.* +%= offset;
     } else {
         target.* -%= offset;

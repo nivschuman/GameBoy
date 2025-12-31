@@ -123,7 +123,7 @@ pub const Cpu = struct {
 
         self.io.serial.receiveByte();
         if (self.io.serial.bytes_received_length > 0) {
-            logger.debug("Serial Debug: {s}", .{self.io.serial.bytes_received});
+            logger.debug("{s}", .{self.io.serial.bytes_received});
         }
     }
 };
