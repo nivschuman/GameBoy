@@ -258,6 +258,7 @@ pub fn ret(cpu: *Cpu, should_ret: bool) void {
     }
 
     cpu.pc = pop(cpu);
+    cpu.cycle(1);
 }
 
 pub fn pop(cpu: *Cpu) u16 {
