@@ -23,10 +23,8 @@ pub const GameBoy = struct {
             if (self.debug_mode.shouldStep()) {
                 const opcode = debug.getCurrentInstruction(self.cpu);
                 const opcode_name = debug.getCurrentInstructionName(self.cpu);
-                if (opcode == 0) {
-                    logger.debug("[0x{X}] executing opcode 0x{X} {s}", .{ self.cpu.pc, opcode, opcode_name });
-                    debug.waitForEnter();
-                }
+                logger.debug("[0x{X}] executing opcode 0x{X} {s}", .{ self.cpu.pc, opcode, opcode_name });
+                debug.waitForEnter();
             }
 
             self.cpu.step();

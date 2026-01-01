@@ -58,7 +58,7 @@ fn opcode02(cpu: *Cpu) void {
 }
 
 fn opcode03(cpu: *Cpu) void {
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     cpu.registers.setBC(cpu.registers.getBC() +% 1);
     cpu.pc +%= 1;
 }
@@ -102,7 +102,7 @@ fn opcode0A(cpu: *Cpu) void {
 }
 
 fn opcode0B(cpu: *Cpu) void {
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     cpu.registers.setBC(cpu.registers.getBC() -% 1);
     cpu.pc +%= 1;
 }
@@ -144,7 +144,7 @@ fn opcode12(cpu: *Cpu) void {
 }
 
 fn opcode13(cpu: *Cpu) void {
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     cpu.registers.setDE(cpu.registers.getDE() +% 1);
     cpu.pc +%= 1;
 }
@@ -189,7 +189,7 @@ fn opcode1A(cpu: *Cpu) void {
 }
 
 fn opcode1B(cpu: *Cpu) void {
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     cpu.registers.setDE(cpu.registers.getDE() -% 1);
     cpu.pc +%= 1;
 }
@@ -233,7 +233,7 @@ fn opcode22(cpu: *Cpu) void {
 }
 
 fn opcode23(cpu: *Cpu) void {
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     cpu.registers.setHL(cpu.registers.getHL() +% 1);
     cpu.pc +%= 1;
 }
@@ -278,7 +278,7 @@ fn opcode2A(cpu: *Cpu) void {
 }
 
 fn opcode2B(cpu: *Cpu) void {
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     cpu.registers.setHL(cpu.registers.getHL() -% 1);
     cpu.pc +%= 1;
 }
@@ -321,7 +321,7 @@ fn opcode32(cpu: *Cpu) void {
 }
 
 fn opcode33(cpu: *Cpu) void {
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     cpu.sp +%= 1;
     cpu.pc +%= 1;
 }
@@ -370,7 +370,7 @@ fn opcode3A(cpu: *Cpu) void {
 }
 
 fn opcode3B(cpu: *Cpu) void {
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     cpu.sp -%= 1;
     cpu.pc +%= 1;
 }
@@ -1037,7 +1037,7 @@ fn opcodeBF(cpu: *Cpu) void {
 
 fn opcodeC0(cpu: *Cpu) void {
     cpu.pc +%= 1;
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     instructions.ret(cpu, !cpu.registers.getZeroFlag());
 }
 
@@ -1081,7 +1081,7 @@ fn opcodeC7(cpu: *Cpu) void {
 
 fn opcodeC8(cpu: *Cpu) void {
     cpu.pc +%= 1;
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     instructions.ret(cpu, cpu.registers.getZeroFlag());
 }
 
@@ -1124,7 +1124,7 @@ fn opcodeCF(cpu: *Cpu) void {
 
 fn opcodeD0(cpu: *Cpu) void {
     cpu.pc +%= 1;
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     instructions.ret(cpu, !cpu.registers.getCarryFlag());
 }
 
@@ -1162,13 +1162,13 @@ fn opcodeD7(cpu: *Cpu) void {
 
 fn opcodeD8(cpu: *Cpu) void {
     cpu.pc +%= 1;
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     instructions.ret(cpu, cpu.registers.getCarryFlag());
 }
 
 fn opcodeD9(cpu: *Cpu) void {
-    instructions.reti(cpu);
     cpu.pc +%= 1;
+    instructions.reti(cpu);
 }
 
 fn opcodeDA(cpu: *Cpu) void {
@@ -1224,7 +1224,7 @@ fn opcodeE7(cpu: *Cpu) void {
 }
 
 fn opcodeE8(cpu: *Cpu) void {
-    cpu.cycle_manager.cycle(1); //this opcode takes an extra cycle
+    cpu.cycle(1); //this opcode takes an extra cycle
     instructions.addSigned(cpu, &cpu.sp, cpu.s8());
     cpu.pc +%= 2;
 }
