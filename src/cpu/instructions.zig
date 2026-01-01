@@ -261,14 +261,25 @@ pub fn ret(cpu: *Cpu, should_ret: bool) void {
 }
 
 pub fn pop(cpu: *Cpu) u16 {
-    const result = cpu.readWord(cpu.sp);
-    cpu.sp +%= 2;
-    return result;
+    const low: u8 = cpu.readByte(cpu.sp);
+    cpu.sp +%= 1;
+
+    const high: u8 = cpu.readByte(cpu.sp);
+    cpu.sp +%= 1;
+
+    return (@as(u16, high) << 8) | @as(u16, low);
 }
 
 pub fn push(cpu: *Cpu, value: u16) void {
-    cpu.sp -%= 2;
-    cpu.writeWord(cpu.sp, value);
+    const high: u8 = @truncate(value >> 8);
+    const low: u8 = @truncate(value);
+
+    cpu.sp -%= 1;
+    cpu.writeByte(cpu.sp, high);
+
+    cpu.sp -%= 1;
+    cpu.writeByte(cpu.sp, low);
+
     cpu.cycle(1);
 }
 

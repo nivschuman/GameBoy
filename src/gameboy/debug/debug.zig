@@ -8,23 +8,23 @@ const c = @cImport({
 });
 
 pub const DebugMode = enum {
-    Step,
-    Log,
-    Off,
+    DebugStep,
+    DebugLog,
+    DebugOff,
 
     pub fn shouldStep(self: DebugMode) bool {
         return switch (self) {
-            .Step => true,
-            .Log => false,
-            .Off => false,
+            .DebugStep => true,
+            .DebugLog => false,
+            .DebugOff => false,
         };
     }
 
     pub fn shouldLog(self: DebugMode) bool {
         return switch (self) {
-            .Step => true,
-            .Log => true,
-            .Off => false,
+            .DebugStep => true,
+            .DebugLog => true,
+            .DebugOff => false,
         };
     }
 };

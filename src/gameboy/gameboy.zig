@@ -21,8 +21,12 @@ pub const GameBoy = struct {
         self.run.store(true, std.builtin.AtomicOrder.seq_cst);
         while (self.run.load(std.builtin.AtomicOrder.seq_cst)) {
             if (self.debug_mode.shouldStep()) {
-                logger.debug("Executing opcode 0x{X} {s}", .{ debug.getCurrentInstruction(self.cpu), debug.getCurrentInstructionName(self.cpu) });
-                debug.waitForEnter();
+                const opcode = debug.getCurrentInstruction(self.cpu);
+                const opcode_name = debug.getCurrentInstructionName(self.cpu);
+                if (opcode == 0) {
+                    logger.debug("[0x{X}] executing opcode 0x{X} {s}", .{ self.cpu.pc, opcode, opcode_name });
+                    debug.waitForEnter();
+                }
             }
 
             self.cpu.step();

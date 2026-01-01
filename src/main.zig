@@ -45,8 +45,15 @@ pub fn main() !void {
     var cycle_manager = CycleManager.init(&timer);
     var cpu = Cpu.init(&mmu, &cycle_manager, &io);
 
+    var debug_mode = debug.DebugMode.DebugOff;
+    if (args.len >= 3) {
+        if (std.meta.stringToEnum(debug.DebugMode, args[2])) |mode| {
+            debug_mode = mode;
+        }
+    }
+
     const start = std.time.timestamp();
-    var gameboy = GameBoy.init(&cpu, debug.DebugMode.Step);
+    var gameboy = GameBoy.init(&cpu, debug_mode);
     const thread = try std.Thread.spawn(.{ .allocator = allocator }, GameBoy.start, .{&gameboy});
 
     var ui = try Ui.init(allocator);

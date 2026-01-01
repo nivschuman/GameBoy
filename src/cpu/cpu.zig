@@ -60,9 +60,9 @@ pub const Cpu = struct {
     }
 
     pub fn readWord(self: *const Cpu, address: u16) u16 {
-        const result = self.mmu.readWord(address);
-        self.cycle(2);
-        return result;
+        const low = self.readByte(address);
+        const high = self.readByte(address + 1);
+        return (@as(u16, high) << 8) | (@as(u16, low));
     }
 
     pub fn writeByte(self: *Cpu, address: u16, value: u8) void {
@@ -71,8 +71,10 @@ pub const Cpu = struct {
     }
 
     pub fn writeWord(self: *Cpu, address: u16, value: u16) void {
-        self.mmu.writeWord(address, value);
-        self.cycle(2);
+        const low = @as(u8, @truncate(value));
+        const high = @as(u8, @truncate(value >> 8));
+        self.writeByte(address, low);
+        self.writeByte(address + 1, high);
     }
 
     pub fn executeInstruction(self: *Cpu) void {
