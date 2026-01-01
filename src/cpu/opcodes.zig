@@ -1114,7 +1114,7 @@ fn opcodeCD(cpu: *Cpu) void {
 
 fn opcodeCE(cpu: *Cpu) void {
     instructions.adc(cpu, &cpu.registers.a, cpu.d8());
-    cpu.pc +%= 1;
+    cpu.pc +%= 2;
 }
 
 fn opcodeCF(cpu: *Cpu) void {
