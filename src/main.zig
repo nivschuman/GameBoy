@@ -12,6 +12,7 @@ const Io = @import("io/io.zig").Io;
 const files = @import("utils/files/files.zig");
 const errors = @import("errors/errors.zig");
 const Ui = @import("ui/ui.zig").Ui;
+const debug = @import("gameboy/debug/debug.zig");
 
 const logger = std.log.scoped(.main);
 
@@ -45,7 +46,7 @@ pub fn main() !void {
     var cpu = Cpu.init(&mmu, &cycle_manager, &io);
 
     const start = std.time.timestamp();
-    var gameboy = GameBoy.init(&cpu, true);
+    var gameboy = GameBoy.init(&cpu, debug.DebugMode.Step);
     const thread = try std.Thread.spawn(.{ .allocator = allocator }, GameBoy.start, .{&gameboy});
 
     var ui = try Ui.init(allocator);
