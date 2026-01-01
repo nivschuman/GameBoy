@@ -22,7 +22,7 @@ pub fn addWords(cpu: *Cpu, target: *u16, value: u16) void {
 
 pub fn addSigned(cpu: *Cpu, target: *u16, value: i8) void {
     cpu.cycle_manager.cycle(1);
-    const value_u16: u16 = @as(u16, @bitCast(@as(i16, value)));
+    const value_u16: u16 = @bitCast(@as(i16, value));
     const result = target.* +% value_u16;
     const xor_result = target.* ^ value_u16 ^ result;
 
@@ -308,7 +308,7 @@ pub fn daa(cpu: *Cpu, target: *u8) void {
         carry = true;
     }
 
-    if (cpu.registers.getSubtractionFlag()) {
+    if (!cpu.registers.getSubtractionFlag()) {
         target.* +%= offset;
     } else {
         target.* -%= offset;

@@ -167,7 +167,7 @@ fn opcode16(cpu: *Cpu) void {
 fn opcode17(cpu: *Cpu) void {
     instructions.rl(cpu, &cpu.registers.a);
     cpu.registers.setZeroFlag(false); // RLA always clears zero flag
-    cpu.pc +%= 2;
+    cpu.pc +%= 1;
 }
 
 fn opcode18(cpu: *Cpu) void {

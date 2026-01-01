@@ -1,15 +1,10 @@
-const std = @import("std");
 const Registers = @import("registers/registers.zig").Registers;
 const Mmu = @import("../mmu/mmu.zig").Mmu;
 const CycleManager = @import("../cycles/cycles.zig").CycleManager;
 const Cycle = @import("../cycles/cycles.zig").Cycle;
 const Io = @import("../io/io.zig").Io;
 const opcodes_table = @import("opcodes.zig").opcodes_table;
-const opcode_names = @import("opcodes.zig").opcode_names;
-const opcodes_cb_names = @import("opcodes_cb.zig").opcodes_cb_names;
 const call = @import("instructions.zig").call;
-
-const logger = std.log.scoped(.cpu);
 
 pub const Cpu = struct {
     registers: Registers,
@@ -81,14 +76,7 @@ pub const Cpu = struct {
     }
 
     pub fn executeInstruction(self: *Cpu) void {
-        const op = self.opcode();
-        if (op == 0xCB) {
-            const op_cb = self.mmu.readByte(self.pc +% 1);
-            logger.info("executing CB opcode 0x{X}: {s}", .{ op_cb, opcodes_cb_names[op_cb] });
-        } else {
-            logger.info("executing opcode 0x{X}: {s}", .{ op, opcode_names[op] });
-        }
-        opcodes_table[op](self);
+        opcodes_table[self.opcode()](self);
     }
 
     pub fn executeInterrupt(self: *Cpu) void {
@@ -107,22 +95,18 @@ pub const Cpu = struct {
     pub fn step(self: *Cpu) void {
         if (self.halted) {
             self.cycle_manager.cycle(1);
-            self.halted = self.io.interrupt_registers.interrupt_enable & self.io.interrupt_registers.interrupt_flag != 0;
+            self.halted = self.io.interrupt_registers.interrupt_flag == 0;
         } else {
             self.executeInstruction();
         }
 
         if (self.interrupt_master_enable) {
             self.executeInterrupt();
+            self.set_interrupt_master_enable = false;
         }
 
         if (self.set_interrupt_master_enable) {
             self.interrupt_master_enable = true;
-        }
-
-        self.io.serial.receiveByte();
-        if (self.io.serial.bytes_received_length > 0) {
-            logger.debug("Serial Debug: {s}", .{self.io.serial.bytes_received});
         }
     }
 };

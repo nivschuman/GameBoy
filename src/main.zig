@@ -13,6 +13,8 @@ const files = @import("utils/files/files.zig");
 const errors = @import("errors/errors.zig");
 const Ui = @import("ui/ui.zig").Ui;
 
+const logger = std.log.scoped(.main);
+
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
@@ -42,7 +44,8 @@ pub fn main() !void {
     var cycle_manager = CycleManager.init(&timer);
     var cpu = Cpu.init(&mmu, &cycle_manager, &io);
 
-    var gameboy = GameBoy.init(&cpu);
+    const start = std.time.timestamp();
+    var gameboy = GameBoy.init(&cpu, true);
     const thread = try std.Thread.spawn(.{ .allocator = allocator }, GameBoy.start, .{&gameboy});
 
     var ui = try Ui.init(allocator);
@@ -53,4 +56,7 @@ pub fn main() !void {
 
     gameboy.stop();
     thread.join();
+
+    const end = std.time.timestamp();
+    logger.info("Gameboy ran for {d} seconds", .{end - start});
 }
