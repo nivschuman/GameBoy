@@ -1,4 +1,3 @@
-const std = @import("std");
 const Registers = @import("registers/registers.zig").Registers;
 const Mmu = @import("../mmu/mmu.zig").Mmu;
 const CycleManager = @import("../cycles/cycles.zig").CycleManager;

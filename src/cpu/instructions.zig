@@ -22,7 +22,7 @@ pub fn addWords(cpu: *Cpu, target: *u16, value: u16) void {
 
 pub fn addSigned(cpu: *Cpu, target: *u16, value: i8) void {
     cpu.cycle_manager.cycle(1);
-    const value_u16: u16 = @as(u16, @bitCast(@as(i16, value)));
+    const value_u16: u16 = @bitCast(@as(i16, value));
     const result = target.* +% value_u16;
     const xor_result = target.* ^ value_u16 ^ result;
 
