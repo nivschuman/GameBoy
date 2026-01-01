@@ -11,7 +11,7 @@ pub fn add(cpu: *Cpu, target: *u8, value: u8) void {
 }
 
 pub fn addWords(cpu: *Cpu, target: *u16, value: u16) void {
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     const result = @addWithOverflow(target.*, value);
 
     cpu.registers.setSubtractionFlag(false);
@@ -21,7 +21,7 @@ pub fn addWords(cpu: *Cpu, target: *u16, value: u16) void {
 }
 
 pub fn addSigned(cpu: *Cpu, target: *u16, value: i8) void {
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
     const value_u16: u16 = @bitCast(@as(i16, value));
     const result = target.* +% value_u16;
     const xor_result = target.* ^ value_u16 ^ result;
@@ -249,7 +249,7 @@ pub fn jp(cpu: *Cpu, address: u16, should_jump: bool) void {
     }
 
     cpu.pc = address;
-    cpu.cycle_manager.cycle(1);
+    cpu.cycle(1);
 }
 
 pub fn ret(cpu: *Cpu, should_ret: bool) void {
@@ -261,15 +261,26 @@ pub fn ret(cpu: *Cpu, should_ret: bool) void {
 }
 
 pub fn pop(cpu: *Cpu) u16 {
-    const result = cpu.readWord(cpu.sp);
-    cpu.sp +%= 2;
-    return result;
+    const low: u8 = cpu.readByte(cpu.sp);
+    cpu.sp +%= 1;
+
+    const high: u8 = cpu.readByte(cpu.sp);
+    cpu.sp +%= 1;
+
+    return (@as(u16, high) << 8) | @as(u16, low);
 }
 
 pub fn push(cpu: *Cpu, value: u16) void {
-    cpu.sp -%= 2;
-    cpu.writeWord(cpu.sp, value);
-    cpu.cycle_manager.cycle(1);
+    const high: u8 = @truncate(value >> 8);
+    const low: u8 = @truncate(value);
+
+    cpu.sp -%= 1;
+    cpu.writeByte(cpu.sp, high);
+
+    cpu.sp -%= 1;
+    cpu.writeByte(cpu.sp, low);
+
+    cpu.cycle(1);
 }
 
 pub fn call(cpu: *Cpu, address: u16, should_call: bool) void {
