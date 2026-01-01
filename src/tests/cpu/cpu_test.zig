@@ -57,11 +57,11 @@ test "executeInterrupt" {
             cpu.io.interrupt_registers.setSpecifiedInterruptFlag(interrupts.Interrupt.VBlank, true);
             cpu.pc = 0x100;
             cpu.sp = 0xFFFE;
-            cpu.mmu.writeWord(cpu.sp - 2, 0x0000);
+            cpu.writeWord(cpu.sp - 2, 0x0000);
             cpu.executeInterrupt();
             try std.testing.expect(cpu.pc == 0x0040);
             try std.testing.expect(cpu.interrupt_master_enable == false);
-            const pushed_pc = cpu.mmu.readWord(cpu.sp);
+            const pushed_pc = cpu.readWord(cpu.sp);
             try std.testing.expect(pushed_pc == 0x0100);
         }
     }.testFunction;
