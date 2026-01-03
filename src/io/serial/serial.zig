@@ -1,4 +1,6 @@
 pub const Serial = struct {
+    const SIZE: usize = 1024;
+
     sb: u8,
     sc: u8,
     bytes_received: [1024]u8,
@@ -8,7 +10,7 @@ pub const Serial = struct {
         return .{
             .sb = 0,
             .sc = 0,
-            .bytes_received = [_]u8{0} ** 1024,
+            .bytes_received = [_]u8{0} ** SIZE,
             .bytes_received_length = 0,
         };
     }
@@ -35,6 +37,9 @@ pub const Serial = struct {
 
     pub fn receiveByte(self: *Serial) bool {
         if (self.sc == 0x81) {
+            if (self.bytes_received_length >= SIZE) {
+                self.bytes_received_length = 0;
+            }
             self.bytes_received[self.bytes_received_length] = self.sb;
             self.bytes_received_length += 1;
             self.sc = 0;
