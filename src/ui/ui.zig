@@ -125,7 +125,7 @@ pub const GameBoyWindow = struct {
 
     pub fn renderFrame(self: *GameBoyWindow) !void {
         if (self.debug) {
-            try self.renderTiles(4);
+            try self.renderTiles(SCALE);
         } else {
             try self.renderer.renderFrame();
         }
@@ -147,8 +147,8 @@ pub const GameBoyWindow = struct {
                 const idx: c_int = @intCast(tile_index);
                 const x_index: c_int = @mod(idx, tile_columns);
                 const y_index: c_int = @divTrunc(idx, tile_columns);
-                const x: c_int = x_index * tile_size * scale;
-                const y: c_int = y_index * tile_size * scale;
+                const x: c_int = x_index * scale + x_index * tile_size * scale;
+                const y: c_int = y_index * scale + y_index * tile_size * scale;
                 try s.displayTile(tile, x, y, scale);
             }
 
@@ -166,7 +166,7 @@ pub const Renderer = struct {
     renderer: *c.struct_SDL_Renderer,
 
     pub fn init(window: *c.struct_SDL_Window) !Renderer {
-        const renderer = c.SDL_CreateRenderer(window, 0, c.SDL_RENDERER_PRESENTVSYNC);
+        const renderer = c.SDL_CreateRenderer(window, -1, 0);
         if (renderer) |r| {
             return .{ .renderer = r };
         }
