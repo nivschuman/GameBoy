@@ -60,13 +60,14 @@ pub fn main() !void {
     }
 
     const start = std.time.timestamp();
-    var gameboy = GameBoy.init(&cpu, debug_mode);
+    var gameboy = GameBoy.init(&cpu, &ppu, debug_mode);
     const thread = try std.Thread.spawn(.{ .allocator = allocator }, GameBoy.start, .{&gameboy});
 
     var ui = try Ui.init(allocator);
     defer ui.deinit();
 
-    _ = try ui.createGameBoyWindow("GameBoy", &gameboy);
+    _ = try ui.createGameBoyWindow("GameBoy", &gameboy, false);
+    _ = try ui.createGameBoyWindow("GameBoyDebug", &gameboy, true);
     ui.run();
 
     gameboy.stop();

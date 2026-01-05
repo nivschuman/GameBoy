@@ -22,9 +22,21 @@ pub const TileRow = struct {
         const low_pixel: u1 = @truncate(low_byte >> pos);
         return Pixel.init((@as(u2, low_pixel) << 1) | @as(u2, high_pixel));
     }
+
+    pub fn getPixels(self: *const TileRow) [8]Pixel {
+        var pixels: [8]Pixel = undefined;
+        var position: usize = 0;
+        while (position < 8) : (position += 1) {
+            pixels[position] = self.getPixel(@truncate(position));
+        }
+
+        return pixels;
+    }
 };
 
 pub const Tile = struct {
+    pub const SIZE = 16; //16 bytes
+
     bytes: u128,
 
     pub fn init(bytes: u128) Tile {
@@ -35,5 +47,15 @@ pub const Tile = struct {
         const low_byte: u8 = @truncate(self.bytes >> (16 * @as(u7, position)));
         const high_byte: u8 = @truncate(self.bytes >> (16 * @as(u7, position) + 8));
         return TileRow.init((@as(u16, high_byte) << 8) | @as(u16, low_byte));
+    }
+
+    pub fn getRows(self: *const Tile) [8]TileRow {
+        var rows: [8]TileRow = undefined;
+        var position: usize = 0;
+        while (position < 8) : (position += 1) {
+            rows[position] = self.getRow(@truncate(position));
+        }
+
+        return rows;
     }
 };
