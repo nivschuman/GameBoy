@@ -379,3 +379,84 @@ test "addSigned" {
     }.testFunction;
     try testWithCpu(testFunction);
 }
+
+test "stack" {
+    const testFunction = struct {
+        pub fn testFunction(cpu: *Cpu) anyerror!void {
+            cpu.sp = 0xFFFE;
+
+            instructions.push(cpu, 0x1234);
+            try std.testing.expect(cpu.sp == 0xFFFC);
+
+            const value = instructions.pop(cpu);
+            try std.testing.expect(value == 0x1234);
+            try std.testing.expect(cpu.sp == 0xFFFE);
+        }
+    }.testFunction;
+    try testWithCpu(testFunction);
+}
+
+test "call" {
+    const testFunction = struct {
+        pub fn testFunction(cpu: *Cpu) anyerror!void {
+            cpu.pc = 0x0150;
+            cpu.sp = 0xFFFE;
+
+            instructions.call(cpu, 0x4000, true);
+
+            try std.testing.expect(cpu.pc == 0x4000);
+
+            const ret = instructions.pop(cpu);
+            try std.testing.expect(ret == 0x0150);
+        }
+    }.testFunction;
+    try testWithCpu(testFunction);
+}
+
+test "ret" {
+    const testFunction = struct {
+        pub fn testFunction(cpu: *Cpu) anyerror!void {
+            cpu.sp = 0xFFFC;
+            instructions.push(cpu, 0x1234);
+            instructions.ret(cpu, true);
+            try std.testing.expect(cpu.pc == 0x1234);
+            try std.testing.expect(cpu.sp == 0xFFFC);
+        }
+    }.testFunction;
+    try testWithCpu(testFunction);
+}
+
+test "daa" {
+    const testFunction = struct {
+        pub fn testFunction(cpu: *Cpu) anyerror!void {
+            cpu.registers.a = 0x45;
+            cpu.registers.f = 0;
+            instructions.add(cpu, &cpu.registers.a, 0x55);
+            instructions.daa(cpu, &cpu.registers.a);
+            try std.testing.expect(cpu.registers.a == 0x00);
+            try std.testing.expect(cpu.registers.getCarryFlag());
+
+            cpu.registers.a = 0x15;
+            cpu.registers.f = 0;
+            instructions.add(cpu, &cpu.registers.a, 0x27);
+            instructions.daa(cpu, &cpu.registers.a);
+            try std.testing.expect(cpu.registers.a == 0x42);
+            try std.testing.expect(!cpu.registers.getCarryFlag());
+
+            cpu.registers.a = 0x42;
+            cpu.registers.f = 0x40;
+            instructions.sub(cpu, &cpu.registers.a, 0x18);
+            instructions.daa(cpu, &cpu.registers.a);
+            try std.testing.expect(cpu.registers.a == 0x24);
+            try std.testing.expect(cpu.registers.getSubtractionFlag());
+
+            cpu.registers.a = 0x99;
+            cpu.registers.f = 0;
+            instructions.add(cpu, &cpu.registers.a, 0x01);
+            instructions.daa(cpu, &cpu.registers.a);
+            try std.testing.expect(cpu.registers.a == 0x00);
+            try std.testing.expect(cpu.registers.getZeroFlag());
+        }
+    }.testFunction;
+    try testWithCpu(testFunction);
+}

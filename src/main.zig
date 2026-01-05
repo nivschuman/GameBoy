@@ -9,6 +9,9 @@ const interrupts = @import("io/interrupts/interrupts.zig");
 const Serial = @import("io/serial/serial.zig").Serial;
 const Timer = @import("io/timer/timer.zig").Timer;
 const Io = @import("io/io.zig").Io;
+const Oam = @import("ppu/oam/oam.zig").Oam;
+const VRam = @import("ppu/vram/vram.zig").VRam;
+const Ppu = @import("ppu/ppu.zig").Ppu;
 const files = @import("utils/files/files.zig");
 const errors = @import("errors/errors.zig");
 const Ui = @import("ui/ui.zig").Ui;
@@ -38,9 +41,13 @@ pub fn main() !void {
 
     var cart = Cartridge.init(file_bytes.bytes);
 
+    var vram = VRam.init();
+    var oam = Oam.init();
+    var ppu = Ppu.init(&oam, &vram);
+
     var wram = memory.WRam.init();
     var hram = memory.HRam.init();
-    var mmu = Mmu.init(&cart, &wram, &hram, &io);
+    var mmu = Mmu.init(&cart, &wram, &hram, &io, &ppu);
 
     var cycle_manager = CycleManager.init(&timer);
     var cpu = Cpu.init(&mmu, &cycle_manager, &io);
@@ -53,13 +60,14 @@ pub fn main() !void {
     }
 
     const start = std.time.timestamp();
-    var gameboy = GameBoy.init(&cpu, debug_mode);
+    var gameboy = GameBoy.init(&cpu, &ppu, debug_mode);
     const thread = try std.Thread.spawn(.{ .allocator = allocator }, GameBoy.start, .{&gameboy});
 
     var ui = try Ui.init(allocator);
     defer ui.deinit();
 
-    _ = try ui.createGameBoyWindow("GameBoy", &gameboy);
+    _ = try ui.createGameBoyWindow("GameBoy", &gameboy, false);
+    _ = try ui.createGameBoyWindow("GameBoyDebug", &gameboy, true);
     ui.run();
 
     gameboy.stop();

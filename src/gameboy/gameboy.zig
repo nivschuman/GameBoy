@@ -1,4 +1,5 @@
 const Cpu = @import("../cpu/cpu.zig").Cpu;
+const Ppu = @import("../ppu/ppu.zig").Ppu;
 const std = @import("std");
 const debug = @import("debug/debug.zig");
 
@@ -6,12 +7,14 @@ const logger = std.log.scoped(.gameboy);
 
 pub const GameBoy = struct {
     cpu: *Cpu,
+    ppu: *Ppu,
     run: std.atomic.Value(bool),
     debug_mode: debug.DebugMode,
 
-    pub fn init(cpu: *Cpu, debug_mode: debug.DebugMode) GameBoy {
+    pub fn init(cpu: *Cpu, ppu: *Ppu, debug_mode: debug.DebugMode) GameBoy {
         return .{
             .cpu = cpu,
+            .ppu = ppu,
             .run = std.atomic.Value(bool).init(false),
             .debug_mode = debug_mode,
         };

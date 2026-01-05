@@ -1,30 +1,33 @@
 const Cartridge = @import("../cartridge/cartridge.zig").Cartridge;
 const memory = @import("memory/memory.zig");
 const Io = @import("../io/io.zig").Io;
+const Ppu = @import("../ppu/ppu.zig").Ppu;
 
 pub const Mmu = struct {
     cartridge: *Cartridge,
     wram: *memory.WRam,
     hram: *memory.HRam,
     io: *Io,
+    ppu: *Ppu,
 
-    pub fn init(cartridge: *Cartridge, wram: *memory.WRam, hram: *memory.HRam, io: *Io) Mmu {
+    pub fn init(cartridge: *Cartridge, wram: *memory.WRam, hram: *memory.HRam, io: *Io, ppu: *Ppu) Mmu {
         return .{
             .cartridge = cartridge,
             .wram = wram,
             .hram = hram,
             .io = io,
+            .ppu = ppu,
         };
     }
 
     pub fn readByte(self: *const Mmu, address: u16) u8 {
         return switch (address) {
             0x0000...0x7FFF => self.cartridge.readByte(address), // ROM bank 0 / switchable banks
-            0x8000...0x9FFF => @panic("unmapped address"), // VRAM (8 KB) – video memory
+            0x8000...0x9FFF => self.ppu.readByte(address), // VRAM (8 KB) – video memory
             0xA000...0xBFFF => self.cartridge.readByte(address), // External RAM in cartridge
             0xC000...0xDFFF => self.wram.readByte(address - 0xC000), // Work RAM (WRAM)
             0xE000...0xFDFF => self.wram.readByte(address - 0xE000), // Echo RAM (mirror of WRAM)
-            0xFE00...0xFE9F => @panic("unmapped address"), // OAM (sprite attribute memory, 160 bytes)
+            0xFE00...0xFE9F => self.ppu.readByte(address), // OAM (sprite attribute memory, 160 bytes)
             0xFEA0...0xFEFF => 0, // Unusable / forbidden memory
             0xFF00...0xFF7F => self.io.readByte(address), // I/O registers
             0xFF80...0xFFFE => self.hram.readByte(address - 0xFF80), // High Ram (HRAM)
@@ -39,11 +42,11 @@ pub const Mmu = struct {
     pub fn writeByte(self: *Mmu, address: u16, value: u8) void {
         switch (address) {
             0x0000...0x7FFF => self.cartridge.writeByte(address, value), // ROM bank 0 / switchable banks
-            0x8000...0x9FFF => {}, // VRAM – video memory
+            0x8000...0x9FFF => self.ppu.writeByte(address, value), // VRAM – video memory
             0xA000...0xBFFF => self.cartridge.writeByte(address, value), // External RAM in cartridge
             0xC000...0xDFFF => self.wram.writeByte(address - 0xC000, value), // Work RAM (WRAM)
             0xE000...0xFDFF => self.wram.writeByte(address - 0xE000, value), // Echo RAM (mirror of WRAM)
-            0xFE00...0xFE9F => @panic("unmapped address"), // OAM (sprite attribute memory, 160 bytes)
+            0xFE00...0xFE9F => self.ppu.writeByte(address, value), // OAM (sprite attribute memory, 160 bytes)
             0xFEA0...0xFEFF => {}, // Unusable / forbidden memory – writes ignored
             0xFF00...0xFF7F => self.io.writeByte(address, value), // I/O registers
             0xFF80...0xFFFE => self.hram.writeByte(address - 0xFF80, value), // High Ram (HRAM)

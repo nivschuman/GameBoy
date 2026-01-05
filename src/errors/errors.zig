@@ -5,4 +5,11 @@ pub const ArgParseError = error{
 pub const UiError = error{
     WindowCreationFailed,
     RendererCreationFailed,
+    SurfaceCreationFailed,
+    TextureCreationFailed,
+    UpdateTextureFailed,
+    FillRectFailed,
+    RenderCopyFailed,
+    RenderDrawColorFailed,
+    RenderClearFailed,
 };

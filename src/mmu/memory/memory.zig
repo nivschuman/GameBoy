@@ -18,5 +18,3 @@ pub fn Memory(comptime size: usize) type {
 
 pub const WRam = Memory(0x2000);
 pub const HRam = Memory(0x80);
-pub const Oam = Memory(0xA0);
-pub const VRam = Memory(0x2000);
