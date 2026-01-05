@@ -9,6 +9,7 @@ const Serial = @import("../../io/serial/serial.zig").Serial;
 const Timer = @import("../../io/timer/timer.zig").Timer;
 const Io = @import("../../io/io.zig").Io;
 const Oam = @import("../../ppu/oam/oam.zig").Oam;
+const VRam = @import("../../ppu/vram/vram.zig").VRam;
 const Ppu = @import("../../ppu/ppu.zig").Ppu;
 
 pub fn testWithCpu(testFunction: fn (*Cpu) anyerror!void) anyerror!void {
@@ -20,7 +21,7 @@ pub fn testWithCpu(testFunction: fn (*Cpu) anyerror!void) anyerror!void {
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
 
-    var vram = memory.VRam.init();
+    var vram = VRam.init();
     var oam = Oam.init();
     var ppu = Ppu.init(&oam, &vram);
 

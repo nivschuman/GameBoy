@@ -87,7 +87,7 @@ pub const Sprite = struct {
 pub const Oam = struct {
     const SIZE = 40;
 
-    sprites: [40]Sprite,
+    sprites: [SIZE]Sprite,
 
     pub fn init() Oam {
         return .{ .sprites = [_]Sprite{Sprite.init()} ** SIZE };

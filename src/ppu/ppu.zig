@@ -1,11 +1,11 @@
-const Vram = @import("../mmu/memory/memory.zig").VRam;
+const VRam = @import("vram/vram.zig").VRam;
 const Oam = @import("oam/oam.zig").Oam;
 
 pub const Ppu = struct {
     oam: *Oam,
-    vram: *Vram,
+    vram: *VRam,
 
-    pub fn init(oam: *Oam, vram: *Vram) Ppu {
+    pub fn init(oam: *Oam, vram: *VRam) Ppu {
         return .{
             .oam = oam,
             .vram = vram,
