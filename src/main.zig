@@ -68,13 +68,15 @@ pub fn main() !void {
     defer ui.deinit();
 
     const icon_image = @embedFile("assets/icon.bmp");
-    const icon = Icon.init(icon_image);
+    var icon = Icon.init(icon_image);
+    defer icon.deinit();
 
     const icon_debug_image = @embedFile("assets/icon-debug.bmp");
-    const icon_debug = Icon.init(icon_debug_image);
+    var icon_debug = Icon.init(icon_debug_image);
+    defer icon_debug.deinit();
 
-    _ = try ui.createGameBoyWindow("GameBoy", icon, &gameboy, false);
-    _ = try ui.createGameBoyWindow("GameBoy Debug", icon_debug, &gameboy, true);
+    _ = try ui.createGameBoyWindow("GameBoy", &icon, &gameboy, false);
+    _ = try ui.createGameBoyWindow("GameBoy Debug", &icon_debug, &gameboy, true);
     ui.run();
 
     gameboy.stop();
