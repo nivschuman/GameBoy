@@ -28,8 +28,8 @@ pub const Ui = struct {
         c.SDL_Quit();
     }
 
-    pub fn createGameBoyWindow(self: *Ui, title: [*c]const u8, gameboy: *GameBoy, debug: bool) !WindowId {
-        const window = try GameBoyWindow.init(title, gameboy, debug);
+    pub fn createGameBoyWindow(self: *Ui, title: [*c]const u8, icon: ?*const Icon, gameboy: *GameBoy, debug: bool) !WindowId {
+        const window = try GameBoyWindow.init(title, icon, gameboy, debug);
         try self.windows.append(self.allocator, window);
         return window.id;
     }
@@ -73,12 +73,13 @@ pub const Ui = struct {
 pub const WindowId = u32;
 
 pub const GameBoyWindow = struct {
-    const SCALE = 4;
+    const SCALE = 3;
     const SCREEN_WIDTH = 1024;
     const SCREEN_HEIGHT = 768;
 
     id: WindowId,
     title: [*c]const u8,
+    icon: ?*const Icon,
     window: *c.struct_SDL_Window,
     renderer: Renderer,
     surface: ?Surface,
@@ -87,7 +88,7 @@ pub const GameBoyWindow = struct {
     debug: bool,
     gameboy: *GameBoy,
 
-    pub fn init(title: [*c]const u8, gameboy: *GameBoy, debug: bool) !GameBoyWindow {
+    pub fn init(title: [*c]const u8, icon: ?*const Icon, gameboy: *GameBoy, debug: bool) !GameBoyWindow {
         const width: c_int = if (!debug) SCREEN_WIDTH else 16 * 8 * SCALE;
         const height: c_int = if (!debug) SCREEN_HEIGHT else 32 * 8 * SCALE;
         const window = c.SDL_CreateWindow(title, c.SDL_WINDOWPOS_CENTERED, c.SDL_WINDOWPOS_CENTERED, width, height, 0);
@@ -96,9 +97,13 @@ pub const GameBoyWindow = struct {
             const renderer = try Renderer.init(w);
             const surface = if (debug) try Surface.init(SCALE) else null;
             const texture = if (debug) try Texture.init(renderer.renderer, SCALE) else null;
+            if (icon) |i| {
+                i.attach(w);
+            }
             return .{
                 .id = id,
                 .title = title,
+                .icon = icon,
                 .window = w,
                 .renderer = renderer,
                 .surface = surface,
@@ -148,7 +153,7 @@ pub const GameBoyWindow = struct {
                 const x_index: c_int = @mod(idx, tile_columns);
                 const y_index: c_int = @divTrunc(idx, tile_columns);
                 const x: c_int = x_index * scale + x_index * tile_size * scale;
-                const y: c_int = y_index * scale + y_index * tile_size * scale;
+                const y: c_int = 16 + y_index * scale + y_index * tile_size * scale;
                 try s.displayTile(tile, x, y, scale);
             }
 
@@ -207,6 +212,26 @@ pub const Renderer = struct {
         if (err != 0) {
             return UiError.RenderCopyFailed;
         }
+    }
+};
+
+pub const Icon = struct {
+    surface: *c.struct_SDL_Surface,
+
+    pub fn init(bytes: []const u8) Icon {
+        const rw = c.SDL_RWFromConstMem(bytes.ptr, @intCast(bytes.len));
+        const surface = c.SDL_LoadBMP_RW(rw, 1);
+        return .{
+            .surface = surface,
+        };
+    }
+
+    pub fn deinit(self: *Icon) void {
+        c.SDL_FreeSurface(self.surface);
+    }
+
+    pub fn attach(self: *const Icon, window: *c.struct_SDL_Window) void {
+        c.SDL_SetWindowIcon(window, self.surface);
     }
 };
 

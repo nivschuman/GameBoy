@@ -15,6 +15,7 @@ const Ppu = @import("ppu/ppu.zig").Ppu;
 const files = @import("utils/files/files.zig");
 const errors = @import("errors/errors.zig");
 const Ui = @import("ui/ui.zig").Ui;
+const Icon = @import("ui/ui.zig").Icon;
 const debug = @import("gameboy/debug/debug.zig");
 
 const logger = std.log.scoped(.main);
@@ -66,8 +67,16 @@ pub fn main() !void {
     var ui = try Ui.init(allocator);
     defer ui.deinit();
 
-    _ = try ui.createGameBoyWindow("GameBoy", &gameboy, false);
-    _ = try ui.createGameBoyWindow("GameBoyDebug", &gameboy, true);
+    const icon_image = @embedFile("assets/icon.bmp");
+    var icon = Icon.init(icon_image);
+    defer icon.deinit();
+
+    const icon_debug_image = @embedFile("assets/icon-debug.bmp");
+    var icon_debug = Icon.init(icon_debug_image);
+    defer icon_debug.deinit();
+
+    _ = try ui.createGameBoyWindow("GameBoy", &icon, &gameboy, false);
+    _ = try ui.createGameBoyWindow("GameBoy Debug", &icon_debug, &gameboy, true);
     ui.run();
 
     gameboy.stop();
