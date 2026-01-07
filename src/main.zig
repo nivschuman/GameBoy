@@ -17,6 +17,7 @@ const errors = @import("errors/errors.zig");
 const Ui = @import("ui/ui.zig").Ui;
 const Icon = @import("ui/ui.zig").Icon;
 const debug = @import("gameboy/debug/debug.zig");
+const Dma = @import("io/dma/dma.zig").Dma;
 
 const logger = std.log.scoped(.main);
 
@@ -38,19 +39,20 @@ pub fn main() !void {
     var interrupt_registers = interrupts.InterruptRegisters.init();
     var serial = Serial.init();
     var timer = Timer.init(&interrupt_registers);
-    var io = Io.init(&serial, &timer, &interrupt_registers);
+    var dma = Dma.init();
+    var io = Io.init(&serial, &timer, &interrupt_registers, &dma);
 
     var cart = Cartridge.init(file_bytes.bytes);
 
     var vram = VRam.init();
     var oam = Oam.init();
-    var ppu = Ppu.init(&oam, &vram);
+    var ppu = Ppu.init(&oam, &vram, &dma);
 
     var wram = memory.WRam.init();
     var hram = memory.HRam.init();
     var mmu = Mmu.init(&cart, &wram, &hram, &io, &ppu);
 
-    var cycle_manager = CycleManager.init(&timer);
+    var cycle_manager = CycleManager.init(&timer, &dma, &mmu);
     var cpu = Cpu.init(&mmu, &cycle_manager, &io);
 
     var debug_mode = debug.DebugMode.DebugOff;
