@@ -1,17 +1,20 @@
 const InterruptRegisters = @import("interrupts/interrupts.zig").InterruptRegisters;
 const Serial = @import("serial/serial.zig").Serial;
 const Timer = @import("timer/timer.zig").Timer;
+const Dma = @import("dma/dma.zig").Dma;
 
 pub const Io = struct {
     serial: *Serial,
     timer: *Timer,
     interrupt_registers: *InterruptRegisters,
+    dma: *Dma,
 
-    pub fn init(serial: *Serial, timer: *Timer, interrupt_registers: *InterruptRegisters) Io {
+    pub fn init(serial: *Serial, timer: *Timer, interrupt_registers: *InterruptRegisters, dma: *Dma) Io {
         return .{
             .serial = serial,
             .timer = timer,
             .interrupt_registers = interrupt_registers,
+            .dma = dma,
         };
     }
 
@@ -32,6 +35,7 @@ pub const Io = struct {
             0xFF02 => self.serial.setSC(value),
             0xFF04...0xFF07 => self.timer.writeByte(address, value),
             0xFF0F => self.interrupt_registers.setInterruptFlag(value),
+            0xFF46 => self.dma.activate(value),
             0xFFFF => self.interrupt_registers.setInterruptEnable(value),
             else => {},
         }

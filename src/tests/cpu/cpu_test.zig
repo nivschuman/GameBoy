@@ -10,26 +10,28 @@ const Timer = @import("../../io/timer/timer.zig").Timer;
 const Io = @import("../../io/io.zig").Io;
 const Oam = @import("../../ppu/oam/oam.zig").Oam;
 const VRam = @import("../../ppu/vram/vram.zig").VRam;
+const Dma = @import("../../io/dma/dma.zig").Dma;
 const Ppu = @import("../../ppu/ppu.zig").Ppu;
 
 pub fn testWithCpu(testFunction: fn (*Cpu) anyerror!void) anyerror!void {
     var interrupt_registers = interrupts.InterruptRegisters.init();
     var serial = Serial.init();
     var timer = Timer.init(&interrupt_registers);
-    var io = Io.init(&serial, &timer, &interrupt_registers);
+    var dma = Dma.init();
+    var io = Io.init(&serial, &timer, &interrupt_registers, &dma);
 
     var rom: [0x8000]u8 = [_]u8{0} ** 0x8000;
     var cart = Cartridge.init(rom[0..]);
 
     var vram = VRam.init();
     var oam = Oam.init();
-    var ppu = Ppu.init(&oam, &vram);
+    var ppu = Ppu.init(&oam, &vram, &dma);
 
     var wram = memory.WRam.init();
     var hram = memory.HRam.init();
     var mmu = Mmu.init(&cart, &wram, &hram, &io, &ppu);
 
-    var cycle_manager = CycleManager.init(&timer);
+    var cycle_manager = CycleManager.init(&timer, &dma, &mmu);
     var cpu = Cpu.init(&mmu, &cycle_manager, &io);
     try testFunction(&cpu);
 }
