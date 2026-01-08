@@ -3,7 +3,7 @@ pub const Serial = struct {
 
     sb: u8,
     sc: u8,
-    bytes_received: [1024]u8,
+    bytes_received: [SIZE]u8,
     bytes_received_length: usize,
 
     pub fn init() Serial {

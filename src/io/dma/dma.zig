@@ -1,11 +1,11 @@
 const Mmu = @import("../../mmu/mmu.zig").Mmu;
-const Tick = @import("../../cycles/cycles.zig").Tick;
+const Cycle = @import("../../cycles/cycles.zig").Cycle;
 
 pub const Dma = struct {
     source_address: u16,
     destination_address: u16,
     active: bool,
-    delay: Tick,
+    delay: Cycle,
 
     pub fn init() Dma {
         return .{
@@ -20,10 +20,10 @@ pub const Dma = struct {
         self.source_address = @as(u16, value) << 8;
         self.destination_address = 0xFE00;
         self.active = true;
-        self.delay = 8;
+        self.delay = 2;
     }
 
-    pub fn tick(self: *Dma, mmu: *Mmu) void {
+    pub fn cycle(self: *Dma, mmu: *Mmu) void {
         if (!self.active) {
             return;
         }
