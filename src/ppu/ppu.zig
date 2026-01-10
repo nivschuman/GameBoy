@@ -1,6 +1,6 @@
 const VRam = @import("vram/vram.zig").VRam;
 const Oam = @import("oam/oam.zig").Oam;
-const Dma = @import("../io/dma/dma.zig").Dma;
+const Dma = @import("../io/lcd/dma/dma.zig").Dma;
 
 pub const Ppu = struct {
     oam: *Oam,

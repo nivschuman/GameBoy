@@ -27,6 +27,14 @@ pub const DebugMode = enum {
             .DebugOff => false,
         };
     }
+
+    pub fn shouldShowDebugWindow(self: DebugMode) bool {
+        return switch (self) {
+            .DebugStep => true,
+            .DebugLog => true,
+            .DebugOff => false,
+        };
+    }
 };
 
 pub fn waitForEnter() void {
