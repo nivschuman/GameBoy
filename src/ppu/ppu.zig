@@ -7,9 +7,9 @@ const Oam = @import("oam/oam.zig").Oam;
 const Dma = @import("../io/lcd/dma/dma.zig").Dma;
 const Lcd = @import("../io/lcd/lcd.zig").Lcd;
 const InterruptRegisters = @import("../io/interrupts/interrupts.zig").InterruptRegisters;
-const Ui = @import("../ui/ui.zig").Ui;
 const Tick = @import("../cycles/cycles.zig").Tick;
-const std = @import("std");
+const Stopwatch = @import("../utils/time/time.zig").Stopwatch;
+const Delayer = @import("../utils/time/time.zig").Delayer;
 
 pub const Ppu = struct {
     const TICKS_PER_OAM_SEARCH_MODE: Tick = 80;
@@ -24,19 +24,21 @@ pub const Ppu = struct {
     dma: *Dma,
     lcd: *Lcd,
     interrupt_registers: *InterruptRegisters,
+    stopwatch: Stopwatch,
+    delayer: Delayer,
     ticks: Tick,
-    frame_start_time: u32,
     current_frame: u32,
 
-    pub fn init(oam: *Oam, vram: *VRam, dma: *Dma, lcd: *Lcd, interrupt_registers: *InterruptRegisters) Ppu {
+    pub fn init(oam: *Oam, vram: *VRam, dma: *Dma, lcd: *Lcd, interrupt_registers: *InterruptRegisters, stopwatch: Stopwatch, delayer: Delayer) Ppu {
         return .{
             .oam = oam,
             .vram = vram,
             .dma = dma,
             .lcd = lcd,
             .interrupt_registers = interrupt_registers,
+            .stopwatch = stopwatch,
+            .delayer = delayer,
             .ticks = 0,
-            .frame_start_time = 0,
             .current_frame = 0,
         };
     }
@@ -114,13 +116,12 @@ pub const Ppu = struct {
     }
 
     fn incrementFrame(self: *Ppu) void {
-        const frame_end_time = Ui.elapsedMilliseconds();
-        const frame_time = frame_end_time - self.frame_start_time;
+        const frame_time = self.stopwatch.elapsedTime();
         if (frame_time < EXPECTED_FRAME_TIME) {
-            Ui.delay(EXPECTED_FRAME_TIME - frame_time);
+            self.delayer.delay(EXPECTED_FRAME_TIME - frame_time);
         }
 
-        self.frame_start_time = Ui.elapsedMilliseconds();
+        self.stopwatch.reset();
         self.current_frame +%= 1;
     }
 

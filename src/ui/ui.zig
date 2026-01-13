@@ -2,6 +2,7 @@ const std = @import("std");
 const GameBoy = @import("../gameboy/gameboy.zig").GameBoy;
 const UiError = @import("../errors/errors.zig").UiError;
 const tiles = @import("../ppu/vram/tiles/tiles.zig");
+const time = @import("../utils/time/time.zig");
 const c = @cImport({
     @cInclude("SDL.h");
 });
@@ -67,12 +68,20 @@ pub const Ui = struct {
         }
     }
 
-    pub fn delay(milliseconds: u32) void {
-        c.SDL_Delay(milliseconds);
+    pub fn delayer() time.Delayer {
+        return time.Delayer.init(delay);
     }
 
-    pub fn elapsedMilliseconds() u32 {
+    pub fn stopwatch() time.Stopwatch {
+        return time.Stopwatch.init(getTicks);
+    }
+
+    pub fn getTicks() time.Milliseconds {
         return c.SDL_GetTicks();
+    }
+
+    pub fn delay(milliseconds: time.Milliseconds) void {
+        c.SDL_Delay(milliseconds);
     }
 };
 

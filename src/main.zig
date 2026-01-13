@@ -48,7 +48,7 @@ pub fn main() !void {
 
     var vram = VRam.init();
     var oam = Oam.init();
-    var ppu = Ppu.init(&oam, &vram, &dma, &lcd, &interrupt_registers);
+    var ppu = Ppu.init(&oam, &vram, &dma, &lcd, &interrupt_registers, Ui.stopwatch(), Ui.delayer());
 
     var wram = memory.WRam.init();
     var hram = memory.HRam.init();
