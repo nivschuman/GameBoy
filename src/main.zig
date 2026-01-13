@@ -17,7 +17,8 @@ const errors = @import("errors/errors.zig");
 const Ui = @import("ui/ui.zig").Ui;
 const Icon = @import("ui/ui.zig").Icon;
 const debug = @import("gameboy/debug/debug.zig");
-const Dma = @import("io/dma/dma.zig").Dma;
+const Dma = @import("io/lcd/dma/dma.zig").Dma;
+const Lcd = @import("io/lcd/lcd.zig").Lcd;
 
 const logger = std.log.scoped(.main);
 
@@ -40,7 +41,8 @@ pub fn main() !void {
     var serial = Serial.init();
     var timer = Timer.init(&interrupt_registers);
     var dma = Dma.init();
-    var io = Io.init(&serial, &timer, &interrupt_registers, &dma);
+    var lcd = Lcd.init(&dma);
+    var io = Io.init(&serial, &timer, &interrupt_registers, &lcd);
 
     var cart = Cartridge.init(file_bytes.bytes);
 
@@ -73,12 +75,16 @@ pub fn main() !void {
     var icon = Icon.init(icon_image);
     defer icon.deinit();
 
-    const icon_debug_image = @embedFile("assets/icon-debug.bmp");
-    var icon_debug = Icon.init(icon_debug_image);
-    defer icon_debug.deinit();
-
     _ = try ui.createGameBoyWindow("GameBoy", &icon, &gameboy, false);
-    _ = try ui.createGameBoyWindow("GameBoy Debug", &icon_debug, &gameboy, true);
+
+    if (debug_mode.shouldShowDebugWindow()) {
+        const icon_debug_image = @embedFile("assets/icon-debug.bmp");
+        var icon_debug = Icon.init(icon_debug_image);
+        defer icon_debug.deinit();
+
+        _ = try ui.createGameBoyWindow("GameBoy Debug", &icon_debug, &gameboy, true);
+    }
+
     ui.run();
 
     gameboy.stop();

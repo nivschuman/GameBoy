@@ -2,7 +2,7 @@
 //cycle frequency = 4,194,304Hz / 4 = 1,048,576 Hz (one cycle every 4 ticks)
 
 const Timer = @import("../io/timer/timer.zig").Timer;
-const Dma = @import("../io/dma/dma.zig").Dma;
+const Dma = @import("../io/lcd/dma/dma.zig").Dma;
 const Mmu = @import("../mmu/mmu.zig").Mmu;
 
 // 1 cycle = 4 ticks

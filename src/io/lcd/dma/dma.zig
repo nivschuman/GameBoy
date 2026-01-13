@@ -1,5 +1,5 @@
-const Mmu = @import("../../mmu/mmu.zig").Mmu;
-const Cycle = @import("../../cycles/cycles.zig").Cycle;
+const Mmu = @import("../../../mmu/mmu.zig").Mmu;
+const Cycle = @import("../../../cycles/cycles.zig").Cycle;
 
 pub const Dma = struct {
     source_address: u16,
