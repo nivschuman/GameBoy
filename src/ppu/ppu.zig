@@ -12,12 +12,12 @@ const Stopwatch = @import("../utils/time/time.zig").Stopwatch;
 const Delayer = @import("../utils/time/time.zig").Delayer;
 
 pub const Ppu = struct {
-    const TICKS_PER_OAM_SEARCH_MODE: Tick = 80;
-    const TICKS_PER_PIXEL_TRANSFER_MODE: Tick = 172;
-    const TICKS_PER_LINE: Tick = 456;
-    const VERTICAL_HEIGHT: u8 = 144;
-    const LINES_PER_FRAME: u8 = 154;
-    const EXPECTED_FRAME_TIME: u32 = 1000 / 60;
+    pub const TICKS_PER_OAM_SEARCH_MODE: Tick = 80;
+    pub const TICKS_PER_PIXEL_TRANSFER_MODE: Tick = 172;
+    pub const TICKS_PER_LINE: Tick = 456;
+    pub const VERTICAL_HEIGHT: u8 = 144;
+    pub const LINES_PER_FRAME: u8 = 154;
+    pub const EXPECTED_FRAME_TIME: u32 = 1000 / 60;
 
     oam: *Oam,
     vram: *VRam,

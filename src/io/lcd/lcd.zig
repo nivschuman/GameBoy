@@ -98,11 +98,11 @@ pub const Lcd = struct {
         return @as(u1, @truncate(self.stat >> @intFromEnum(condition))) == 1;
     }
 
-    pub fn setStatInterruptCondition(self: *Lcd, condition: StatInterruptCondition, value: u1) void {
-        if (value == 0) {
-            self.stat &= ~(1 << @as(u8, @intFromEnum(condition)));
+    pub fn setStatInterruptCondition(self: *Lcd, condition: StatInterruptCondition, value: bool) void {
+        if (!value) {
+            self.stat &= ~(@as(u8, 1) << @as(u3, @intFromEnum(condition)));
         } else {
-            self.stat |= (1 << @as(u8, @intFromEnum(condition)));
+            self.stat |= (@as(u8, 1) << @as(u3, @intFromEnum(condition)));
         }
     }
 
