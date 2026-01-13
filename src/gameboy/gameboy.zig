@@ -21,8 +21,8 @@ pub const GameBoy = struct {
     }
 
     pub fn start(self: *GameBoy) void {
-        self.run.store(true, std.builtin.AtomicOrder.seq_cst);
-        while (self.run.load(std.builtin.AtomicOrder.seq_cst)) {
+        self.run.store(true, .seq_cst);
+        while (self.run.load(.seq_cst)) {
             if (self.debug_mode.shouldStep()) {
                 const opcode = debug.getCurrentInstruction(self.cpu);
                 const opcode_name = debug.getCurrentInstructionName(self.cpu);
@@ -40,6 +40,6 @@ pub const GameBoy = struct {
     }
 
     pub fn stop(self: *GameBoy) void {
-        self.run.store(false, std.builtin.AtomicOrder.seq_cst);
+        self.run.store(false, .seq_cst);
     }
 };

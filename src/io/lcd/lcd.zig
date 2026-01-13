@@ -86,16 +86,16 @@ pub const Lcd = struct {
         return @truncate(self.stat >> 2);
     }
 
-    pub fn setLycEqualsLy(self: *Lcd, value: u1) u1 {
-        if (value == 0) {
-            self.stat &= ~0x04;
+    pub fn setLycEqualsLy(self: *Lcd, value: bool) void {
+        if (!value) {
+            self.stat &= 0xFB;
         } else {
             self.stat |= 0x04;
         }
     }
 
-    pub fn getStatInterruptCondition(self: *const Lcd, condition: StatInterruptCondition) u1 {
-        return @truncate(self.stat >> @intFromEnum(condition));
+    pub fn getStatInterruptCondition(self: *const Lcd, condition: StatInterruptCondition) bool {
+        return @as(u1, @truncate(self.stat >> @intFromEnum(condition))) == 1;
     }
 
     pub fn setStatInterruptCondition(self: *Lcd, condition: StatInterruptCondition, value: u1) void {

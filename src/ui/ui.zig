@@ -64,9 +64,15 @@ pub const Ui = struct {
                     i += 1;
                 }
             }
-
-            c.SDL_Delay(16);
         }
+    }
+
+    pub fn delay(milliseconds: u32) void {
+        c.SDL_Delay(milliseconds);
+    }
+
+    pub fn elapsedMilliseconds() u32 {
+        return c.SDL_GetTicks();
     }
 };
 
@@ -87,6 +93,7 @@ pub const GameBoyWindow = struct {
     closed: bool,
     debug: bool,
     gameboy: *GameBoy,
+    previous_frame: u32,
 
     pub fn init(title: [*c]const u8, icon: ?*const Icon, gameboy: *GameBoy, debug: bool) !GameBoyWindow {
         const width: c_int = if (!debug) SCREEN_WIDTH else 16 * 8 * SCALE;
@@ -111,6 +118,7 @@ pub const GameBoyWindow = struct {
                 .closed = false,
                 .debug = debug,
                 .gameboy = gameboy,
+                .previous_frame = 0,
             };
         }
 
@@ -129,11 +137,15 @@ pub const GameBoyWindow = struct {
     }
 
     pub fn renderFrame(self: *GameBoyWindow) !void {
-        if (self.debug) {
-            try self.renderTiles(SCALE);
-        } else {
-            try self.renderer.renderFrame();
+        if (self.previous_frame != self.gameboy.ppu.current_frame) {
+            if (self.debug) {
+                try self.renderTiles(SCALE);
+            } else {
+                try self.renderer.renderFrame();
+            }
         }
+
+        self.previous_frame = self.gameboy.ppu.current_frame;
     }
 
     pub fn renderTiles(self: *GameBoyWindow, scale: comptime_int) !void {

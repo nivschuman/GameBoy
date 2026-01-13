@@ -130,7 +130,7 @@ fn opcode0F(cpu: *Cpu) void {
 
 fn opcode10(cpu: *Cpu) void {
     instructions.stop(cpu);
-    cpu.pc +%= 1;
+    cpu.pc +%= 2;
 }
 
 fn opcode11(cpu: *Cpu) void {
