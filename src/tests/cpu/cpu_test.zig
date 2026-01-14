@@ -13,6 +13,8 @@ const VRam = @import("../../ppu/vram/vram.zig").VRam;
 const Dma = @import("../../io/lcd/dma/dma.zig").Dma;
 const Lcd = @import("../../io/lcd/lcd.zig").Lcd;
 const Ppu = @import("../../ppu/ppu.zig").Ppu;
+const StdStopwatch = @import("../../utils/time/time.zig").StdStopwatch;
+const StdDelayer = @import("../../utils/time/time.zig").StdDelayer;
 
 pub fn testWithCpu(testFunction: fn (*Cpu) anyerror!void) anyerror!void {
     var interrupt_registers = interrupts.InterruptRegisters.init();
@@ -27,13 +29,13 @@ pub fn testWithCpu(testFunction: fn (*Cpu) anyerror!void) anyerror!void {
 
     var vram = VRam.init();
     var oam = Oam.init();
-    var ppu = Ppu.init(&oam, &vram, &dma);
+    var ppu = Ppu.init(&oam, &vram, &dma, &lcd, &interrupt_registers, StdStopwatch.init(), StdDelayer.init());
 
     var wram = memory.WRam.init();
     var hram = memory.HRam.init();
     var mmu = Mmu.init(&cart, &wram, &hram, &io, &ppu);
 
-    var cycle_manager = CycleManager.init(&timer, &dma, &mmu);
+    var cycle_manager = CycleManager.init(&timer, &dma, &mmu, &ppu);
     var cpu = Cpu.init(&mmu, &cycle_manager, &io);
     try testFunction(&cpu);
 }

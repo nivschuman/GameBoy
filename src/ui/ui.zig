@@ -2,6 +2,7 @@ const std = @import("std");
 const GameBoy = @import("../gameboy/gameboy.zig").GameBoy;
 const UiError = @import("../errors/errors.zig").UiError;
 const tiles = @import("../ppu/vram/tiles/tiles.zig");
+const time = @import("../utils/time/time.zig");
 const c = @cImport({
     @cInclude("SDL.h");
 });
@@ -64,9 +65,23 @@ pub const Ui = struct {
                     i += 1;
                 }
             }
-
-            c.SDL_Delay(16);
         }
+    }
+
+    pub fn delayer() time.Delayer {
+        return time.Delayer.init(delay);
+    }
+
+    pub fn stopwatch() time.Stopwatch {
+        return time.Stopwatch.init(getTicks);
+    }
+
+    pub fn getTicks() time.Milliseconds {
+        return c.SDL_GetTicks();
+    }
+
+    pub fn delay(milliseconds: time.Milliseconds) void {
+        c.SDL_Delay(milliseconds);
     }
 };
 
@@ -87,6 +102,7 @@ pub const GameBoyWindow = struct {
     closed: bool,
     debug: bool,
     gameboy: *GameBoy,
+    previous_frame: u32,
 
     pub fn init(title: [*c]const u8, icon: ?*const Icon, gameboy: *GameBoy, debug: bool) !GameBoyWindow {
         const width: c_int = if (!debug) SCREEN_WIDTH else 16 * 8 * SCALE;
@@ -111,6 +127,7 @@ pub const GameBoyWindow = struct {
                 .closed = false,
                 .debug = debug,
                 .gameboy = gameboy,
+                .previous_frame = 0,
             };
         }
 
@@ -129,11 +146,15 @@ pub const GameBoyWindow = struct {
     }
 
     pub fn renderFrame(self: *GameBoyWindow) !void {
-        if (self.debug) {
-            try self.renderTiles(SCALE);
-        } else {
-            try self.renderer.renderFrame();
+        if (self.previous_frame != self.gameboy.ppu.current_frame) {
+            if (self.debug) {
+                try self.renderTiles(SCALE);
+            } else {
+                try self.renderer.renderFrame();
+            }
         }
+
+        self.previous_frame = self.gameboy.ppu.current_frame;
     }
 
     pub fn renderTiles(self: *GameBoyWindow, scale: comptime_int) !void {

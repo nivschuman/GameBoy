@@ -4,21 +4,24 @@
 const Timer = @import("../io/timer/timer.zig").Timer;
 const Dma = @import("../io/lcd/dma/dma.zig").Dma;
 const Mmu = @import("../mmu/mmu.zig").Mmu;
+const Ppu = @import("../ppu/ppu.zig").Ppu;
 
 // 1 cycle = 4 ticks
-pub const Cycle = u8; //M-Cycle
-pub const Tick = u8; //T-Cycle
+pub const Cycle = u16; //M-Cycle
+pub const Tick = u16; //T-Cycle
 
 pub const CycleManager = struct {
     timer: *Timer,
     dma: *Dma,
     mmu: *Mmu,
+    ppu: *Ppu,
 
-    pub fn init(timer: *Timer, dma: *Dma, mmu: *Mmu) CycleManager {
+    pub fn init(timer: *Timer, dma: *Dma, mmu: *Mmu, ppu: *Ppu) CycleManager {
         return .{
             .timer = timer,
             .dma = dma,
             .mmu = mmu,
+            .ppu = ppu,
         };
     }
 
@@ -29,6 +32,7 @@ pub const CycleManager = struct {
             var t: Tick = 0;
             while (t < ticks) : (t += 1) {
                 self.timer.tick();
+                self.ppu.tick();
             }
 
             self.dma.cycle(self.mmu);

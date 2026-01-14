@@ -1,8 +1,8 @@
 pub const LcdMode = enum(u2) {
     HBLANK = 0,
     VBLANK = 1,
-    OAM = 2,
-    XFER = 3,
+    OAM_SEARCH = 2,
+    PIXEL_TRANSFER = 3,
 };
 
 pub const StatInterruptCondition = enum(u3) {
