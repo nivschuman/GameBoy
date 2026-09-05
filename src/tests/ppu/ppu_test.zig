@@ -15,6 +15,8 @@ const Lcd = @import("../../io/lcd/lcd.zig").Lcd;
 const Ppu = @import("../../ppu/ppu.zig").Ppu;
 const StdStopwatch = @import("../../utils/time/time.zig").StdStopwatch;
 const StdDelayer = @import("../../utils/time/time.zig").StdDelayer;
+const PixelFetcher = @import("../../ppu/fetcher/fetcher.zig").PixelFetcher;
+const PixelFifo = @import("../../ppu/fetcher/fetcher.zig").PixelFifo;
 
 pub fn testWithPpu(testFunction: fn (*Ppu) anyerror!void) anyerror!void {
     var interrupt_registers = interrupts.InterruptRegisters.init();
@@ -22,7 +24,10 @@ pub fn testWithPpu(testFunction: fn (*Ppu) anyerror!void) anyerror!void {
     var lcd = Lcd.init(&dma);
     var vram = VRam.init();
     var oam = Oam.init();
-    var ppu = Ppu.init(&oam, &vram, &dma, &lcd, &interrupt_registers, StdStopwatch.init(), StdDelayer.init());
+    var background_pixel_fifo = PixelFifo.init();
+    var object_pixel_fifo = PixelFifo.init();
+    var pixel_fetcher = PixelFetcher.init(&background_pixel_fifo, &object_pixel_fifo, &vram, &lcd);
+    var ppu = Ppu.init(&oam, &vram, &dma, &lcd, &interrupt_registers, StdStopwatch.init(), StdDelayer.init(), &pixel_fetcher);
     try testFunction(&ppu);
 }
 

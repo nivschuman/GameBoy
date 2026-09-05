@@ -28,9 +28,8 @@ pub const CycleManager = struct {
     pub fn cycle(self: *CycleManager, cycles: Cycle) void {
         var c: Cycle = 0;
         while (c < cycles) : (c += 1) {
-            const ticks: Tick = cycles * 4;
             var t: Tick = 0;
-            while (t < ticks) : (t += 1) {
+            while (t < 4) : (t += 1) {
                 self.timer.tick();
                 self.ppu.tick();
             }

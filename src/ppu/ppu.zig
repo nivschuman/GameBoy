@@ -10,6 +10,7 @@ const InterruptRegisters = @import("../io/interrupts/interrupts.zig").InterruptR
 const Tick = @import("../cycles/cycles.zig").Tick;
 const Stopwatch = @import("../utils/time/time.zig").Stopwatch;
 const Delayer = @import("../utils/time/time.zig").Delayer;
+const PixelFetcher = @import("fetcher/fetcher.zig").PixelFetcher;
 
 pub const Ppu = struct {
     pub const TICKS_PER_OAM_SEARCH_MODE: Tick = 80;
@@ -27,9 +28,10 @@ pub const Ppu = struct {
     stopwatch: Stopwatch,
     delayer: Delayer,
     ticks: Tick,
+    pixel_fetcher: *PixelFetcher,
     current_frame: u32,
 
-    pub fn init(oam: *Oam, vram: *VRam, dma: *Dma, lcd: *Lcd, interrupt_registers: *InterruptRegisters, stopwatch: Stopwatch, delayer: Delayer) Ppu {
+    pub fn init(oam: *Oam, vram: *VRam, dma: *Dma, lcd: *Lcd, interrupt_registers: *InterruptRegisters, stopwatch: Stopwatch, delayer: Delayer, pixel_fetcher: *PixelFetcher) Ppu {
         return .{
             .oam = oam,
             .vram = vram,
@@ -38,6 +40,7 @@ pub const Ppu = struct {
             .interrupt_registers = interrupt_registers,
             .stopwatch = stopwatch,
             .delayer = delayer,
+            .pixel_fetcher = pixel_fetcher,
             .ticks = 0,
             .current_frame = 0,
         };
@@ -71,6 +74,8 @@ pub const Ppu = struct {
 
     fn oamSearchMode(self: *Ppu) void {
         if (self.ticks >= TICKS_PER_OAM_SEARCH_MODE) {
+            self.pixel_fetcher.reset();
+            self.pixel_fetcher.discard_pixels = self.lcd.scx % 8;
             self.lcd.setLcdMode(.PIXEL_TRANSFER);
         }
     }
@@ -81,12 +86,23 @@ pub const Ppu = struct {
         }
 
         self.incrementLy();
+
+        if (self.pixel_fetcher.increment_window_line_counter) {
+            self.pixel_fetcher.window_line_counter += 1;
+            self.pixel_fetcher.increment_window_line_counter = false;
+        }
+
         if (self.lcd.ly >= VERTICAL_HEIGHT) {
             self.lcd.setLcdMode(.VBLANK);
+
+            self.pixel_fetcher.window_line_counter = 0;
+            self.pixel_fetcher.increment_window_line_counter = false;
+
             self.interrupt_registers.setSpecifiedInterruptFlag(.VBlank, true);
             if (self.lcd.getStatInterruptCondition(.VBLANK)) {
                 self.interrupt_registers.setSpecifiedInterruptFlag(.LCD, true);
             }
+
             self.incrementFrame();
         } else {
             self.lcd.setLcdMode(.OAM_SEARCH);
@@ -110,8 +126,16 @@ pub const Ppu = struct {
     }
 
     fn pixelTransferMode(self: *Ppu) void {
-        if (self.ticks >= TICKS_PER_OAM_SEARCH_MODE + TICKS_PER_PIXEL_TRANSFER_MODE) {
+        self.pixel_fetcher.step();
+        self.pixel_fetcher.renderPixel();
+
+        if (self.pixel_fetcher.render_x >= 160) {
+            self.pixel_fetcher.reset();
             self.lcd.setLcdMode(.HBLANK);
+
+            if (self.lcd.getStatInterruptCondition(.HBLANK)) {
+                self.interrupt_registers.setSpecifiedInterruptFlag(.LCD, true);
+            }
         }
     }
 
