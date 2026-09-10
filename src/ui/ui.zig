@@ -89,8 +89,8 @@ pub const WindowId = u32;
 
 pub const GameBoyWindow = struct {
     const SCALE = 3;
-    const WINDOW_WIDTH = 1024;
-    const WINDOW_HEIGHT = 768;
+    const WINDOW_WIDTH = 160 * SCALE;
+    const WINDOW_HEIGHT = 144 * SCALE;
     const DEBUG_WINDOW_WIDTH = 16 * 8 * SCALE;
     const DEBUG_WINDOW_HEIGHT = 32 * 8 * SCALE;
     const DEBUG_TEXTURE_WIDTH = (16 * 8 * SCALE) + (16 * SCALE);

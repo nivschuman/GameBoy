@@ -38,15 +38,15 @@ pub const PixelFetcher = struct {
     lcd: *Lcd,
     mode: PixelFetcherMode,
     fetch_type: FetchType,
-    fetcher_x: u8,
-    window_line_counter: u8,
-    increment_window_line_counter: bool,
-    render_x: u8,
+    fetcher_x: u8, //current x of tile to fetch
+    window_line_counter: u8, //incremented each time a scanline had any window pixels on it and reset when entering VBlank mode
+    increment_window_line_counter: bool, //whether to increment window line counter in hblank mode
+    render_x: u8, //current screen x coordinate to render
     tile_number: u8,
     tile_data_low: u8,
     tile_data_high: u8,
-    discard_pixels: u8,
-    video_buffer: [SCREEN_WIDTH * SCREEN_HEIGHT]Color,
+    discard_pixels: u8, //discard pixels of the first tile which aren't on the screen
+    video_buffer: [SCREEN_WIDTH * SCREEN_HEIGHT]Color, //pixels to display
 
     pub fn init(background_pixel_fifo: *PixelFifo, object_pixel_fifo: *PixelFifo, vram: *VRam, lcd: *Lcd) PixelFetcher {
         return .{
@@ -77,8 +77,8 @@ pub const PixelFetcher = struct {
 
         //background: x = (scx/8 + fetcher_x) modulo 32, y = ((scy+ly) modulo 256) / 8
         //window: x = fetcher_x, y = window_line_counter / 8
-        const tile_map_x = if (self.fetch_type == .BACKGROUND) (@divTrunc(self.lcd.scx, 8) + self.fetcher_x) & 0x1F else self.fetcher_x;
-        const tile_map_y = if (self.fetch_type == .BACKGROUND) @divTrunc((self.lcd.scy + self.lcd.ly) & 0xFF, 8) else @divTrunc(self.window_line_counter, 8);
+        const tile_map_x: u16 = if (self.fetch_type == .BACKGROUND) (@divTrunc(self.lcd.scx, 8) + self.fetcher_x) & 0x1F else self.fetcher_x;
+        const tile_map_y: u16 = if (self.fetch_type == .BACKGROUND) @divTrunc((self.lcd.scy + self.lcd.ly) & 0xFF, 8) else @divTrunc(self.window_line_counter, 8);
         self.tile_number = self.vram.readByte(self.lcd.getBackgroundTileMap().getAddress() + tile_map_x + tile_map_y * 32);
         self.mode = .GET_TILE_DATA_LOW;
     }
@@ -138,7 +138,7 @@ pub const PixelFetcher = struct {
             return;
         }
 
-        self.video_buffer[self.render_x + self.lcd.ly * SCREEN_WIDTH] = pixel_fifo_entry.palette.getColor(pixel_fifo_entry.pixel);
+        self.video_buffer[@as(usize, self.render_x) + @as(usize, self.lcd.ly) * SCREEN_WIDTH] = pixel_fifo_entry.palette.getColor(pixel_fifo_entry.pixel);
         self.render_x += 1;
     }
 
@@ -157,5 +157,7 @@ pub const PixelFetcher = struct {
         self.fetch_type = .BACKGROUND;
         self.mode = .GET_TILE;
         self.fetcher_x = 0;
+        self.render_x = 0;
+        self.discard_pixels = self.lcd.scx % 8;
     }
 };

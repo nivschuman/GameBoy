@@ -75,7 +75,6 @@ pub const Ppu = struct {
     fn oamSearchMode(self: *Ppu) void {
         if (self.ticks >= TICKS_PER_OAM_SEARCH_MODE) {
             self.pixel_fetcher.reset();
-            self.pixel_fetcher.discard_pixels = self.lcd.scx % 8;
             self.lcd.setLcdMode(.PIXEL_TRANSFER);
         }
     }
@@ -130,7 +129,6 @@ pub const Ppu = struct {
         self.pixel_fetcher.renderPixel();
 
         if (self.pixel_fetcher.render_x >= 160) {
-            self.pixel_fetcher.reset();
             self.lcd.setLcdMode(.HBLANK);
 
             if (self.lcd.getStatInterruptCondition(.HBLANK)) {
