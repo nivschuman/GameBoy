@@ -2,8 +2,9 @@ const Dma = @import("dma/dma.zig").Dma;
 const ObjectSize = @import("types/types.zig").ObjectSize;
 const LcdMode = @import("types/types.zig").LcdMode;
 const StatInterruptCondition = @import("types/types.zig").StatInterruptCondition;
-const BackgroundPalette = @import("palette/palette.zig").BackgroundPalette;
-const ObjectPalette = @import("palette/palette.zig").ObjectPalette;
+const Palette = @import("palette/palette.zig").Palette;
+const TileMap = @import("../../ppu/vram/tiles/tiles.zig").TileMap;
+const TileData = @import("../../ppu/vram/tiles/tiles.zig").TileData;
 
 pub const Lcd = struct {
     lcdc: u8, //lcd control
@@ -14,9 +15,9 @@ pub const Lcd = struct {
     scx: u8, //scroll x
     wy: u8, //window y
     wx: u8, //window x
-    bgp: BackgroundPalette, //background pallete
-    obp0: ObjectPalette, //object background palette 0
-    obp1: ObjectPalette, //object background palette 1
+    bgp: Palette, //background pallete
+    obp0: Palette, //object background palette 0
+    obp1: Palette, //object background palette 1
     dma: *Dma,
 
     pub fn init(dma: *Dma) Lcd {
@@ -29,9 +30,9 @@ pub const Lcd = struct {
             .scx = 0,
             .wy = 0,
             .wx = 0,
-            .bgp = BackgroundPalette.init(0xFC),
-            .obp0 = ObjectPalette.init(0xFF),
-            .obp1 = ObjectPalette.init(0xFF),
+            .bgp = Palette.init(0xFC, .BACKGROUND),
+            .obp0 = Palette.init(0xFF, .OBJECT),
+            .obp1 = Palette.init(0xFF, .OBJECT),
             .dma = dma,
         };
     }
@@ -110,23 +111,23 @@ pub const Lcd = struct {
         return @truncate(self.lcdc >> 7);
     }
 
-    pub fn getWindowMapArea(self: *const Lcd) u16 {
+    pub fn getWindowTileMap(self: *const Lcd) TileMap {
         const bit: u1 = @truncate(self.lcdc >> 6);
-        return if (bit == 0) 0x9800 else 0x9C00;
+        return if (bit == 0) .TILE_MAP_1 else .TILE_MAP_2;
     }
 
     pub fn getWindowEnable(self: *const Lcd) u1 {
         return @truncate(self.lcdc >> 5);
     }
 
-    pub fn getBackgroundWindowDataArea(self: *const Lcd) u16 {
+    pub fn getTileData(self: *const Lcd) TileData {
         const bit: u1 = @truncate(self.lcdc >> 4);
-        return if (bit == 0) 0x8800 else 0x8000;
+        return if (bit == 0) .TILE_DATA_2 else .TILE_DATA_1;
     }
 
-    pub fn getBackgroundMapArea(self: *const Lcd) u16 {
+    pub fn getBackgroundTileMap(self: *const Lcd) TileMap {
         const bit: u1 = @truncate(self.lcdc >> 3);
-        return if (bit == 0) 0x9800 else 0x9C00;
+        return if (bit == 0) .TILE_MAP_1 else .TILE_MAP_2;
     }
 
     pub fn getObjectSize(self: *const Lcd) ObjectSize {
@@ -148,7 +149,7 @@ pub const Lcd = struct {
         return @truncate(self.lcdc >> 1);
     }
 
-    pub fn getBackgroundWindowEnable(self: *const Lcd) u1 {
+    pub fn getBackgroundAndWindowPriority(self: *const Lcd) u1 {
         return @truncate(self.lcdc);
     }
 };

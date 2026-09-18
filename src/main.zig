@@ -19,6 +19,8 @@ const Icon = @import("ui/ui.zig").Icon;
 const debug = @import("gameboy/debug/debug.zig");
 const Dma = @import("io/lcd/dma/dma.zig").Dma;
 const Lcd = @import("io/lcd/lcd.zig").Lcd;
+const PixelFetcher = @import("ppu/fetcher/fetcher.zig").PixelFetcher;
+const PixelFifo = @import("ppu/fetcher/fetcher.zig").PixelFifo;
 
 const logger = std.log.scoped(.main);
 
@@ -48,7 +50,12 @@ pub fn main() !void {
 
     var vram = VRam.init();
     var oam = Oam.init();
-    var ppu = Ppu.init(&oam, &vram, &dma, &lcd, &interrupt_registers, Ui.stopwatch(), Ui.delayer());
+
+    var background_pixel_fifo = PixelFifo.init();
+    var object_pixel_fifo = PixelFifo.init();
+    var pixel_fetcher = PixelFetcher.init(&background_pixel_fifo, &object_pixel_fifo, &vram, &lcd);
+
+    var ppu = Ppu.init(&oam, &vram, &dma, &lcd, &interrupt_registers, Ui.stopwatch(), Ui.delayer(), &pixel_fetcher);
 
     var wram = memory.WRam.init();
     var hram = memory.HRam.init();

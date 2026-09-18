@@ -35,8 +35,6 @@ pub const TileRow = struct {
 };
 
 pub const Tile = struct {
-    pub const SIZE = 16; //16 bytes
-
     bytes: u128,
 
     pub fn init(bytes: u128) Tile {
@@ -57,5 +55,29 @@ pub const Tile = struct {
         }
 
         return rows;
+    }
+};
+
+pub const TileMap = enum {
+    TILE_MAP_1,
+    TILE_MAP_2,
+
+    pub fn getAddress(self: TileMap) u16 {
+        return switch (self) {
+            .TILE_MAP_1 => 0x9800,
+            .TILE_MAP_2 => 0x9C00,
+        };
+    }
+};
+
+pub const TileData = enum {
+    TILE_DATA_1,
+    TILE_DATA_2,
+
+    pub fn getTileAddress(self: TileData, tile_number: u8) u16 {
+        return switch (self) {
+            .TILE_DATA_1 => 0x8000 + @as(u16, tile_number) * 16,
+            .TILE_DATA_2 => if (tile_number >= 0x80) 0x8800 + @as(u16, (tile_number - 0x80)) * 16 else 0x9000 + @as(u16, tile_number) * 16,
+        };
     }
 };

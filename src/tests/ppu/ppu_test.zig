@@ -15,6 +15,9 @@ const Lcd = @import("../../io/lcd/lcd.zig").Lcd;
 const Ppu = @import("../../ppu/ppu.zig").Ppu;
 const StdStopwatch = @import("../../utils/time/time.zig").StdStopwatch;
 const StdDelayer = @import("../../utils/time/time.zig").StdDelayer;
+const PixelFetcher = @import("../../ppu/fetcher/fetcher.zig").PixelFetcher;
+const PixelFifo = @import("../../ppu/fetcher/fetcher.zig").PixelFifo;
+const constants = @import("../../constants/constants.zig");
 
 pub fn testWithPpu(testFunction: fn (*Ppu) anyerror!void) anyerror!void {
     var interrupt_registers = interrupts.InterruptRegisters.init();
@@ -22,14 +25,17 @@ pub fn testWithPpu(testFunction: fn (*Ppu) anyerror!void) anyerror!void {
     var lcd = Lcd.init(&dma);
     var vram = VRam.init();
     var oam = Oam.init();
-    var ppu = Ppu.init(&oam, &vram, &dma, &lcd, &interrupt_registers, StdStopwatch.init(), StdDelayer.init());
+    var background_pixel_fifo = PixelFifo.init();
+    var object_pixel_fifo = PixelFifo.init();
+    var pixel_fetcher = PixelFetcher.init(&background_pixel_fifo, &object_pixel_fifo, &vram, &lcd);
+    var ppu = Ppu.init(&oam, &vram, &dma, &lcd, &interrupt_registers, StdStopwatch.init(), StdDelayer.init(), &pixel_fetcher);
     try testFunction(&ppu);
 }
 
 test "VBLANK mode" {
     const testFunction = struct {
         pub fn testFunction(ppu: *Ppu) anyerror!void {
-            ppu.lcd.ly = Ppu.VERTICAL_HEIGHT - 1;
+            ppu.lcd.ly = constants.SCREEN_HEIGHT - 1;
             ppu.lcd.setLcdMode(.HBLANK);
             ppu.ticks = Ppu.TICKS_PER_LINE;
 
@@ -55,6 +61,21 @@ test "HBLANK mode" {
             try std.testing.expect(ppu.lcd.getLcdMode() == .OAM_SEARCH);
             try std.testing.expect(ppu.interrupt_registers.getSpecifiedInterruptFlag(.LCD));
             try std.testing.expect(!ppu.interrupt_registers.getSpecifiedInterruptFlag(.VBlank));
+        }
+    }.testFunction;
+    try testWithPpu(testFunction);
+}
+
+test "PIXEL TRANSFER mode" {
+    const testFunction = struct {
+        pub fn testFunction(ppu: *Ppu) anyerror!void {
+            ppu.lcd.setLcdMode(.PIXEL_TRANSFER);
+            ppu.pixel_fetcher.mode = .GET_TILE;
+            ppu.pixel_fetcher.render_x = constants.SCREEN_WIDTH;
+
+            ppu.tick();
+
+            try std.testing.expect(ppu.lcd.getLcdMode() == .HBLANK);
         }
     }.testFunction;
     try testWithPpu(testFunction);
