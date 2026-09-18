@@ -3,6 +3,7 @@ const GameBoy = @import("../gameboy/gameboy.zig").GameBoy;
 const UiError = @import("../errors/errors.zig").UiError;
 const tiles = @import("../ppu/vram/tiles/tiles.zig");
 const time = @import("../utils/time/time.zig");
+const constants = @import("../constants/constants.zig");
 const c = @cImport({
     @cInclude("SDL.h");
 });
@@ -14,7 +15,10 @@ pub const Ui = struct {
     allocator: std.mem.Allocator,
 
     pub fn init(allocator: std.mem.Allocator) !Ui {
-        _ = c.SDL_Init(c.SDL_INIT_VIDEO);
+        if (c.SDL_Init(c.SDL_INIT_VIDEO) != 0) {
+            return UiError.SdlInitFailed;
+        }
+
         return .{
             .allocator = allocator,
             .windows = .empty,
@@ -89,8 +93,8 @@ pub const WindowId = u32;
 
 pub const GameBoyWindow = struct {
     const SCALE = 3;
-    const WINDOW_WIDTH = 160 * SCALE;
-    const WINDOW_HEIGHT = 144 * SCALE;
+    const WINDOW_WIDTH = constants.SCREEN_WIDTH * SCALE;
+    const WINDOW_HEIGHT = constants.SCREEN_HEIGHT * SCALE;
     const DEBUG_WINDOW_WIDTH = 16 * 8 * SCALE;
     const DEBUG_WINDOW_HEIGHT = 32 * 8 * SCALE;
     const DEBUG_TEXTURE_WIDTH = (16 * 8 * SCALE) + (16 * SCALE);
@@ -167,14 +171,14 @@ pub const GameBoyWindow = struct {
         if (self.surface) |*surface| {
             var rect = c.struct_SDL_Rect{};
 
-            for (0..144) |y| {
-                for (0..160) |x| {
+            for (0..constants.SCREEN_HEIGHT) |y| {
+                for (0..constants.SCREEN_WIDTH) |x| {
                     rect.x = @as(c_int, @intCast(x)) * SCALE;
                     rect.y = @as(c_int, @intCast(y)) * SCALE;
                     rect.w = SCALE;
                     rect.h = SCALE;
 
-                    const color = self.gameboy.ppu.pixel_fetcher.video_buffer[x + y * 160];
+                    const color = self.gameboy.ppu.pixel_fetcher.video_buffer[x + y * constants.SCREEN_WIDTH];
                     try surface.fillRect(&rect, color.getUiColor());
                 }
             }
@@ -233,12 +237,6 @@ pub const Renderer = struct {
 
     pub fn deinit(self: *Renderer) void {
         c.SDL_DestroyRenderer(self.renderer);
-    }
-
-    pub fn renderFrame(self: *Renderer) !void {
-        try self.drawColor(0, 0, 0, 255);
-        try self.clear();
-        self.present();
     }
 
     pub fn clear(self: *Renderer) !void {

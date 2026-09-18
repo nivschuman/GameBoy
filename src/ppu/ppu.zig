@@ -11,12 +11,11 @@ const Tick = @import("../cycles/cycles.zig").Tick;
 const Stopwatch = @import("../utils/time/time.zig").Stopwatch;
 const Delayer = @import("../utils/time/time.zig").Delayer;
 const PixelFetcher = @import("fetcher/fetcher.zig").PixelFetcher;
+const constants = @import("../constants/constants.zig");
 
 pub const Ppu = struct {
     pub const TICKS_PER_OAM_SEARCH_MODE: Tick = 80;
-    pub const TICKS_PER_PIXEL_TRANSFER_MODE: Tick = 172;
     pub const TICKS_PER_LINE: Tick = 456;
-    pub const VERTICAL_HEIGHT: u8 = 144;
     pub const LINES_PER_FRAME: u8 = 154;
     pub const EXPECTED_FRAME_TIME: u32 = 1000 / 60;
 
@@ -91,7 +90,7 @@ pub const Ppu = struct {
             self.pixel_fetcher.increment_window_line_counter = false;
         }
 
-        if (self.lcd.ly >= VERTICAL_HEIGHT) {
+        if (self.lcd.ly >= constants.SCREEN_HEIGHT) {
             self.lcd.setLcdMode(.VBLANK);
 
             self.pixel_fetcher.window_line_counter = 0;
@@ -125,8 +124,7 @@ pub const Ppu = struct {
     }
 
     fn pixelTransferMode(self: *Ppu) void {
-        self.pixel_fetcher.step();
-        self.pixel_fetcher.renderPixel();
+        self.pixel_fetcher.tick();
 
         if (self.pixel_fetcher.render_x >= 160) {
             self.lcd.setLcdMode(.HBLANK);

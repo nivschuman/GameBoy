@@ -3,6 +3,7 @@ pub const ArgParseError = error{
 };
 
 pub const UiError = error{
+    SdlInitFailed,
     WindowCreationFailed,
     RendererCreationFailed,
     SurfaceCreationFailed,

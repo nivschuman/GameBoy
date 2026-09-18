@@ -1,4 +1,6 @@
 const Tile = @import("tiles/tiles.zig").Tile;
+const TileMap = @import("tiles/tiles.zig").TileMap;
+const TileData = @import("tiles/tiles.zig").TileData;
 
 pub const VRam = struct {
     pub const TILES_SIZE = 0x1800;
@@ -29,6 +31,20 @@ pub const VRam = struct {
             0x9800...0x9FFF => self.tile_maps[address - 0x9800] = value,
             else => @panic("invalid vram address"),
         }
+    }
+
+    pub fn getTileNumber(self: *const VRam, tile_map: TileMap, tile_map_x: u5, tile_map_y: u5) u8 {
+        return self.readByte(tile_map.getAddress() + @as(u16, tile_map_x) + @as(u16, tile_map_y) * 32);
+    }
+
+    pub fn getTileDataLow(self: *const VRam, tile_data: TileData, tile_number: u8, tile_row: u3) u8 {
+        //each tile row is two bytes
+        return self.readByte(tile_data.getTileAddress(tile_number) + @as(u16, tile_row) * 2);
+    }
+
+    pub fn getTileDataHigh(self: *const VRam, tile_data: TileData, tile_number: u8, tile_row: u3) u8 {
+        //each tile row is two bytes
+        return self.readByte(tile_data.getTileAddress(tile_number) + @as(u16, tile_row) * 2 + 1);
     }
 
     pub fn getTile(self: *const VRam, position: u16) Tile {
