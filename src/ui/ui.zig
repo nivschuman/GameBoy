@@ -33,10 +33,9 @@ pub const Ui = struct {
         c.SDL_Quit();
     }
 
-    pub fn createGameBoyWindow(self: *Ui, title: [*c]const u8, icon: ?*const Icon, gameboy: *GameBoy, debug: bool) !WindowId {
+    pub fn createGameBoyWindow(self: *Ui, title: [*c]const u8, icon: ?*const Icon, gameboy: *GameBoy, debug: bool) !void {
         const window = try GameBoyWindow.init(title, icon, gameboy, debug);
         try self.windows.append(self.allocator, window);
-        return window.id;
     }
 
     pub fn run(self: *Ui) void {
@@ -45,7 +44,7 @@ pub const Ui = struct {
             while (c.SDL_PollEvent(&event) != 0) {
                 if (event.type == c.SDL_WINDOWEVENT and event.window.event == c.SDL_WINDOWEVENT_CLOSE) {
                     for (self.windows.items) |*win| {
-                        if (win.id == event.window.windowID) {
+                        if (win.getId() == event.window.windowID) {
                             win.closed = true;
                         }
                     }
@@ -102,13 +101,10 @@ pub const GameBoyWindow = struct {
     const DEBUG_SURFACE_WIDTH = (16 * 8 * SCALE) + (16 * SCALE);
     const DEBUG_SURFACE_HEIGHT = (32 * 8 * SCALE) + (64 * SCALE);
 
-    id: WindowId,
-    title: [*c]const u8,
-    icon: ?*const Icon,
-    window: *c.struct_SDL_Window,
+    window: Window,
     renderer: Renderer,
-    surface: ?Surface,
-    texture: ?Texture,
+    surface: Surface,
+    texture: Texture,
     closed: bool,
     debug: bool,
     gameboy: *GameBoy,
@@ -117,48 +113,44 @@ pub const GameBoyWindow = struct {
     pub fn init(title: [*c]const u8, icon: ?*const Icon, gameboy: *GameBoy, debug: bool) !GameBoyWindow {
         const width: c_int = if (!debug) WINDOW_WIDTH else DEBUG_WINDOW_WIDTH;
         const height: c_int = if (!debug) WINDOW_HEIGHT else DEBUG_WINDOW_HEIGHT;
-        const window = c.SDL_CreateWindow(title, c.SDL_WINDOWPOS_CENTERED, c.SDL_WINDOWPOS_CENTERED, width, height, 0);
-        if (window) |w| {
-            const id = c.SDL_GetWindowID(w);
-            const renderer = try Renderer.init(w);
-            const surface = if (debug) try Surface.init(DEBUG_SURFACE_WIDTH, DEBUG_SURFACE_HEIGHT) else try Surface.init(WINDOW_WIDTH, WINDOW_HEIGHT);
-            const texture = if (debug) try Texture.init(renderer.renderer, DEBUG_TEXTURE_WIDTH, DEBUG_TEXTURE_HEIGHT) else try Texture.init(renderer.renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
-            if (icon) |i| {
-                i.attach(w);
-            }
-            return .{
-                .id = id,
-                .title = title,
-                .icon = icon,
-                .window = w,
-                .renderer = renderer,
-                .surface = surface,
-                .texture = texture,
-                .closed = false,
-                .debug = debug,
-                .gameboy = gameboy,
-                .previous_frame = 0,
-            };
+
+        const window = try Window.init(title, width, height);
+        const renderer = try window.createRenderer();
+
+        const surface = if (debug) try Surface.init(DEBUG_SURFACE_WIDTH, DEBUG_SURFACE_HEIGHT) else try Surface.init(WINDOW_WIDTH, WINDOW_HEIGHT);
+        const texture = if (debug) try renderer.createTexture(DEBUG_TEXTURE_WIDTH, DEBUG_TEXTURE_HEIGHT) else try renderer.createTexture(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+        if (icon) |i| {
+            i.attach(&window);
         }
 
-        return UiError.WindowCreationFailed;
+        return .{
+            .window = window,
+            .renderer = renderer,
+            .surface = surface,
+            .texture = texture,
+            .closed = false,
+            .debug = debug,
+            .gameboy = gameboy,
+            .previous_frame = 0,
+        };
     }
 
     pub fn deinit(self: *GameBoyWindow) void {
-        if (self.texture) |*t| {
-            t.deinit();
-        }
-        if (self.surface) |*s| {
-            s.deinit();
-        }
+        self.surface.deinit();
+        self.texture.deinit();
         self.renderer.deinit();
-        c.SDL_DestroyWindow(self.window);
+        self.window.deinit();
+    }
+
+    pub fn getId(self: *const GameBoyWindow) WindowId {
+        return self.window.getId();
     }
 
     pub fn renderFrame(self: *GameBoyWindow) !void {
         if (self.previous_frame != self.gameboy.ppu.current_frame) {
             if (self.debug) {
-                try self.renderTiles(SCALE);
+                try self.renderTiles();
             } else {
                 try self.renderVideoBuffer();
             }
@@ -168,72 +160,77 @@ pub const GameBoyWindow = struct {
     }
 
     pub fn renderVideoBuffer(self: *GameBoyWindow) !void {
-        if (self.surface) |*surface| {
-            var rect = c.struct_SDL_Rect{};
+        var rect = c.struct_SDL_Rect{};
 
-            for (0..constants.SCREEN_HEIGHT) |y| {
-                for (0..constants.SCREEN_WIDTH) |x| {
-                    rect.x = @as(c_int, @intCast(x)) * SCALE;
-                    rect.y = @as(c_int, @intCast(y)) * SCALE;
-                    rect.w = SCALE;
-                    rect.h = SCALE;
+        for (0..constants.SCREEN_HEIGHT) |y| {
+            for (0..constants.SCREEN_WIDTH) |x| {
+                rect.x = @as(c_int, @intCast(x)) * SCALE;
+                rect.y = @as(c_int, @intCast(y)) * SCALE;
+                rect.w = SCALE;
+                rect.h = SCALE;
 
-                    const color = self.gameboy.ppu.pixel_fetcher.video_buffer[x + y * constants.SCREEN_WIDTH];
-                    try surface.fillRect(&rect, color.getUiColor());
-                }
-            }
-
-            if (self.texture) |*texture| {
-                try texture.update(surface.*);
-                try self.renderer.clear();
-                try self.renderer.copy(texture.*);
-                self.renderer.present();
+                const color = self.gameboy.ppu.pixel_fetcher.video_buffer[x + y * constants.SCREEN_WIDTH];
+                try self.surface.fillRect(&rect, color.getUiColor());
             }
         }
+
+        try self.present();
     }
 
-    pub fn renderTiles(self: *GameBoyWindow, scale: comptime_int) !void {
-        if (self.surface) |*s| {
-            var rect = c.struct_SDL_Rect{};
-            rect.x = 0;
-            rect.y = 0;
-            rect.w = s.surface.w;
-            rect.h = s.surface.h;
-            try s.fillRect(&rect, 0xFF111111);
+    pub fn renderTiles(self: *GameBoyWindow) !void {
+        try self.surface.fill(0xFF111111);
 
-            const tile_columns: c_int = 16;
-            const tile_size: c_int = 8;
-            const all_tiles = self.gameboy.ppu.vram.getTiles();
-            for (all_tiles, 0..) |tile, tile_index| {
-                const idx: c_int = @intCast(tile_index);
-                const x_index: c_int = @mod(idx, tile_columns);
-                const y_index: c_int = @divTrunc(idx, tile_columns);
-                const x: c_int = x_index * scale + x_index * tile_size * scale;
-                const y: c_int = 16 + y_index * scale + y_index * tile_size * scale;
-                try s.displayTile(tile, x, y, scale);
-            }
-
-            if (self.texture) |*t| {
-                try t.update(s.*);
-                try self.renderer.clear();
-                try self.renderer.copy(t.*);
-                self.renderer.present();
-            }
+        const tile_columns: c_int = 16;
+        const tile_size: c_int = 8;
+        const all_tiles = self.gameboy.ppu.vram.getTiles();
+        for (all_tiles, 0..) |tile, tile_index| {
+            const idx: c_int = @intCast(tile_index);
+            const x_index: c_int = @mod(idx, tile_columns);
+            const y_index: c_int = @divTrunc(idx, tile_columns);
+            const x: c_int = x_index * SCALE + x_index * tile_size * SCALE;
+            const y: c_int = 16 + y_index * SCALE + y_index * tile_size * SCALE;
+            try self.surface.displayTile(tile, x, y, SCALE);
         }
+
+        try self.present();
+    }
+
+    pub fn present(self: *GameBoyWindow) !void {
+        try self.texture.update(self.surface);
+        try self.renderer.clear();
+        try self.renderer.copy(self.texture);
+        self.renderer.present();
     }
 };
 
-pub const Renderer = struct {
-    renderer: *c.struct_SDL_Renderer,
+pub const Window = struct {
+    window: *c.struct_SDL_Window,
 
-    pub fn init(window: *c.struct_SDL_Window) !Renderer {
-        const renderer = c.SDL_CreateRenderer(window, -1, 0);
+    pub fn init(title: [*c]const u8, width: c_int, height: c_int) !Window {
+        const window = c.SDL_CreateWindow(title, c.SDL_WINDOWPOS_CENTERED, c.SDL_WINDOWPOS_CENTERED, width, height, 0) orelse return UiError.WindowCreationFailed;
+        return .{ .window = window };
+    }
+
+    pub fn deinit(self: *Window) void {
+        c.SDL_DestroyWindow(self.window);
+    }
+
+    pub fn getId(self: *const Window) WindowId {
+        return c.SDL_GetWindowID(self.window);
+    }
+
+    pub fn createRenderer(self: *const Window) !Renderer {
+        const renderer = c.SDL_CreateRenderer(self.window, -1, 0);
         if (renderer) |r| {
             return .{ .renderer = r };
         }
 
         return UiError.RendererCreationFailed;
     }
+};
+
+pub const Renderer = struct {
+    renderer: *c.struct_SDL_Renderer,
 
     pub fn deinit(self: *Renderer) void {
         c.SDL_DestroyRenderer(self.renderer);
@@ -263,6 +260,15 @@ pub const Renderer = struct {
             return UiError.RenderCopyFailed;
         }
     }
+
+    pub fn createTexture(self: *const Renderer, width: c_int, height: c_int) !Texture {
+        const texture = c.SDL_CreateTexture(self.renderer, c.SDL_PIXELFORMAT_ARGB8888, c.SDL_TEXTUREACCESS_STREAMING, width, height);
+        if (texture) |t| {
+            return .{ .texture = t };
+        }
+
+        return UiError.TextureCreationFailed;
+    }
 };
 
 pub const Icon = struct {
@@ -280,8 +286,8 @@ pub const Icon = struct {
         c.SDL_FreeSurface(self.surface);
     }
 
-    pub fn attach(self: *const Icon, window: *c.struct_SDL_Window) void {
-        c.SDL_SetWindowIcon(window, self.surface);
+    pub fn attach(self: *const Icon, window: *const Window) void {
+        c.SDL_SetWindowIcon(window.window, self.surface);
     }
 };
 
@@ -303,7 +309,18 @@ pub const Surface = struct {
         c.SDL_FreeSurface(self.surface);
     }
 
-    pub fn fillRect(self: *Surface, rect: *c.struct_SDL_Rect, color: u32) !void {
+    pub fn fill(self: *Surface, color: u32) !void {
+        const rect = c.struct_SDL_Rect{
+            .x = 0,
+            .y = 0,
+            .w = self.surface.w,
+            .h = self.surface.h,
+        };
+
+        try self.fillRect(&rect, color);
+    }
+
+    pub fn fillRect(self: *Surface, rect: *const c.struct_SDL_Rect, color: u32) !void {
         const err = c.SDL_FillRect(self.surface, rect, color);
         if (err != 0) {
             return UiError.FillRectFailed;
@@ -328,15 +345,6 @@ pub const Surface = struct {
 
 pub const Texture = struct {
     texture: *c.struct_SDL_Texture,
-
-    pub fn init(renderer: *c.struct_SDL_Renderer, width: c_int, height: c_int) !Texture {
-        const texture = c.SDL_CreateTexture(renderer, c.SDL_PIXELFORMAT_ARGB8888, c.SDL_TEXTUREACCESS_STREAMING, width, height);
-        if (texture) |t| {
-            return .{ .texture = t };
-        }
-
-        return UiError.TextureCreationFailed;
-    }
 
     pub fn deinit(self: *Texture) void {
         c.SDL_DestroyTexture(self.texture);
